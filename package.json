@@ -4,13 +4,28 @@
   "description": "^_~",
   "main": "src/index.js",
   "dependencies": {
-    "koa": "^2.7.0",
-    "typescript": "^3.5.2"
+    "@babel/core": "^7.5.0",
+    "@babel/polyfill": "^7.4.4",
+    "@babel/preset-env": "^7.5.0",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.6",
+    "css-loader": "^3.0.0",
+    "express": "^4.17.1",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "style-loader": "^0.23.1",
+    "stylus": "^0.54.5",
+    "stylus-loader": "^3.0.2",
+    "typescript": "^3.5.2",
+    "webpack": "^4.35.2",
+    "webpack-cli": "^3.3.5",
+    "webpack-dev-server": "^3.7.2"
   },
-  "devDependencies": {},
   "scripts": {
+    "start": "webpack-dev-server --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "asu",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {}
 }
