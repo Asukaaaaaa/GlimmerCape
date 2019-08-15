@@ -1,0 +1,13 @@
+.main {
+
+}
+
+.head rect {
+    fill: #e9ebec;
+}
+
+.head text {
+    font-size: 160px;
+    dominant-baseline: central;
+    text-anchor: middle;
+}

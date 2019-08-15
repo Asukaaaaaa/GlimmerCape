@@ -1,16 +1,22 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import { BrowserRouter as Router, Route, Link } from "react-router-dom"
 
 import Main from './pages/main/main'
+import Sign from './pages/sign/sign'
 
-import './index.styl'
+import style from './index.css'
+
 
 const App = () => {
     return (
-        <div>
-            <h1>Hello World!</h1>
-            <Main></Main>
-        </div>
+        <Router>
+            <Link to='/'>Home</Link>
+            <Link to='/sign'>Sign</Link>
+
+            <Route path='/' exact component={Main}></Route>
+            <Route path='/sign' component={Sign}></Route>
+        </Router>
     )
 }
 

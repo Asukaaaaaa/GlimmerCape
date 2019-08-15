@@ -10,21 +10,22 @@ module.exports = {
         rules: [
             {
                 test: /\.js$/,
-                use: 'babel-loader'
+                use: {
+                    loader: 'babel-loader',
+                }
             },
             {
-                test: /\.styl$/,
+                test: /\.css$/,
                 use: [
                     'style-loader',
                     {
                         loader: 'css-loader',
                         options: {
                             modules: {
-                                localIdentName: '[name]__[path]'
+                                localIdentName: '[local]_[name]_[hash:base64:4]'
                             }
                         }
-                    },
-                    'stylus-loader'
+                    }
                 ]
             }
         ]
