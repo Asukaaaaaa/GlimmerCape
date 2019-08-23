@@ -18,7 +18,7 @@ export default class Main extends Component {
         super(props)
         this.graphDatas = { 'sankey': SankeyData, 'circular': CircularData, 'scatter': ScatterData }
         this.state = {
-            graph: 'circular'
+            graph: 'scatter'
         }
     }
 
@@ -28,7 +28,8 @@ export default class Main extends Component {
             <div className={ClassNames(style.main)}>
                 <a href='#' onClick={() => this.setState({ graph: 'sankey' })}>Sankey</a>
                 <a href='#' onClick={() => this.setState({ graph: 'circular' })}>Circular</a>
-                <SvgGraph graph={state.graph} data={this.graphDatas[state.graph]}/>
+                <a href='#' onClick={() => this.setState({ graph: 'scatter' })}>Scatter</a>
+                <SvgGraph graph={state.graph} data={this.graphDatas[state.graph]} />
             </div>
         )
     }

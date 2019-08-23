@@ -83,6 +83,7 @@ const SankeyGraph = {
         maxValue = values.reduce((acc, v, i) => v > acc ? v : acc, 0)
 
         Object.assign(this, { that, nodes, minYear, maxYear, piece, blocks, gap, maxValue })
+        that.nodes = nodes
     },
     render() {
         const { that, nodes, minYear, maxYear, piece, blocks, gap, maxValue } = this
@@ -139,6 +140,7 @@ const CircularGraph = {
         }
 
         Object.assign(this, { that, nodes, links, nodeNum, linkSum, linkMax, r, gap, peri })
+        that.nodes = nodes
     },
     render() {
         const { that, nodes, links, nodeNum, linkSum, linkMax, r, gap, peri } = this
@@ -151,6 +153,36 @@ const CircularGraph = {
 /**
  * Scatter
  */
+
+const ScatterGraph = {
+    viewPort: { w: 10000, h: 10000 },
+    init(that, data) {
+        const year = data.label, nodes = data.zp
+        const range = nodes.reduce((acc, v, i) => {
+            if (i) {
+                acc.x[0] = acc.x[0] < v.weight ? acc.x[0] : v.weight
+                acc.x[1] = acc.x[1] > v.weight ? acc.x[1] : v.weight
+                acc.y[0] = acc.y[0] < v.height ? acc.y[0] : v.height
+                acc.y[1] = acc.y[1] > v.height ? acc.y[1] : v.height
+            } else {
+                acc.x[0] = acc.x[1] = v.weight
+                acc.y[0] = acc.y[1] = v.height
+            }
+            return acc
+        }, { x: [0, 0], y: [0, 0] })
+        range.x.v = range.x[1] - range.x[0]
+        range.y.v = range.y[1] - range.y[0]
+        this.viewPort.w = range.x.v * 13
+        this.viewPort.h = range.y.v * 13
+
+        Object.assign(this, { that, year, nodes, range })
+        that.nodes = nodes
+    },
+    render() {
+        const { that, year, nodes, range } = this
+        return <Scatter that={that} year={year} nodes={nodes} range={range} />
+    }
+}
 
 export default class Graph extends Component {
     constructor(props) {
@@ -176,7 +208,9 @@ export default class Graph extends Component {
             this.viewPort = CircularGraph.viewPort
         }
         else if (graph === 'scatter') {
-
+            ScatterGraph.init(this, data)
+            this.Content = ScatterGraph.render.bind(ScatterGraph)
+            this.viewPort = ScatterGraph.viewPort
         }
         else {
             this.Content = () => null
@@ -200,15 +234,15 @@ export default class Graph extends Component {
                 </svg>
                 {state.active ?
                     <div style={{ left: state.x, top: state.y }} className={style.follow}>
-                        <span className={style[`${state.active}-f`]}></span>
-                        <span>{`${state.src.name}.${state.src.year||''}`}</span>
+                        <span style={{ backgroundColor: this.nodes[state.src.name].color }} className={style[`${state.active.split('-')[0]}-f`]}></span>
+                        <span>{`${state.src.name}.${state.src.year || ''}`}</span>
                         {state.tar ?
                             <span>
                                 {' ---->  '}
                                 <span>{`${state.tar.name}.${state.tar.year}`}</span>
-                                {` : ${state.value.toFixed(2)}`}
                             </span> : null}
-                        </div> : null}
+                        {` : ${state.value.toFixed(2)}`}
+                    </div> : null}
             </div>
         )
     }
