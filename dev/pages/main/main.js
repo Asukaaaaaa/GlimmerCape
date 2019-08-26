@@ -14,9 +14,7 @@ import SvgGraph from '../../components/Svg-graph/graph'
 import style from './main.css'
 
 import { ClassNames } from '../../util'
-import SankeyData from '../../../static/test.json'
-import CircularData from '../../../static/source.json'
-import ScatterData from '../../../static/zp.json'
+
 import CircleFlowData from '../../../static/circle-flow.json'
 
 export default class Main extends Component {
@@ -40,6 +38,7 @@ export default class Main extends Component {
                     <Route path='/project/:id' component={ProjectDetail} />
                     <Route path='/model/:id' component={ModelDetail} />
                 </Switch>
+                
             </div>
         )
     }

@@ -4,7 +4,7 @@
 }
 
 .graph {
-    flex-basis: 70%;
+    flex-basis: 64%;
 }
 .graph > div:first-of-type {
     height: 45px;
@@ -15,7 +15,8 @@
 }
 
 .table {
-    flex-basis: 30%;
+    flex-basis: 36%;
+    max-width: 36%;
 }
 .table > div:first-of-type {
     height: 42px;

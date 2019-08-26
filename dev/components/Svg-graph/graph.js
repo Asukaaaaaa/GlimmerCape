@@ -25,11 +25,12 @@ const SankeyGraph = {
             maxYear = getMax(maxYear, year)
             nodes[name] || (nodes[name] = {
                 name,
-                id: n.ID,
                 links: []
             })
             nodes[name].links.push({
                 year: year,
+                id: n.ID,
+                num: n.num,
                 from: [],
                 to: []
             })
@@ -83,7 +84,6 @@ const SankeyGraph = {
             nodes={nodes} minYear={minYear} maxYear={maxYear}
             blocks={blocks} piece={piece} gap={gap} maxValue={maxValue} />
     }
-
 }
 
 /**
@@ -184,19 +184,40 @@ const CircleFlowGraph = {
     init(that, data) {
         const nodes = data.cluster_nodes
         const froms = [], _froms = [],
-            tos = [], _tos = []
+            tos = [], _tos = [],
+            origins = {}, aims = {}
         let sum = 0, fromSum = 0, toSum = 0
         nodes.forEach(v => {
             // TODO
             if (v.origin !== 'null') {
                 froms.push(v)
                 fromSum += v.weight
+                if (origins[v.origin]) {
+                    origins[v.origin].counts++
+                } else {
+                    const node = that.props.sourceData.nodes.find(n => n.ID === v.origin)
+                    origins[v.origin] = {
+                        name: node.name,
+                        year: node.group,
+                        counts: 1
+                    }
+                }
             } else {
                 _froms.push(v)
             }
             if (v.aim !== 'null') {
                 tos.push(v)
                 toSum += v.weight
+                if (aims[v.aim]) {
+                    aims[v.aim].counts++
+                } else {
+                    const node = that.props.sourceData.nodes.find(n => n.ID === v.aim)
+                    aims[v.aim] = {
+                        name: node.name,
+                        year: node.group,
+                        counts: 1
+                    }
+                }
             } else {
                 _tos.push(v)
             }
@@ -205,10 +226,9 @@ const CircleFlowGraph = {
 
         Object.assign(this, {
             that, sum,
-            from: { out: froms, self: _froms, sum: fromSum },
-            to: { out: tos, self: _tos, sum: toSum }
+            from: { out: froms, self: _froms, sum: fromSum, others: origins },
+            to: { out: tos, self: _tos, sum: toSum, others: aims }
         })
-        that.nodes = nodes
     },
     render() {
         const { that, sum, from, to } = this

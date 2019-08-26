@@ -1,7 +1,11 @@
+.main text {
+    text-anchor: middle;
+    dominant-baseline: central;
+}
 .main > g:nth-of-type(1) {
     fill: #5BC49F;
 }
-.main > g:nth-of-type(2) {
+.main > g:nth-of-type(3) {
     fill: #60ACFC;
 }
 .active > .main circle:not(:hover) {

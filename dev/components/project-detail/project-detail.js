@@ -6,7 +6,7 @@ const { TabPane } = Tabs, { Column, ColumnGroup } = Table
 
 import style from './project-detail.css'
 
-const data = new Array(100).fill(0)
+const data = new Array(5).fill(0)
 
 export default class ProjectDetail extends Component {
     constructor(props) {

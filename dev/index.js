@@ -1,22 +1,34 @@
-import React from 'react'
+import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
-import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom"
+import { BrowserRouter as Router, Route, Link, Switch, Redirect } from "react-router-dom"
 
 import Main from './pages/main/main'
-import Sign from './pages/sign/sign'
+import SignForm from './pages/sign/sign'
 
 import style from './index.css'
 
-
-const App = () => {
-    return (
-        <Router>
-            <Switch>
-                <Route path='/sign' component={Sign} />
-                <Route path='/' component={Main} />
-            </Switch>
-        </Router>
-    )
+class App extends Component {
+    constructor(props) {
+        super(props)
+        this.state = { user: null }
+    }
+    render() {
+        return (
+            <Router>
+                <Route
+                    render={() => (
+                        <Redirect to={this.state.user ? '/' : '/sign'} />
+                    )}
+                />
+                <Switch>
+                    <Route path='/sign'
+                        render={() => <SignForm handleSign={user => this.setState({ user })} />}
+                    />
+                    <Route path='/' component={Main} />
+                </Switch>
+            </Router >
+        )
+    }
 }
 
 ReactDOM.render(<App />, document.getElementById('root'))

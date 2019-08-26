@@ -33,3 +33,7 @@
 .blocks > div > img:hover {
     border-color: #679fff;
 }
+
+.form > div:last-of-type {
+    text-align: center;
+}

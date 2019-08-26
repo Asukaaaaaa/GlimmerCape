@@ -45,8 +45,9 @@ export default class Sankey extends Component {
                             w: 120,
                             h: 8600 * block.value / maxValue
                         }
-                        const year = (minYear + i) + '', info = { name: block.name, year }
-                        Object.assign(node.links.find(l => l.year == minYear + i), _rect)
+                        const year = (minYear + i) + '', ls = node.links.find(l => l.year == minYear + i),
+                            info = { name: block.name, year, id: ls.id, num: ls.num }
+                        Object.assign(ls, _rect)
                         y += _rect.h + gap
                         return <Block inactive={!this.isActive(info)} rect={_rect} info={info} color={node.color} key={j} />
                     })}
@@ -119,7 +120,6 @@ export default class Sankey extends Component {
     }
     handleClickBlock(e) {
         const { that, nodes } = this.props, info = JSON.parse(e.target.parentNode.getAttribute('name')).src
-        info.id = nodes[info.name].id
         that.props.handleSelectNode(info)
     }
     handleHoverBlock(e) {
