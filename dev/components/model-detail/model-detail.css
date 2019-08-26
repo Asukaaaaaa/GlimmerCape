@@ -1,0 +1,27 @@
+.main {
+    height: calc(100% - 64px);
+    display: flex;
+}
+
+.graph {
+    flex-basis: 70%;
+}
+.graph > div:first-of-type {
+    height: 45px;
+    padding: 0 5px;
+}
+.graph > div:nth-of-type(2) {
+    height: calc(100% - 50px);
+}
+
+.table {
+    flex-basis: 30%;
+}
+.table > div:first-of-type {
+    height: 42px;
+    font-size: 18px;
+    text-align: center;
+}
+.table > div:nth-of-type(2) {
+    height: calc(100% - 42px);
+}

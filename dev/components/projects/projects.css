@@ -1,0 +1,56 @@
+.main {
+    padding: 0 14%;
+    height: 55%;
+}
+
+.title {
+    display: flex;
+    align-items: center;
+    height: 13%;
+}
+.title > span {
+    padding: 0 15px;
+}
+
+.blocks {
+    height: 60%;
+    margin: 3% 0 6% 0;
+}
+.blocks > div {
+    display: inline-block;
+    width: 20%;
+    max-width: 200px;
+    height: 100%;
+    position: relative;
+    border: 1px solid #dadce0;
+}
+.blocks > div:not(:last-of-type) {
+    margin-right: calc(6.66% - 2.66px);
+}
+.blocks > div:hover {
+    border-color: #679fff;
+}
+.blocks > div > div:first-of-type {
+    height: 75%;
+    padding: 5%;
+}
+.blocks > div > div:nth-of-type(2) {
+    height: 25%;
+    box-shadow: 0 -2px 4px 0.5px rgba(0, 0, 0, 0.1);
+}
+.blocks > div > div:nth-of-type(3) {
+    width: 100%;
+    height: 16%;
+    padding: 1% 0;
+    position: absolute;
+    top: 100%;
+    display: none;
+}
+.blocks > div:hover > div:nth-of-type(3) {
+    display: initial !important;
+}
+.blocks > div > div:nth-of-type(2) > span, .blocks > div > div:nth-of-type(3) > span {
+    display: block;
+    height: 50%;
+    padding: 5px 5%;
+}

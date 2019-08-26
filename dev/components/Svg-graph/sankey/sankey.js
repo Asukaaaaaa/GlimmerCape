@@ -117,6 +117,11 @@ export default class Sankey extends Component {
     handleResetState() {
         this.setState({ active: false, src: null, tar: null })
     }
+    handleClickBlock(e) {
+        const { that, nodes } = this.props, info = JSON.parse(e.target.parentNode.getAttribute('name')).src
+        info.id = nodes[info.name].id
+        that.props.handleSelectNode(info)
+    }
     handleHoverBlock(e) {
         this.setState({
             active: 'node',
@@ -141,7 +146,7 @@ export default class Sankey extends Component {
             <g>
                 <g className={style.head}>{Head}</g>
                 <g className={style.belts} onMouseOver={this.handleHoverBelt.bind(that)} onMouseOut={this.handleResetState.bind(that)}>{Belts}</g>
-                <g className={style.blocks} onMouseOver={this.handleHoverBlock.bind(that)} onMouseOut={this.handleResetState.bind(that)}>{Blocks}</g>
+                <g className={style.blocks} onClick={this.handleClickBlock.bind(this)} onMouseOver={this.handleHoverBlock.bind(that)} onMouseOut={this.handleResetState.bind(that)}>{Blocks}</g>
             </g>
         )
     }

@@ -1,10 +1,8 @@
-html, body {
-    width: 100%;
+html, body, :global(#root) {
     height: 100%;
 }
 
 body {
-    position: fixed;
     margin: 0;
 }
 

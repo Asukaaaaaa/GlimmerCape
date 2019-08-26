@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import Sankey from './sankey/sankey'
 import Circular from './circular/circular'
 import Scatter from './scatter/scatter'
+import CircleFlow from './circle-flow/circle-flow'
 
 import style from './graph.css'
 
@@ -19,41 +20,32 @@ const SankeyGraph = {
         const getMax = (...args) => args.reduce((acc, v, i) => v > (acc || v) ? v : acc || v, null)
         const getMin = (...args) => args.reduce((acc, v, i) => v < (acc || v) ? v : acc || v, null)
         data.nodes.forEach(n => {
-            const names = n.name.split('_')
-            let year = Number.parseInt(names[0])
+            const name = n.name, year = n.group
             minYear = getMin(minYear, year)
             maxYear = getMax(maxYear, year)
-            if (names[1]) {
-                const node = nodes[names[1]] || {
-                    name: names[1],
-                    links: []
-                }
-                node.links.push({
-                    year: names[0],
-                    from: [],
-                    to: []
-                })
-                nodes[names[1]] = node
-            }
+            nodes[name] || (nodes[name] = {
+                name,
+                id: n.ID,
+                links: []
+            })
+            nodes[name].links.push({
+                year: year,
+                from: [],
+                to: []
+            })
         })
-        let flows = {}
+        minYear = Number.parseInt(minYear), maxYear = Number.parseInt(maxYear)
         data.links.forEach(l => {
-            const source = l.source.split('_'), target = l.target.split('_')
-            flows[source[0]] = flows[source[0]] || 0 + l.value
-            if (source[1] && l.value) {
-                nodes[source[1]].links.find(l => l.year === source[0]).to.push({
-                    year: target[0],
-                    name: target[1],
-                    value: l.value
-                })
-            }
-            if (target[1] && l.value) {
-                nodes[target[1]].links.find(l => l.year === target[0]).from.push({
-                    year: source[0],
-                    name: source[1],
-                    value: l.value
-                })
-            }
+            nodes[l.source].links.find(ls => ls.year === l.sourcegroup).to.push({
+                year: l.targetgroup,
+                name: l.target,
+                value: l.value
+            })
+            nodes[l.target].links.find(ls => ls.year === l.targetgroup).from.push({
+                year: l.sourcegroup,
+                name: l.source,
+                value: l.value
+            })
         })
         for (let attr in nodes) {
             const n = nodes[attr]
@@ -176,13 +168,54 @@ const ScatterGraph = {
         this.viewPort.h = range.y.v * 13
 
         Object.assign(this, { that, year, nodes, range })
-        that.nodes = nodes
     },
     render() {
         const { that, year, nodes, range } = this
         return <Scatter that={that} year={year} nodes={nodes} range={range} />
     }
 }
+
+/**
+ * CircleFlow
+ */
+
+const CircleFlowGraph = {
+    viewPort: { w: 20000, h: 15000 },
+    init(that, data) {
+        const nodes = data.cluster_nodes
+        const froms = [], _froms = [],
+            tos = [], _tos = []
+        let sum = 0, fromSum = 0, toSum = 0
+        nodes.forEach(v => {
+            // TODO
+            if (v.origin !== 'null') {
+                froms.push(v)
+                fromSum += v.weight
+            } else {
+                _froms.push(v)
+            }
+            if (v.aim !== 'null') {
+                tos.push(v)
+                toSum += v.weight
+            } else {
+                _tos.push(v)
+            }
+            sum += v.weight
+        })
+
+        Object.assign(this, {
+            that, sum,
+            from: { out: froms, self: _froms, sum: fromSum },
+            to: { out: tos, self: _tos, sum: toSum }
+        })
+        that.nodes = nodes
+    },
+    render() {
+        const { that, sum, from, to } = this
+        return <CircleFlow that={that} sum={sum} from={from} to={to} />
+    }
+}
+
 
 export default class Graph extends Component {
     constructor(props) {
@@ -195,26 +228,17 @@ export default class Graph extends Component {
     }
 
     init(props = this.props) {
-        const { graph, data } = props
-
-        if (graph === 'sankey') {
-            SankeyGraph.init(this, data)
-            this.Content = SankeyGraph.render.bind(SankeyGraph)
-            this.viewPort = SankeyGraph.viewPort
-        }
-        else if (graph === 'circular') {
-            CircularGraph.init(this, data)
-            this.Content = CircularGraph.render.bind(CircularGraph)
-            this.viewPort = CircularGraph.viewPort
-        }
-        else if (graph === 'scatter') {
-            ScatterGraph.init(this, data)
-            this.Content = ScatterGraph.render.bind(ScatterGraph)
-            this.viewPort = ScatterGraph.viewPort
-        }
-        else {
-            this.Content = () => null
-            this.viewPort = {}
+        let { graph, data } = props
+        graph = {
+            'sankey': SankeyGraph,
+            'circular': CircularGraph,
+            'scatter': ScatterGraph,
+            'circle-flow': CircleFlowGraph
+        }[graph]
+        if (graph) {
+            graph.init(this, data)
+            this.Content = graph.render.bind(graph)
+            this.viewPort = graph.viewPort
         }
     }
     componentWillReceiveProps(_) {
@@ -229,7 +253,7 @@ export default class Graph extends Component {
 
         return (
             <div className={style.main}>
-                <svg viewBox={`0 0 ${viewPort.w} ${viewPort.h}`} preserveAspectRatio='none' onMouseMove={this.handleMouseMove.bind(this)}>
+                <svg viewBox={`0 0 ${viewPort.w} ${viewPort.h}`} preserveAspectRatio='xMinYMin meet' onMouseMove={this.handleMouseMove.bind(this)}>
                     {Content()}
                 </svg>
                 {state.active ?
@@ -241,7 +265,7 @@ export default class Graph extends Component {
                                 {' ---->  '}
                                 <span>{`${state.tar.name}.${state.tar.year}`}</span>
                             </span> : null}
-                        {` : ${state.value.toFixed(2)}`}
+                        {state.value ? ` : ${state.value.toFixed(2)}` : ''}
                     </div> : null}
             </div>
         )

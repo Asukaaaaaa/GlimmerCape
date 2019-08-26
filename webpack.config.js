@@ -16,6 +16,12 @@ module.exports = {
             },
             {
                 test: /\.css$/,
+                include: /node_modules/,
+                use: ['style-loader', "css-loader"]
+            },
+            {
+                test: /\.css$/,
+                include: /dev/,
                 use: [
                     'style-loader',
                     {
@@ -26,6 +32,12 @@ module.exports = {
                             }
                         }
                     }
+                ]
+            },
+            {
+                test: /\.(png|svg|jpg|gif)$/,
+                use: [
+                    'file-loader'
                 ]
             }
         ]

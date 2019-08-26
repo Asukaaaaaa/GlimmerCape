@@ -1,0 +1,8 @@
+.main {
+    height: calc(100% - 64px);
+    padding-right: 24px;
+}
+
+.tabs {
+    height: 100%;
+}
