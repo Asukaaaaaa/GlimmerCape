@@ -78,7 +78,7 @@ const DataForm = ({ form, handleSubmit }) => {
     )
 }
 const WrappedDataForm = Form.create()(DataForm)
-const ModelForm = ({ form }) => {
+const ModelForm = ({ form, datasets }) => {
     const { getFieldDecorator, handleSubmit } = form
     return (
         <Form className={style.form}
@@ -89,12 +89,12 @@ const ModelForm = ({ form }) => {
                         // TODO
                         fetch(host + '/model/createModel', {
                             method: 'POST',
-                            body: {
+                            body: JSON.stringify({
                                 model: {
                                     project_id: 0,
                                     ...values
                                 }
-                            }
+                            })
                         }).then(r => r.json()).then(res => {
                             if (res.resultDesc === 'Success') {
                                 handleSubmit()
@@ -113,7 +113,7 @@ const ModelForm = ({ form }) => {
             </Form.Item>
             <Form.Item label='选择数据集'>
                 {getFieldDecorator('dataset_id', {
-                    initialValue: '1'
+                    initialValue: '0'
                 })(
                     <Select
                         showSearch
@@ -123,7 +123,7 @@ const ModelForm = ({ form }) => {
                             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                         }
                     >
-                        <Option value="1">Jack</Option>
+                        {datasets.map((v, i) => <Option value={i} key={i}>{v.datasetName}</Option>)}
                     </Select>
                 )}
             </Form.Item>
@@ -137,35 +137,35 @@ const ModelForm = ({ form }) => {
             </Form.Item>
             <Form.Item label="社区分区算法" >
                 {getFieldDecorator('detector_flag', {
-                    initialValue: '1'
+                    initialValue: '0'
                 })(
-                    <Select defaultValue="1">
-                        <Option value="1">Option 1</Option>
-                        <Option value="2">Option 2</Option>
-                        <Option value="3">Option 3</Option>
+                    <Select>
+                        <Option value="0"> Blondel</Option>
+                        <Option value="1"> Newman MM</Option>
+                        <Option value="2"> Ball OverLapping</Option>
                     </Select>
                 )}
             </Form.Item>
             <Form.Item label="社区排序方法" >
                 {getFieldDecorator('sort_flag', {
-                    initialValue: '1'
+                    initialValue: '0'
                 })(
-                    <Select defaultValue="1">
-                        <Option value="1">Option 1</Option>
-                        <Option value="2">Option 2</Option>
+                    <Select>
+                        <Option value="0"> 中心度</Option>
+                        <Option value="1"> 节点数量</Option>
                     </Select>
                 )}
             </Form.Item>
             <Form.Item label="社区相似度系数" >
                 {getFieldDecorator('similarity_flag', {
-                    initialValue: '1'
+                    initialValue: '0'
                 })(
                     <Select>
-                        <Option value="1">Option 1</Option>
-                        <Option value="2">Option 2</Option>
-                        <Option value="3">Option 3</Option>
-                        <Option value="4">Option 4</Option>
-                        <Option value="5">Option 5</Option>
+                        <Option value="0"> 节点比重后向寻找</Option>
+                        <Option value="1"> 节点比重前向寻找</Option>
+                        <Option value="2"> 余弦相似度</Option>
+                        <Option value="3"> 扩展Jaccard系数</Option>
+                        <Option value="4"> 核心节点相似度</Option>
                     </Select>
                 )}
             </Form.Item>
@@ -203,11 +203,11 @@ export default class ProjectDetail extends Component {
     update() {
         fetch(host + '/dataset/getDatasetList', {
             method: 'POST',
-            body: {
+            body: JSON.stringify({
                 project_id: 0,
                 page_num: 1,
                 page_size: 100
-            }
+            })
         }).then(r => r.json()).then(res => {
             if (res.resultDesc === 'Success') {
                 this.setState({ datasets: res.list })
@@ -215,11 +215,11 @@ export default class ProjectDetail extends Component {
         })
         fetch(host + '/model/getModelList', {
             method: 'POST',
-            body: {
+            body: JSON.stringify({
                 project_id: 0,
                 page_num: 1,
                 page_size: 100
-            }
+            })
         }).then(r => r.json()).then(res => {
             if (res.resultDesc === 'Success') {
                 this.setState({ models: res.list })
@@ -242,7 +242,7 @@ export default class ProjectDetail extends Component {
                 >
                     {state.tabOn === 'data' ?
                         <WrappedDataForm handleSubmit={null} /> :
-                        <WrappedModelForm handleSubmit={null} />}
+                        <WrappedModelForm datasets={state.datasets} handleSubmit={null} />}
                 </Modal>
                 <Tabs className={style.tabs} defaultActiveKey={state.tabOn} tabPosition='left' onChange={
                     key => this.setState({ tabOn: key })

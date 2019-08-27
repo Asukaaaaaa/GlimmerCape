@@ -16,11 +16,11 @@ class Projects extends Component {
     update() {
         fetch(host + '/project/getProjectList', {
             method: 'POST',
-            body: {
+            body: JSON.stringify({
                 user_id: window.user_id,
                 page_num: 5,
                 page_size: 4
-            }
+            })
         }).then(r => r.json()).then(res => {
             if (res.resultDesc === 'Success') {
                 this.setState({ data: res.list })

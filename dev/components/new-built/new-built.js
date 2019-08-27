@@ -16,13 +16,13 @@ const ModalForm = ({ form, handleSubmit }) => {
                         // TODO
                         fetch(host + '/project/createProject', {
                             method: 'POST',
-                            body: {
+                            body: JSON.stringify({
                                 project: {
                                     user_id: window.user_id,
                                     project_name: values.name,
                                     project_desc: values.desc
                                 }
-                            }
+                            })
                         }).then(r => r.json()).then(res => {
                             if (res.resultDesc === 'Success') {
                                 handleSubmit()

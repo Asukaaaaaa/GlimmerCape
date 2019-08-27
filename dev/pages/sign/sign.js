@@ -23,10 +23,10 @@ class NormalLoginForm extends React.Component {
                 if (this.state.sign === 'in')
                     fetch(host + '/user/login', {
                         method: 'POST',
-                        body: {
+                        body: JSON.stringify({
                             account: values.username,
                             password: values.password
-                        }
+                        })
                     }).then(r => r.json()).then(res => {
                         if (res.resultDesc === 'Success') {
                             window.user_id = res.data
@@ -35,12 +35,12 @@ class NormalLoginForm extends React.Component {
                     })
                 else if (this.state.sign === 'up') {
                     const formData = new FormData()
-                    formData.append('user', {
+                    formData.append('user', JSON.stringify({
                         account: values.username,
                         password: values.password,
                         phone: values.phone
-                    })
-                    formData.append('photo', values.upload.fileList[0])
+                    }))
+                    formData.append('photo', values.upload[0])
                     fetch(host + '/user/signUp', {
                         method: 'POST',
                         body: formData
@@ -111,16 +111,15 @@ class NormalLoginForm extends React.Component {
                         valuePropName: 'checked',
                         initialValue: true,
                     })(<Checkbox>Remember me</Checkbox>)}
-                    {this.state.sign === 'in' ?
-                        <a className={style["login-form-forgot"]} href="#">
-                            Forgot password
-                        </a> : null}
+                    <a className={style["login-form-forgot"]} onClick={e => this.props.handleSign({})}>
+                        Skip~~
+                    </a>
                     <Button type="primary" htmlType="submit" className={style["login-form-button"]}>
                         Sign
                     </Button>
                     Or <a
                         onClick={() => this.setState({ sign: this.state.sign === 'in' ? 'up' : 'in' })}>
-                        Sign {this.state.sign}!</a>
+                        Sign {this.state.sign === 'in' ? 'up' : 'in'}!</a>
                 </Form.Item>
             </Form>
         )

@@ -6,7 +6,7 @@ const color = []//BaseColor.reduce()
 const NormalColor = []
 const ExtendColor = []
 
-const host = ''
+const host = 'http://www.zueler.cn:8080/Web_NEview'
 
 export {
     ClassNames,
