@@ -1,18 +1,55 @@
 import React, { Component } from 'react'
 import { Link, Route } from 'react-router-dom'
 
-import { Form, Icon, Input, Button, Checkbox } from 'antd'
+import { Form, Icon, Input, Button, Checkbox, Upload } from 'antd'
 
+import { host } from '../../util'
 import style from './sign.css'
 
 class NormalLoginForm extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            sign: 'in'
+        }
+    }
+
     handleSubmit(e) {
         const { handleSign } = this.props
         e.preventDefault()
         this.props.form.validateFields((err, values) => {
             if (!err) {
                 // TODO
-                handleSign(values)
+                if (this.state.sign === 'in')
+                    fetch(host + '/user/login', {
+                        method: 'POST',
+                        body: {
+                            account: values.username,
+                            password: values.password
+                        }
+                    }).then(r => r.json()).then(res => {
+                        if (res.resultDesc === 'Success') {
+                            window.user_id = res.data
+                            handleSign(values)
+                        }
+                    })
+                else if (this.state.sign === 'up') {
+                    const formData = new FormData()
+                    formData.append('user', {
+                        account: values.username,
+                        password: values.password,
+                        phone: values.phone
+                    })
+                    formData.append('photo', values.upload.fileList[0])
+                    fetch(host + '/user/signUp', {
+                        method: 'POST',
+                        body: formData
+                    }).then(r => r.json()).then(res => {
+                        if (res.resultDesc === 'Success') {
+                            handleSign(values)
+                        }
+                    })
+                }
             }
         })
     }
@@ -42,38 +79,48 @@ class NormalLoginForm extends React.Component {
                         />,
                     )}
                 </Form.Item>
-                <Route path='/sign/up'
-                    render={() => (
+                {this.state.sign === 'up' ?
+                    <div>
                         <Form.Item>
-                            {getFieldDecorator('password2', {
-                                rules: [{ required: true, message: 'input your Password again!' }],
+                            {getFieldDecorator('phone', {
+                                rules: [{ required: true, message: '请输入手机号!' }],
                             })(
                                 <Input
-                                    prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                                    type="password"
-                                    placeholder="Password again"
+                                    prefix={<Icon type="phone" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                                    placeholder="Phone"
                                 />,
                             )}
                         </Form.Item>
-                    )}
-                />
+                        <Form.Item>
+                            {getFieldDecorator('upload', {
+                                rules: [{ required: true, message: '请选择头像!' }],
+                                valuePropName: 'fileList',
+                                getValueFromEvent: e => e.fileList ? e.fileList : e,
+                            })(
+                                <Upload
+                                    beforeUpload={() => false}>
+                                    <Button>
+                                        <Icon type="upload" /> 上传头像
+                                        </Button>
+                                </Upload>,
+                            )}
+                        </Form.Item>
+                    </div> : null}
                 <Form.Item>
                     {getFieldDecorator('remember', {
                         valuePropName: 'checked',
                         initialValue: true,
                     })(<Checkbox>Remember me</Checkbox>)}
-                    <a className={style["login-form-forgot"]} href="#">
-                        Forgot password
-                    </a>
+                    {this.state.sign === 'in' ?
+                        <a className={style["login-form-forgot"]} href="#">
+                            Forgot password
+                        </a> : null}
                     <Button type="primary" htmlType="submit" className={style["login-form-button"]}>
-                        Log in
+                        Sign
                     </Button>
-                    Or <Route path='/sign' exact
-                        render={() => <Link to='/sign/up'>Sign Up!</Link>}
-                    />
-                    <Route path='/sign/up' exact
-                        render={() => <Link to='/sign'>Sign In.</Link>}
-                    />
+                    Or <a
+                        onClick={() => this.setState({ sign: this.state.sign === 'in' ? 'up' : 'in' })}>
+                        Sign {this.state.sign}!</a>
                 </Form.Item>
             </Form>
         )

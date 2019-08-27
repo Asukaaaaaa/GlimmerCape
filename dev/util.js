@@ -6,9 +6,12 @@ const color = []//BaseColor.reduce()
 const NormalColor = []
 const ExtendColor = []
 
+const host = ''
+
 export {
     ClassNames,
     BaseColor,
     NormalColor,
-    ExtendColor
+    ExtendColor,
+    host
 }

@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 
 import { Modal, Form, Input, Button } from 'antd'
 
+import { host } from '../../util'
 import style from './new-built.css'
 
 const ModalForm = ({ form, handleSubmit }) => {
@@ -13,20 +14,33 @@ const ModalForm = ({ form, handleSubmit }) => {
                 form.validateFields((err, values) => {
                     if (!err) {
                         // TODO
-                        handleSubmit(values)
+                        fetch(host + '/project/createProject', {
+                            method: 'POST',
+                            body: {
+                                project: {
+                                    user_id: window.user_id,
+                                    project_name: values.name,
+                                    project_desc: values.desc
+                                }
+                            }
+                        }).then(r => r.json()).then(res => {
+                            if (res.resultDesc === 'Success') {
+                                handleSubmit()
+                            }
+                        })
                     }
                 })
             }}
         >
             <Form.Item>
-                {getFieldDecorator('projname', {
+                {getFieldDecorator('name', {
                     rules: [{ required: true, message: 'Please input project name!' }],
                 })(
                     <Input placeholder="Projct Name" />,
                 )}
             </Form.Item>
             <Form.Item>
-                {getFieldDecorator('projdesc')(
+                {getFieldDecorator('desc')(
                     <Input placeholder="Project Description" rows={2} />,
                 )}
             </Form.Item>
@@ -69,8 +83,8 @@ export default class NewBuilt extends Component {
                 </div>
                 <Modal
                     title="创建项目"
-                    visible={this.state.visible}
                     footer={null}
+                    visible={this.state.visible} destroyOnClose
                     onCancel={this.handleCancel.bind(this)}
                 >
                     <WrappedModalForm handleSubmit={this.handleSubmit.bind(this)} />

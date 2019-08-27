@@ -1,8 +1,7 @@
 .main {
     position: fixed;
     top: 64px;
-    right: 8px;
-    z-index: 998;   
+    right: 8px;   
     width: 240px;
     box-shadow: rgba(0, 0, 0, 0.16) 0px 2px 4px;
     border-radius: 5px;

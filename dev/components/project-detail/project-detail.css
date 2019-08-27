@@ -3,6 +3,23 @@
     padding-right: 24px;
 }
 
+.main > button {
+    position: absolute;
+    top: 64px;
+    right: 24px;
+    z-index: 997;
+}
+
 .tabs {
     height: 100%;
+}
+
+.form > div:last-of-type {
+    text-align: center;
+}
+.form > div:not(:last-of-type) {
+    display: flex;
+}
+.form > div:not(:last-of-type) > div:nth-of-type(2) {
+    flex-grow: 1;
 }

@@ -17,7 +17,7 @@ class App extends Component {
             <Router>
                 <Route
                     render={() => (
-                        <Redirect to={this.state.user ? '/' : '/sign'} />
+                        <Redirect to={this.state.user ? '/' : '/'} /> // TODO
                     )}
                 />
                 <Switch>

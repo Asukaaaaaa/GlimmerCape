@@ -6,7 +6,7 @@ import style from './user.css'
 
 const User = ({ active }) => {
     return (
-        <div style={{ opacity: active ? 1 : 0 }} className={style.main}>
+        <div style={{ opacity: active ? 1 : 0, zIndex: active ? 998 : '' }} className={style.main}>
             <div className={style.info}>
                 <div>
                     <div>
