@@ -53,9 +53,9 @@ export default class ModelDetail extends Component {
                                     <Statistic title="元素数量" value={state.node.num} />
                                 </Col>
                             </Row>)}>
-                        <Column title="词汇" dataIndex="key" key="key" />
-                        <Column title="Z-value" dataIndex="z_value" key="z_value" />
-                        <Column title="P-value" dataIndex="p_value" key="p_value" />
+                        <Column width='25%' title="词汇" dataIndex="key" key="key" render={(text, record) => <div style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>{text}</div>} />
+                        <Column width='30%' title="Z-value" dataIndex="z_value" key="z_value" render={(text, record) => <div style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>{text}</div>} />
+                        <Column width='30%' title="P-value" dataIndex="p_value" key="p_value" render={(text, record) => <div style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>{text}</div>} />
                         <Column title="词频" dataIndex="weight" key="weight" />
                     </Table>
                 </div>
