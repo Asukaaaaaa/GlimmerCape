@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { Tabs, Table, Divider, Tag, Button, Icon, Modal, Form, Input, Upload, Select } from 'antd'
@@ -80,6 +80,7 @@ const DataForm = ({ form, handleSubmit }) => {
 const WrappedDataForm = Form.create()(DataForm)
 const ModelForm = ({ form, datasets }) => {
     const { getFieldDecorator, handleSubmit } = form
+    const [isCmNum, setIsCmNum] = useState(false)
     return (
         <Form className={style.form}
             onSubmit={e => {
@@ -127,19 +128,20 @@ const ModelForm = ({ form, datasets }) => {
                     </Select>
                 )}
             </Form.Item>
-            <Form.Item label='社区数量'>
-                {getFieldDecorator('community_num', {
-                    rules: [{ required: true }],
-                    initialValue: '1'
-                })(
-                    <Input />,
-                )}
-            </Form.Item>
+            {isCmNum ?
+                <Form.Item label='社区数量'>
+                    {getFieldDecorator('community_num', {
+                        rules: [{ required: true }],
+                        initialValue: '1'
+                    })(
+                        <Input />,
+                    )}
+                </Form.Item> : null}
             <Form.Item label="社区分区算法" >
                 {getFieldDecorator('detector_flag', {
                     initialValue: '0'
                 })(
-                    <Select>
+                    <Select onChange={e => setIsCmNum(e === '2')}>
                         <Option value="0"> Blondel</Option>
                         <Option value="1"> Newman MM</Option>
                         <Option value="2"> Ball OverLapping</Option>
