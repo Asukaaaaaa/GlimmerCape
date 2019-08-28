@@ -93,6 +93,7 @@ const ModelForm = ({ form, datasets }) => {
                             body: JSON.stringify({
                                 model: {
                                     project_id: 0,
+                                    community_num: 0,
                                     ...values
                                 }
                             })
