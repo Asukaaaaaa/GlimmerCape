@@ -3,28 +3,28 @@ import { withRouter } from 'react-router-dom'
 
 import style from './sider.css'
 
-import { ClassNames } from '../../util'
+import { ClassNames, imgs } from '../../util'
 
 const Sider = ({ active }) => {
     return (
         <div className={ClassNames(style.main, active && style.active)}>
             <div>
-                <img src='./img/test.png' />
+                <img src={imgs.test} />
                 <span>View</span>
             </div>
             <div className={style.menu}>
                 <div>
-                    <img src='./img/detail.svg' />
+                    <img src={imgs.detail} />
                     <span>Detail</span>
                 </div>
                 <div>
-                    <img src='./img/edit.svg' />
+                    <img src={imgs.edit} />
                     <span>Edit</span>
                 </div>
             </div>
             <div className={style.menu}>
                 <div>
-                    <img src='./img/question-circle.svg' />
+                    <img src={imgs.questionCircle} />
                     <span>Question</span>
                 </div>
             </div>

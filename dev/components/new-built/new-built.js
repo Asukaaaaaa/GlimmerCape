@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 
 import { Modal, Form, Input, Button } from 'antd'
 
-import { host } from '../../util'
+import { host, imgs } from '../../util'
 import style from './new-built.css'
 
 const ModalForm = ({ form, handleSubmit }) => {
@@ -78,7 +78,7 @@ export default class NewBuilt extends Component {
                 </div>
                 <div className={style.blocks} >
                     <div onClick={e => this.setState({ visible: true })}>
-                        <img src='./img/cross.png' />
+                        <img src={imgs.cross} />
                     </div>
                 </div>
                 <Modal
