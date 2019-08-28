@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
-import { BrowserRouter as Router, Route, Link, Switch, Redirect } from "react-router-dom"
+import { HashRouter as Router, Route, Link, Switch, Redirect } from "react-router-dom"
 
 import Main from './pages/main/main'
 import SignForm from './pages/sign/sign'
