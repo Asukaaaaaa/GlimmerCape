@@ -24,7 +24,7 @@ export default class Scatter extends Component {
                     x2 = xBase + range.x.v * 11.5, y2 = range.y.v * 1.5
                 xBase += 10000 //range.w
                 return (
-                    <g className={style.axis}>
+                    <g className={style.axis} key={i}>
                         <g>{new Array(6).fill(0).map((v, i) => {
                             const y = y0 + range.y.v * 11 / 5 * i
                             return <line x1={o[0]} y1={y} x2={x0} y2={y} key={i} />
@@ -35,7 +35,7 @@ export default class Scatter extends Component {
                         })}</g>
                         <polygon points={`${o[0] + 30} ${y0} ${o[0]} ${y0 - 50} ${o[0] - 30} ${y0}`} />
                         <polygon points={`${x0} ${o[1] + 30} ${x0 + 50} ${o[1]} ${x0} ${o[1] - 30}`} />
-                        <text x={xBase + range.x.v * 6.5} y={range.y.v * 0.5}>{year}</text>
+                        <text x={range.xBase + range.x.v * 6.5} y={range.y.v * 0.5}>{year}</text>
                     </g>
                 )
             })}</g>
@@ -47,7 +47,7 @@ export default class Scatter extends Component {
             <g>{datas.map(({ nodes, range }, i) => {
                 const o = [range.xBase + range.x.v * 1.5, range.y.v * 11.5]
                 return (
-                    <g className={style.nodes} onMouseOver={this.handleHoverNode.bind(this)}>
+                    <g className={style.nodes} onMouseOver={this.handleHoverNode.bind(this)} key={i}>
                         {nodes.map((v, i) => {
                             const x = o[0] + (v.weight - range.x[0]) * 10, y = o[1] - (v.height - range.y[0]) * 10
                             return <circle name={JSON.stringify({ x, y })} fill={v.gender}
