@@ -59,6 +59,7 @@ export default class NewBuilt extends Component {
 
     handleSubmit() {
         this.setState({ visible: false })
+        this.props.handleUpdate()
     }
     handleCancel() {
         this.setState({ visible: false })

@@ -5,18 +5,13 @@ const { TabPane } = Tabs, { Column } = Table
 
 import SvgGraph from '../Svg-graph/graph'
 
-import SankeyData from '../../../static/source.json'
-import ScatterData from '../../../static/zp.json'
-import CircleFlowData from '../../../static/circle-flow.json'
-
 import style from './model-detail.css'
 
 export default class ModelDetail extends Component {
     constructor(props) {
         super(props)
 
-        this.sourceData = SankeyData
-        this.graphData = { 'sankey': SankeyData, 'circle-flow': CircleFlowData, 'scatter': ScatterData, }
+        // TODO
         this.state = {
             graph: 'sankey',
             node: {}
@@ -28,13 +23,18 @@ export default class ModelDetail extends Component {
         return (
             <div className={style.main}>
                 <div className={style.graph}>
-                    <Tabs defaultActiveKey={state.graph} onChange={key => state.node.name && this.setState({ graph: key })}
+                    <Tabs defaultActiveKey={state.graph}
+                        onChange={key => {
+                            if (key === 'circle-flow' && !state.node.name)
+                                return
+                            this.setState({ graph: key })
+                        }}
                         tabBarExtraContent={<span>{`${state.node.name || ''}.${state.node.year || ''}`}</span>}>
                         <TabPane tab='网络流形' key="sankey" />
-                        <TabPane tab={<span><Icon style={{ color: state.node.name ? '#1890ff' : '' }} type='dot-chart' />ZP分布</span>} key="scatter" />
+                        <TabPane tab={<span><Icon type='dot-chart' />ZP分布</span>} key="scatter" />
                         <TabPane tab={<span><Icon style={{ color: state.node.name ? '#1890ff' : '' }} type='dot-chart' />社区演化</span>} key="circle-flow" />
                     </Tabs>
-                    <SvgGraph graph={state.graph} data={this.graphData[state.graph]} sourceData={SankeyData}
+                    <SvgGraph graph={state.graph} data={this.graphData}
                         handleSelectNode={info => this.setState({ node: info })}
                     />
                 </div>

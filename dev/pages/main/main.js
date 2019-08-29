@@ -20,7 +20,9 @@ import CircleFlowData from '../../../static/circle-flow.json'
 export default class Main extends Component {
     constructor(props) {
         super(props)
-        this.state = {}
+        this.state = {
+            indexUpdate: 0
+        }
     }
 
     render() {
@@ -32,13 +34,13 @@ export default class Main extends Component {
                 <Sider active={state.tabOn} />
                 <Switch>
                     <Route path='/' exact>
-                        <Route path='/' render={() => <NewBuilt />} />
-                        <Route path='/' render={() => <Projects />} />
+                        <Route path='/' render={() => <NewBuilt handleUpdate={() => this.setState({ indexUpdate: state.indexUpdate++ })} />} />
+                        <Route path='/' render={() => <Projects update={state.indexUpdate} />} />
                     </Route>
                     <Route path='/project/:id' component={ProjectDetail} />
                     <Route path='/model/:id' component={ModelDetail} />
                 </Switch>
-                
+
             </div>
         )
     }

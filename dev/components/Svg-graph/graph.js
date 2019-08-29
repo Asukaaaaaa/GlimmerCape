@@ -9,7 +9,6 @@ import style from './graph.css'
 
 import { ClassNames, BaseColor, NormalColor, ExtendColor, host } from '../../util'
 
-
 /**
  * Sankey
  */
@@ -244,16 +243,29 @@ export default class Graph extends Component {
             active: false, ok: false
         }
         this.data = {}
-        $.post(host + '/result/getEvoFile', {
-            model_id: 42
-        }, res => {
-            if (res.resultDesc === 'Success') {
-                $.post(host + res.data.split('Web_NEview')[1], res => {
-                    this.data.sankey = res
-                    this.init()
-                })
-            }
-        })
+        Promise.all([
+            new Promise((resolve, reject) => $.post(host + '/result/getEvoFile', {
+                model_id: 42
+            }, res => {
+                if (res.resultDesc === 'Success') {
+                    fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).then(res => {
+                        this.data.sankey = res
+                        resolve('sankey')
+                    })
+                }
+            })),
+            new Promise((resolve, reject) => $.post(host + '/result/getZpFile', {
+                model_id: 42
+            }, res => {
+                if (res.resultDesc === 'Success') {
+                    fetch(host + res.data.split('Web_NEview')[1]).then(r => r.text()).then(res => {
+                        this.data.scatter = res
+                        resolve('scatter')
+                    })
+                }
+            }))]).then(vs => {
+                this.init()
+            })
     }
 
     init(props = this.props) {
