@@ -77,9 +77,9 @@ export default class CircleFlow extends Component {
 
     render() {
         return (
-            <g>
+            <svg viewBox='0 0 20000 15000' preserveAspectRatio='xMinYMin meet' >
                 {this.Content()}
-            </g>
+            </svg>
         )
     }
 }

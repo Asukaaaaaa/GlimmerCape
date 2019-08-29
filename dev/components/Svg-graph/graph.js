@@ -13,7 +13,6 @@ import { ClassNames, BaseColor, NormalColor, ExtendColor, host } from '../../uti
  * Sankey
  */
 const SankeyGraph = {
-    viewPort: { w: 20000, h: 10000 },
     init(that, data) {
         let nodes = {}, minYear, maxYear
         const getMax = (...args) => args.reduce((acc, v, i) => v > (acc || v) ? v : acc || v, null)
@@ -146,7 +145,6 @@ const CircularGraph = {
  */
 
 const ScatterGraph = {
-    viewPort: { w: 10000, h: 10000 },
     init(that, data) {
         const datas = data.map((d, i) => {
             const year = d.label, nodes = d.zp
@@ -164,6 +162,8 @@ const ScatterGraph = {
             }, { x: [0, 0], y: [0, 0] })
             range.x.v = range.x[1] - range.x[0]
             range.y.v = range.y[1] - range.y[0]
+            range.w = range.x.v * 13
+            range.h = range.y.v * 13
             return { year, nodes, range }
         })
 
@@ -171,10 +171,7 @@ const ScatterGraph = {
     },
     render() {
         const { that, datas } = this
-        const { year, nodes, range } = datas[that.state.zpIndex]
-        this.viewPort.w = range.x.v * 13
-        this.viewPort.h = range.y.v * 13
-        return <Scatter that={that} year={year} nodes={nodes} range={range} />
+        return <Scatter that={that} datas={datas} />
     }
 }
 
@@ -183,7 +180,6 @@ const ScatterGraph = {
  */
 
 const CircleFlowGraph = {
-    viewPort: { w: 20000, h: 15000 },
     init(that, data) {
         const nodes = data.cluster_nodes
         const froms = [], _froms = [],
@@ -238,7 +234,6 @@ const CircleFlowGraph = {
         return <CircleFlow that={that} sum={sum} from={from} to={to} />
     }
 }
-
 
 export default class Graph extends Component {
     constructor(props) {
@@ -300,18 +295,7 @@ export default class Graph extends Component {
 
         return state.ok ? (
             <div className={style.main}>
-                <svg viewBox={`0 0 ${viewPort.w} ${viewPort.h}`} preserveAspectRatio='xMinYMin meet'
-                    onMouseMove={this.handleMouseMove.bind(this)}
-                    onWheel={e => {
-                        let i = e.deltaY < 0 ? -1 : 1 + state.zpIndex, len = this.data.scatter.length
-                        i = i < 0 ? 0 : i
-                        i = i > len - 1 ? len - 1 : i
-                        if (props.graph === 'scatter')
-                            this.setState({ zpIndex: i })
-                    }}
-                >
-                    {Content()}
-                </svg>
+                {Content()}
                 {state.active ?
                     <div style={{ left: state.x, top: state.y }} className={style.follow}>
                         <span style={{ backgroundColor: this.nodes[state.src.name].color }} className={style[`${state.active.split('-')[0]}-f`]}></span>
