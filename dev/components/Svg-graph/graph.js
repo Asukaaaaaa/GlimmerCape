@@ -148,28 +148,32 @@ const CircularGraph = {
 const ScatterGraph = {
     viewPort: { w: 10000, h: 10000 },
     init(that, data) {
-        const year = data.label, nodes = data.zp
-        const range = nodes.reduce((acc, v, i) => {
-            if (i) {
-                acc.x[0] = acc.x[0] < v.weight ? acc.x[0] : v.weight
-                acc.x[1] = acc.x[1] > v.weight ? acc.x[1] : v.weight
-                acc.y[0] = acc.y[0] < v.height ? acc.y[0] : v.height
-                acc.y[1] = acc.y[1] > v.height ? acc.y[1] : v.height
-            } else {
-                acc.x[0] = acc.x[1] = v.weight
-                acc.y[0] = acc.y[1] = v.height
-            }
-            return acc
-        }, { x: [0, 0], y: [0, 0] })
-        range.x.v = range.x[1] - range.x[0]
-        range.y.v = range.y[1] - range.y[0]
-        this.viewPort.w = range.x.v * 13
-        this.viewPort.h = range.y.v * 13
+        const datas = data.map((d, i) => {
+            const year = d.label, nodes = d.zp
+            const range = nodes.reduce((acc, v, i) => {
+                if (i) {
+                    acc.x[0] = acc.x[0] < v.weight ? acc.x[0] : v.weight
+                    acc.x[1] = acc.x[1] > v.weight ? acc.x[1] : v.weight
+                    acc.y[0] = acc.y[0] < v.height ? acc.y[0] : v.height
+                    acc.y[1] = acc.y[1] > v.height ? acc.y[1] : v.height
+                } else {
+                    acc.x[0] = acc.x[1] = v.weight
+                    acc.y[0] = acc.y[1] = v.height
+                }
+                return acc
+            }, { x: [0, 0], y: [0, 0] })
+            range.x.v = range.x[1] - range.x[0]
+            range.y.v = range.y[1] - range.y[0]
+            return { year, nodes, range }
+        })
 
-        Object.assign(this, { that, year, nodes, range })
+        Object.assign(this, { that, datas })
     },
     render() {
-        const { that, year, nodes, range } = this
+        const { that, datas } = this
+        const { year, nodes, range } = datas[that.state.zpIndex]
+        this.viewPort.w = range.x.v * 13
+        this.viewPort.h = range.y.v * 13
         return <Scatter that={that} year={year} nodes={nodes} range={range} />
     }
 }
@@ -240,7 +244,8 @@ export default class Graph extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            active: false, ok: false
+            active: false, ok: false,
+            zpIndex: 0
         }
         this.data = {}
         Promise.all([
@@ -258,7 +263,7 @@ export default class Graph extends Component {
                 model_id: 42
             }, res => {
                 if (res.resultDesc === 'Success') {
-                    fetch(host + res.data.split('Web_NEview')[1]).then(r => r.text()).then(res => {
+                    fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).then(res => {
                         this.data.scatter = res
                         resolve('scatter')
                     })
@@ -295,7 +300,16 @@ export default class Graph extends Component {
 
         return state.ok ? (
             <div className={style.main}>
-                <svg viewBox={`0 0 ${viewPort.w} ${viewPort.h}`} preserveAspectRatio='xMinYMin meet' onMouseMove={this.handleMouseMove.bind(this)}>
+                <svg viewBox={`0 0 ${viewPort.w} ${viewPort.h}`} preserveAspectRatio='xMinYMin meet'
+                    onMouseMove={this.handleMouseMove.bind(this)}
+                    onWheel={e => {
+                        let i = e.deltaY < 0 ? -1 : 1 + state.zpIndex, len = this.data.scatter.length
+                        i = i < 0 ? 0 : i
+                        i = i > len - 1 ? len - 1 : i
+                        if (props.graph === 'scatter')
+                            this.setState({ zpIndex: i })
+                    }}
+                >
                     {Content()}
                 </svg>
                 {state.active ?
