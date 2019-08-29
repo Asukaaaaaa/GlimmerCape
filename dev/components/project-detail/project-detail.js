@@ -117,7 +117,7 @@ const ModelForm = ({ form, datasets, handleSubmit, pid }) => {
             </Form.Item>
             <Form.Item label='选择数据集'>
                 {getFieldDecorator('dataset_id', {
-                    initialValue: '0'
+                    initialValue: datasets.length ? '0' : ''
                 })(
                     <Select
                         showSearch
@@ -127,7 +127,7 @@ const ModelForm = ({ form, datasets, handleSubmit, pid }) => {
                             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                         }
                     >
-                        {datasets.map((v, i) => <Option value={i} key={i}>{v.datasetName}</Option>)}
+                        {datasets.map((v, i) => <Option value={i} key={i}>{`${v.datasetId}. ${v.datasetName}`}</Option>)}
                     </Select>
                 )}
             </Form.Item>

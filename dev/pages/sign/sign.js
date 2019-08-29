@@ -43,7 +43,7 @@ class NormalLoginForm extends React.Component {
                     formData.append('user.password', values.password)
                     formData.append('user.phone', values.phone)
                     formData.append('photo', values.upload[0])
-                    $.get({
+                    $.post({
                         url: host + '/user/signUp',
                         processData: false,
                         contentType: false,
