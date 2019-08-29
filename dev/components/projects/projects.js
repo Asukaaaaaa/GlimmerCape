@@ -14,16 +14,13 @@ class Projects extends Component {
     }
 
     update() {
-        fetch(host + '/project/getProjectList', {
-            method: 'POST',
-            body: JSON.stringify({
-                user_id: window.user_id,
-                page_num: 5,
-                page_size: 4
-            })
-        }).then(r => r.json()).then(res => {
+        $.post(host + '/project/getProjectList', {
+            user_id: window.user_id,
+            page_num: 1,
+            page_size: 100
+        }, res => {
             if (res.resultDesc === 'Success') {
-                this.setState({ data: res.list })
+                this.setState({ data: res.data.list })
             }
         })
     }

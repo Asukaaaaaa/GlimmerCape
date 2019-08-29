@@ -7,7 +7,7 @@ import CircleFlow from './circle-flow/circle-flow'
 
 import style from './graph.css'
 
-import { ClassNames, BaseColor, NormalColor, ExtendColor } from '../../util'
+import { ClassNames, BaseColor, NormalColor, ExtendColor, host } from '../../util'
 
 
 /**
@@ -240,26 +240,36 @@ const CircleFlowGraph = {
 export default class Graph extends Component {
     constructor(props) {
         super(props)
-
         this.state = {
-            active: false
+            active: false, ok: false
         }
-        this.init()
+        this.data = {}
+        $.post(host + '/result/getEvoFile', {
+            model_id: 42
+        }, res => {
+            if (res.resultDesc === 'Success') {
+                $.post(host + res.data.split('Web_NEview')[1], res => {
+                    this.data.sankey = res
+                    this.init()
+                })
+            }
+        })
     }
 
     init(props = this.props) {
-        let { graph, data } = props
+        let { graph } = props, data = this.data[graph]
         graph = {
             'sankey': SankeyGraph,
-            'circular': CircularGraph,
             'scatter': ScatterGraph,
             'circle-flow': CircleFlowGraph
+            // 'circular': CircularGraph,
         }[graph]
         if (graph) {
             graph.init(this, data)
             this.Content = graph.render.bind(graph)
             this.viewPort = graph.viewPort
         }
+        this.setState({ ok: true })
     }
     componentWillReceiveProps(_) {
         this.init(_)
@@ -271,7 +281,7 @@ export default class Graph extends Component {
     render() {
         const { props, state, Content, viewPort } = this
 
-        return (
+        return state.ok ? (
             <div className={style.main}>
                 <svg viewBox={`0 0 ${viewPort.w} ${viewPort.h}`} preserveAspectRatio='xMinYMin meet' onMouseMove={this.handleMouseMove.bind(this)}>
                     {Content()}
@@ -288,6 +298,8 @@ export default class Graph extends Component {
                         {state.value ? ` : ${state.value.toFixed(2)}` : ''}
                     </div> : null}
             </div>
-        )
+        ) : (
+                null
+            )
     }
 }

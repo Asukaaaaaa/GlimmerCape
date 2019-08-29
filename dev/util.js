@@ -6,7 +6,7 @@ const color = []//BaseColor.reduce()
 const NormalColor = []
 const ExtendColor = []
 
-const host = '/Web_NEview'//'http://www.zueler.cn:8080/Web_NEview'
+const host = 'https://www.cross2u.top/Web_NEview'
 
 import logo from '../static/img/logo.png'
 import cross from '../static/img/cross.png'

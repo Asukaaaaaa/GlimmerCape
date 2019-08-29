@@ -9,7 +9,7 @@ import style from './project-detail.css'
 
 let project_id
 
-const DataForm = ({ form, handleSubmit }) => {
+const DataForm = ({ form, handleSubmit, pid }) => {
     const { getFieldDecorator } = form
     return (
         <Form className={style.form}
@@ -18,17 +18,20 @@ const DataForm = ({ form, handleSubmit }) => {
                 form.validateFields((err, values) => {
                     if (!err) {
                         const formData = new FormData()
-                        formData.append('project_id')
+                        formData.append('project_id', pid)
                         formData.append('dataset_name', values.name)
                         formData.append('dataset_file', values.dataset[0])
                         formData.append('stopword_flag', values.stopword ? 1 : 0)
                         formData.append('stopword_file', values.stopword ? values.stopword[0] : null)
-                        fetch(host + '/dataset/upload', {
-                            method: 'POST',
-                            body: formData
-                        }).then(r => r.json()).then(res => {
-                            if (res.resultDesc === 'Success') {
-                                handleSubmit()
+                        $.post({
+                            url: host + '/dataset/upload',
+                            processData: false,
+                            contentType: false,
+                            data: formData,
+                            success: res => {
+                                if (res.resultDesc === 'Success') {
+                                    handleSubmit()
+                                }
                             }
                         })
                     }
@@ -78,8 +81,8 @@ const DataForm = ({ form, handleSubmit }) => {
     )
 }
 const WrappedDataForm = Form.create()(DataForm)
-const ModelForm = ({ form, datasets }) => {
-    const { getFieldDecorator, handleSubmit } = form
+const ModelForm = ({ form, datasets, handleSubmit, pid }) => {
+    const { getFieldDecorator } = form
     const [isCmNum, setIsCmNum] = useState(false)
     return (
         <Form className={style.form}
@@ -87,17 +90,16 @@ const ModelForm = ({ form, datasets }) => {
                 e.preventDefault()
                 form.validateFields((err, values) => {
                     if (!err) {
-                        // TODO
-                        fetch(host + '/model/createModel', {
-                            method: 'POST',
-                            body: JSON.stringify({
-                                model: {
-                                    project_id: 0,
-                                    community_num: 0,
-                                    ...values
-                                }
-                            })
-                        }).then(r => r.json()).then(res => {
+                        let data = {
+                            project_id: pid,
+                            community_num: 0,
+                            ...values
+                        }
+                        for (let attr in data) {
+                            data['model.' + attr] = data[attr]
+                            delete data[attr]
+                        }
+                        $.post(host + '/model/createModel', data, res => {
                             if (res.resultDesc === 'Success') {
                                 handleSubmit()
                             }
@@ -129,15 +131,6 @@ const ModelForm = ({ form, datasets }) => {
                     </Select>
                 )}
             </Form.Item>
-            {isCmNum ?
-                <Form.Item label='社区数量'>
-                    {getFieldDecorator('community_num', {
-                        rules: [{ required: true }],
-                        initialValue: '1'
-                    })(
-                        <Input />,
-                    )}
-                </Form.Item> : null}
             <Form.Item label="社区分区算法" >
                 {getFieldDecorator('detector_flag', {
                     initialValue: '0'
@@ -149,6 +142,15 @@ const ModelForm = ({ form, datasets }) => {
                     </Select>
                 )}
             </Form.Item>
+            {isCmNum ?
+                <Form.Item label='社区数量'>
+                    {getFieldDecorator('community_num', {
+                        rules: [{ required: true }],
+                        initialValue: '1'
+                    })(
+                        <Input />,
+                    )}
+                </Form.Item> : null}
             <Form.Item label="社区排序方法" >
                 {getFieldDecorator('sort_flag', {
                     initialValue: '0'
@@ -204,34 +206,28 @@ export default class ProjectDetail extends Component {
     }
 
     update() {
-        fetch(host + '/dataset/getDatasetList', {
-            method: 'POST',
-            body: JSON.stringify({
-                project_id: 0,
-                page_num: 1,
-                page_size: 100
-            })
-        }).then(r => r.json()).then(res => {
+        $.post(host + '/dataset/getDatasetList', {
+            project_id: this.props.match.params.id,
+            page_num: 1,
+            page_size: 100
+        }, res => {
             if (res.resultDesc === 'Success') {
-                this.setState({ datasets: res.list })
+                this.setState({ datasets: res.data.list.concat([{}]) })
             }
         })
-        fetch(host + '/model/getModelList', {
-            method: 'POST',
-            body: JSON.stringify({
-                project_id: 0,
-                page_num: 1,
-                page_size: 100
-            })
-        }).then(r => r.json()).then(res => {
+        $.post(host + '/model/getModelList', {
+            project_id: this.props.match.params.id,
+            page_num: 1,
+            page_size: 100
+        }, res => {
             if (res.resultDesc === 'Success') {
-                this.setState({ models: res.list })
+                this.setState({ models: res.data.list.concat([{}]) })
             }
         })
     }
 
     render() {
-        const { state } = this
+        const { state, props } = this
         return (
             <div className={style.main}>
                 <Button onClick={e => this.setState({ visible: true })} type="primary" shape="round" icon="plus">
@@ -244,8 +240,8 @@ export default class ProjectDetail extends Component {
                     onCancel={e => this.setState({ visible: false })}
                 >
                     {state.tabOn === 'data' ?
-                        <WrappedDataForm handleSubmit={null} /> :
-                        <WrappedModelForm datasets={state.datasets} handleSubmit={null} />}
+                        <WrappedDataForm handleSubmit={null} pid={props.match.params.id} /> :
+                        <WrappedModelForm datasets={state.datasets} handleSubmit={null} pid={props.match.params.id} />}
                 </Modal>
                 <Tabs className={style.tabs} defaultActiveKey={state.tabOn} tabPosition='left' onChange={
                     key => this.setState({ tabOn: key })

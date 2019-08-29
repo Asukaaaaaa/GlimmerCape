@@ -12,6 +12,8 @@ class NormalLoginForm extends React.Component {
         this.state = {
             sign: 'in'
         }
+
+        window.user_id = 1 //TODO
     }
 
     handleSubmit(e) {
@@ -21,13 +23,10 @@ class NormalLoginForm extends React.Component {
             if (!err) {
                 // TODO
                 if (this.state.sign === 'in')
-                    fetch(host + '/user/login', {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            account: values.username,
-                            password: values.password
-                        })
-                    }).then(r => r.json()).then(res => {
+                    $.post(host + '/user/login', {
+                        account: values.username,
+                        password: values.password
+                    }, res => {
                         if (res.resultDesc === 'Success') {
                             window.user_id = res.data
                             handleSign(values)
@@ -35,18 +34,25 @@ class NormalLoginForm extends React.Component {
                     })
                 else if (this.state.sign === 'up') {
                     const formData = new FormData()
-                    formData.append('user', JSON.stringify({
+                    /*formData.append('user', JSON.stringify({
                         account: values.username,
                         password: values.password,
                         phone: values.phone
-                    }))
+                    }))*/
+                    formData.append('user.account', values.username)
+                    formData.append('user.password', values.password)
+                    formData.append('user.phone', values.phone)
                     formData.append('photo', values.upload[0])
-                    fetch(host + '/user/signUp', {
-                        method: 'POST',
-                        body: formData
-                    }).then(r => r.json()).then(res => {
-                        if (res.resultDesc === 'Success') {
-                            handleSign(values)
+                    $.get({
+                        url: host + '/user/signUp',
+                        processData: false,
+                        contentType: false,
+                        data: formData,
+                        success: res => {
+                            if (res.resultDesc === 'Success') {
+                                window.user_id = data
+                                handleSign(values)
+                            }
                         }
                     })
                 }

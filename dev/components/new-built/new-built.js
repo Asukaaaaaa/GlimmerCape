@@ -13,17 +13,11 @@ const ModalForm = ({ form, handleSubmit }) => {
                 e.preventDefault()
                 form.validateFields((err, values) => {
                     if (!err) {
-                        // TODO
-                        fetch(host + '/project/createProject', {
-                            method: 'POST',
-                            body: JSON.stringify({
-                                project: {
-                                    user_id: window.user_id,
-                                    project_name: values.name,
-                                    project_desc: values.desc
-                                }
-                            })
-                        }).then(r => r.json()).then(res => {
+                        $.post(host + '/project/createProject', {
+                            'project.user_id': window.user_id,
+                            'project.project_name': values.name,
+                            'project.project_desc': values.desc
+                        }, res => {
                             if (res.resultDesc === 'Success') {
                                 handleSubmit()
                             }
@@ -49,7 +43,7 @@ const ModalForm = ({ form, handleSubmit }) => {
                     Create
                 </Button>
             </Form.Item>
-        </Form>
+        </Form >
     )
 }
 const WrappedModalForm = Form.create()(ModalForm)
