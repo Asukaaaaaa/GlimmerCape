@@ -92,7 +92,6 @@ const ModelForm = ({ form, datasets, handleSubmit, pid }) => {
                     if (!err) {
                         let data = {
                             project_id: pid,
-                            community_num: 0,
                             ...values
                         }
                         for (let attr in data) {
@@ -192,14 +191,20 @@ const ModelForm = ({ form, datasets, handleSubmit, pid }) => {
 }
 const WrappedModelForm = Form.create()(ModelForm)
 
+const Mapping = {
+    detectorFlag: ['Blondel', 'Newman MM', 'Ball OverLapping'],
+    sortFlag: ['中心度', '节点数量'],
+    modelStatus: ['训练中', '成功', '失败']
+}
+
 export default class ProjectDetail extends Component {
     constructor(props) {
         super(props)
         this.state = {
             tabOn: 'data',
             visible: false,
-            datasets: [{}],
-            models: [{}],
+            datasets: [],
+            models: [],
         }
         project_id = this.props.match.id
         this.update()
@@ -226,6 +231,19 @@ export default class ProjectDetail extends Component {
         })
     }
 
+    handleSubmit(values) {
+        /*
+        if (this.state.tabOn === 'data') {
+            this.state.datasets.unshift(values)
+            this.setState({ datasets: this.state.datasets })
+        } else if (this.state.tabOn === 'data') {
+            this.state.models, unshift(values)
+            this.setState({ models: this.state.models })
+        }*/
+        this.update()
+        this.setState({ visible: false })
+    }
+
     render() {
         const { state, props } = this
         return (
@@ -240,8 +258,8 @@ export default class ProjectDetail extends Component {
                     onCancel={e => this.setState({ visible: false })}
                 >
                     {state.tabOn === 'data' ?
-                        <WrappedDataForm handleSubmit={null} pid={props.match.params.id} /> :
-                        <WrappedModelForm datasets={state.datasets} handleSubmit={null} pid={props.match.params.id} />}
+                        <WrappedDataForm handleSubmit={this.handleSubmit.bind(this)} pid={props.match.params.id} /> :
+                        <WrappedModelForm datasets={state.datasets} handleSubmit={this.handleSubmit.bind(this)} pid={props.match.params.id} />}
                 </Modal>
                 <Tabs className={style.tabs} defaultActiveKey={state.tabOn} tabPosition='left' onChange={
                     key => this.setState({ tabOn: key })
@@ -254,7 +272,10 @@ export default class ProjectDetail extends Component {
                             </ColumnGroup>
                             <Column title="周期数目" dataIndex="periodNum" key="pnum" />
                             <Column title="数据条数" dataIndex="datasetNum" key="dnum" />
-                            <Column title="上传时间" dataIndex="createTime" key="time" />
+                            <Column title="上传时间" dataIndex="createTime" key="time"
+                                render={(text, record) => (
+                                    <span>{new Date(text).toLocaleString()}</span>
+                                )} />
                             <Column title="Action" key="action"
                                 render={(text, record) => (
                                     <span>
@@ -270,12 +291,16 @@ export default class ProjectDetail extends Component {
                             <ColumnGroup title="模型">
                                 <Column title="ID" dataIndex="modelId" key="id" />
                                 <Column title="名称" dataIndex="modelName" key="name" />
-                                <Column title="状态" dataIndex="modelStatus" key="status" />
+                                <Column title="状态" dataIndex="modelStatus" key="status"
+                                    render={text => Mapping.modelStatus[text]} />
                             </ColumnGroup>
-                            <Column title="社区选择" dataIndex="" key="" />
+                            <Column title="社区选择" dataIndex="detectorFlag" key=""
+                                render={text => Mapping.detectorFlag[text]} />
                             <Column title="相似度系数" dataIndex="similarityThreshold" key="similarT" />
-                            <Column title="社区排序" dataIndex="" key="" />
-                            <Column title="更新时间" dataIndex="modifyTime" key="time" />
+                            <Column title="社区排序" dataIndex="sortFlag" key=""
+                                render={text => Mapping.sortFlag[text]} />
+                            <Column title="更新时间" dataIndex="modifyTime" key="time"
+                                render={(text, record) => new Date(text).toLocaleString()} />
                             <Column title="Action" key="action"
                                 render={(text, record) => (
                                     <span>
