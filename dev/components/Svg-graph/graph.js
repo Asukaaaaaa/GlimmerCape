@@ -180,8 +180,8 @@ const ScatterGraph = {
  */
 
 const CircleFlowGraph = {
-    init(that, data) {
-        const nodes = data.cluster_nodes
+    init(that) {
+        const nodes = that.props.data
         const froms = [], _froms = [],
             tos = [], _tos = [],
             origins = {}, aims = {}
@@ -194,7 +194,7 @@ const CircleFlowGraph = {
                 if (origins[v.origin]) {
                     origins[v.origin].counts++
                 } else {
-                    const node = that.props.sourceData.nodes.find(n => n.ID === v.origin)
+                    const node = that.data.sankey.nodes.find(n => n.ID === v.origin)
                     origins[v.origin] = {
                         name: node.name,
                         year: node.group,
@@ -210,7 +210,7 @@ const CircleFlowGraph = {
                 if (aims[v.aim]) {
                     aims[v.aim].counts++
                 } else {
-                    const node = that.props.sourceData.nodes.find(n => n.ID === v.aim)
+                    const node = that.data.sankey.nodes.find(n => n.ID === v.aim)
                     aims[v.aim] = {
                         name: node.name,
                         year: node.group,
@@ -240,7 +240,6 @@ export default class Graph extends Component {
         super(props)
         this.state = {
             active: false, ok: false,
-            zpIndex: 0
         }
         this.data = {}
         Promise.all([
@@ -294,7 +293,9 @@ export default class Graph extends Component {
         const { props, state, Content, viewPort } = this
 
         return state.ok ? (
-            <div className={style.main}>
+            <div className={style.main}
+                onMouseMove={e => state.active && this.setState({ x: e.clientX, y: e.clientY })}
+            >
                 {Content()}
                 {state.active ?
                     <div style={{ left: state.x, top: state.y }} className={style.follow}>

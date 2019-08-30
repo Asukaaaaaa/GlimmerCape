@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 import style from './circle-flow.css'
 
 const { cos, sin, PI } = Math,
-    C = [10000, 7500], R = 6000, R0 = 4000, R1 = 8000
+    C = [10000, 7500], R = 6000, R0 = 4000, R1 = 9000
 
 export default class CircleFlow extends Component {
     constructor(props) {
@@ -47,9 +47,10 @@ export default class CircleFlow extends Component {
         const data = props[state.type]
         return (
             <g className={style.main}>
-                <g>{data.out.map(({ x, y, r }, i) => <circle cx={x} cy={y} r={r} key={i} />)}</g>
+                <g className={style.lines}>{data.out.map(({ origin, x, y, r }, i) => <path d={`M${x} ${y} L${data.others[origin].x} ${data.others[origin].x}`} stroke={data.others[origin].fill} />)}</g>
+                <g className={style.out}>{data.out.map(({ x, y, r }, i) => <circle cx={x} cy={y} r={r} key={i} />)}</g>
                 <g>{data.out.map(({ key, x, y, r }, i) => <text x={x} y={y} fontSize={r} key={i}>{key}</text>)}</g>
-                <g>{data.self.map(({ x, y, r }, i) => <circle cx={x} cy={y} r={r} key={i} />)}</g>
+                <g className={style.self}>{data.self.map(({ x, y, r }, i) => <circle cx={x} cy={y} r={r} key={i} />)}</g>
                 <g>{data.self.map(({ key, x, y, r }, i) => <text x={x} y={y} fontSize={50 + r} fontWeight={r} key={i}>{key}</text>)}</g>
                 <g>{(() => {
                     const res = []
@@ -60,7 +61,6 @@ export default class CircleFlow extends Component {
                     }
                     return res
                 })()}</g>
-                <g>{data.out.map(({ origin, x, y, r }, i) => <path d={`M${x} ${y} L${data.others[origin].x} ${data.others[origin].x}`} stroke={data.others[origin].fill} />)}</g>
             </g>
         )
     }

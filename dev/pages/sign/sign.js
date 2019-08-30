@@ -34,15 +34,10 @@ class NormalLoginForm extends React.Component {
                     })
                 else if (this.state.sign === 'up') {
                     const formData = new FormData()
-                    /*formData.append('user', JSON.stringify({
-                        account: values.username,
-                        password: values.password,
-                        phone: values.phone
-                    }))*/
                     formData.append('user.account', values.username)
                     formData.append('user.password', values.password)
                     formData.append('user.phone', values.phone)
-                    formData.append('photo', values.upload[0])
+                    formData.append('photo', values.upload[0].originFileObj)
                     $.post({
                         url: host + '/user/signUp',
                         processData: false,
@@ -50,7 +45,6 @@ class NormalLoginForm extends React.Component {
                         data: formData,
                         success: res => {
                             if (res.resultDesc === 'Success') {
-                                window.user_id = data
                                 handleSign(values)
                             }
                         }

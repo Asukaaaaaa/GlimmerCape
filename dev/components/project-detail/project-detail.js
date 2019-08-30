@@ -20,9 +20,9 @@ const DataForm = ({ form, handleSubmit, pid }) => {
                         const formData = new FormData()
                         formData.append('project_id', pid)
                         formData.append('dataset_name', values.name)
-                        formData.append('dataset_file', values.dataset[0])
+                        formData.append('dataset_file', values.dataset[0].originFileObj)
                         formData.append('stopword_flag', values.stopword ? 1 : 0)
-                        formData.append('stopword_file', values.stopword ? values.stopword[0] : null)
+                        formData.append('stopword_file', values.stopword ? values.stopword[0].originFileObj : null)
                         $.post({
                             url: host + '/dataset/upload',
                             processData: false,
