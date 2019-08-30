@@ -257,7 +257,7 @@ export default class Graph extends Component {
                 model_id: 42
             }, res => {
                 if (res.resultDesc === 'Success') {
-                    fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).then(res => {
+                    fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).catch(console.log).then(res => {
                         this.data.scatter = res
                         resolve('scatter')
                     })

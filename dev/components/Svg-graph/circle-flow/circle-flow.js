@@ -14,8 +14,7 @@ export default class CircleFlow extends Component {
     init(type = this.state.type, props = this.props) {
         const { that, sum } = props, data = props[type]
         let arc = data.sum / sum, dir = type === 'from' ? -1 : 1
-        type === 'from' && (arc = [arc - 0.5, -0.5 - arc])
-        type === 'to' && (arc = [0.5 - arc, 0.5 + arc])
+        arc = [0.5 - arc, 0.5 + arc].map(v => v * dir)
         arc = arc.map(v => PI * v)
         let p = arc[0]
         data.out.forEach(v => {
@@ -39,15 +38,21 @@ export default class CircleFlow extends Component {
             Object.assign(v, { x: C[0] + R1 * sin(c), y: C[1] - R1 * cos(c), r: R0 * sin(r), fill: that.nodes[v.name].color })
         }
     }
+    componentWillUpdate(props, state) {
+        this.init(state.type)
+    }
     componentWillReceiveProps(props) {
-        this.init(type = this.state.type, props)
+        this.init(props = props)
     }
     Content() {
         const { state, props } = this
-        const data = props[state.type]
+        const data = props[state.type], label = state.type === 'from' ? 'origin' : 'aim'
         return (
             <g className={style.main}>
-                <g className={style.lines}>{data.out.map(({ origin, x, y, r }, i) => <path d={`M${x} ${y} L${data.others[origin].x} ${data.others[origin].x}`} stroke={data.others[origin].fill} />)}</g>
+                <g className={style.lines}>{data.out.map((val, i) => {
+                    const { x, y, r } = val
+                    return < path d={`M${x} ${y} L${data.others[val[label]].x} ${data.others[val[label]].y}`} stroke={data.others[val[label]].fill} key={i} />
+                })}</g>
                 <g className={style.out}>{data.out.map(({ x, y, r }, i) => <circle cx={x} cy={y} r={r} key={i} />)}</g>
                 <g>{data.out.map(({ key, x, y, r }, i) => <text x={x} y={y} fontSize={r} key={i}>{key}</text>)}</g>
                 <g className={style.self}>{data.self.map(({ x, y, r }, i) => <circle cx={x} cy={y} r={r} key={i} />)}</g>
@@ -61,6 +66,9 @@ export default class CircleFlow extends Component {
                     }
                     return res
                 })()}</g>
+                <circle cx={C[0]} cy={C[1]} r='400' className={state.type === 'from' ? style.out : style.self}
+                    onClick={e => this.setState({ type: state.type === 'from' ? 'to' : 'from' })}
+                ></circle>
             </g>
         )
     }

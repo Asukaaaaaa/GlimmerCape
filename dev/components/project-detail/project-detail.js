@@ -212,7 +212,7 @@ export default class ProjectDetail extends Component {
             page_size: 100
         }, res => {
             if (res.resultDesc === 'Success') {
-                this.setState({ datasets: res.data.list.concat([{}]) })
+                this.setState({ datasets: res.data.list })
             }
         })
         $.post(host + '/model/getModelList', {
@@ -221,7 +221,7 @@ export default class ProjectDetail extends Component {
             page_size: 100
         }, res => {
             if (res.resultDesc === 'Success') {
-                this.setState({ models: res.data.list.concat([{}]) })
+                this.setState({ models: res.data.list })
             }
         })
     }
@@ -234,7 +234,7 @@ export default class ProjectDetail extends Component {
                     添加{state.tabOn === 'data' ? '数据集' : '模型'}
                 </Button>
                 <Modal
-                    title="创建项目"
+                    title={`创建${state.tabOn === 'data' ? '数据集' : '模型'}`}
                     footer={null}
                     visible={this.state.visible} destroyOnClose
                     onCancel={e => this.setState({ visible: false })}
