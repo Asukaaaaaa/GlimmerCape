@@ -244,7 +244,7 @@ export default class Graph extends Component {
         this.data = {}
         Promise.all([
             new Promise((resolve, reject) => $.post(host + '/result/getEvoFile', {
-                model_id: 42
+                model_id: props.id
             }, res => {
                 if (res.resultDesc === 'Success') {
                     fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).then(res => {
@@ -254,7 +254,7 @@ export default class Graph extends Component {
                 }
             })),
             new Promise((resolve, reject) => $.post(host + '/result/getZpFile', {
-                model_id: 42
+                model_id: props.id
             }, res => {
                 if (res.resultDesc === 'Success') {
                     fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).catch(console.log).then(res => {

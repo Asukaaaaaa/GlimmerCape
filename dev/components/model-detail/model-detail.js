@@ -35,7 +35,7 @@ export default class ModelDetail extends Component {
                         <TabPane tab={<span><Icon type='dot-chart' />ZP分布</span>} key="scatter" />
                         <TabPane tab={<span><Icon style={{ color: state.node.name ? '#1890ff' : '' }} type='dot-chart' />社区演化</span>} key="circle-flow" />
                     </Tabs>
-                    <SvgGraph graph={state.graph} data={state.clusterData}
+                    <SvgGraph graph={state.graph} data={state.clusterData} id={this.props.match.params.id}
                         handleSelectNode={info => {
                             this.setState({ node: info })
                             $.post(host + '/result/getPickedClusterInfo', {
