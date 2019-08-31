@@ -17,9 +17,10 @@ import mail from '../static/img/mail.svg'
 import questionCircle from '../static/img/question-circle.svg'
 import telephone from '../static/img/telephone.svg'
 import userCenter from '../static/img/user-center.svg'
+import download from '../static/img/download-fill.svg'
 
 const imgs = {
-    logo, cross, test, detail, edit, mail, questionCircle, telephone, userCenter
+    logo, cross, test, detail, edit, mail, questionCircle, telephone, userCenter, download
 }
 
 export {

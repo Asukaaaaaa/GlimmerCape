@@ -7,7 +7,7 @@ import CircleFlow from './circle-flow/circle-flow'
 
 import style from './graph.css'
 
-import { ClassNames, BaseColor, NormalColor, ExtendColor, host } from '../../util'
+import { ClassNames, BaseColor, NormalColor, ExtendColor, host, imgs } from '../../util'
 
 /**
  * Sankey
@@ -265,6 +265,8 @@ export default class Graph extends Component {
             }))]).then(vs => {
                 this.init()
             })
+
+        this.imgLoader = React.createRef()
     }
 
     init(props = this.props) {
@@ -285,6 +287,7 @@ export default class Graph extends Component {
     componentWillReceiveProps(_) {
         this.init(_)
     }
+
     handleMouseMove(e) {
         this.state.active && this.setState({ x: e.clientX, y: e.clientY })
     }
@@ -296,6 +299,27 @@ export default class Graph extends Component {
             <div className={style.main}
                 onMouseMove={e => state.active && this.setState({ x: e.clientX, y: e.clientY })}
             >
+                <canvas ref={this.imgLoader} />
+                <div className={style.download}>
+                    <a>
+                        <img src={imgs.download}
+                            onClick={e => { // TODO
+                                /*
+                                const img = new Image(),
+                                    canvas = this.imgLoader.current, context = canvas.getContext('2d'),
+                                    a = $('+ div > a', canvas)[0]
+                                img.onload = _e => {
+                                    context.drawImage(img, 0, 0)
+                                    a.href = canvas.toDataURL('image/png')
+                                    a.download = new Date().getTime() + '.png'
+                                    a.click()
+                                    e.target.onclick = null
+                                }
+                                img.src = 'data:image/svg+xml;base64,' + btoa($('~ svg', canvas)[0].outerHTML)
+                                */
+                            }} />
+                    </a>
+                </div>
                 {Content()}
                 {state.active ?
                     <div style={{ left: state.x, top: state.y }} className={style.follow}>

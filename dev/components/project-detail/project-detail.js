@@ -293,7 +293,11 @@ export default class ProjectDetail extends Component {
                                 <Column title="ID" dataIndex="modelId" key="id" />
                                 <Column title="名称" dataIndex="modelName" key="name" />
                                 <Column title="状态" dataIndex="modelStatus" key="status"
-                                    render={text => Mapping.modelStatus[text]} />
+                                    render={text => (
+                                        <Tag color={['geekblue', 'green', 'volcano'][text]} key={text}>
+                                            {Mapping.modelStatus[text]}
+                                        </Tag>
+                                    )} />
                             </ColumnGroup>
                             <Column title="社区选择" dataIndex="detectorFlag" key=""
                                 render={text => Mapping.detectorFlag[text]} />
