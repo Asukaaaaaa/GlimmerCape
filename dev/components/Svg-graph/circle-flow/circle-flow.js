@@ -53,7 +53,10 @@ export default class CircleFlow extends Component {
                     const { x, y, r } = val
                     return < path d={`M${x} ${y} L${data.others[val[label]].x} ${data.others[val[label]].y}`} stroke={data.others[val[label]].fill} key={i} />
                 })}</g>
-                <g className={style.out}>{data.out.map(({ x, y, r }, i) => <circle cx={x} cy={y} r={r} key={i} />)}</g>
+                <g className={style.out}>{data.out.map((val, i) => {
+                    const { x, y, r } = val
+                    return <circle cx={x} cy={y} r={r} fill={data.others[val[label]].fill} key={i} />
+                })}</g>
                 <g>{data.out.map(({ key, x, y, r }, i) => <text x={x} y={y} fontSize={r} key={i}>{key}</text>)}</g>
                 <g className={style.self}>{data.self.map(({ x, y, r }, i) => <circle cx={x} cy={y} r={r} key={i} />)}</g>
                 <g>{data.self.map(({ key, x, y, r }, i) => <text x={x} y={y} fontSize={50 + r} fontWeight={r} key={i}>{key}</text>)}</g>

@@ -3,10 +3,10 @@
     dominant-baseline: central;
 }
 .self {
-    fill: #5BC49F;
+    fill: #f7f7f7;
 }
 .out {
-    fill: #60ACFC;
+    /*fill: #60ACFC;*/
 }
 .lines path {
     stroke-width: 20;

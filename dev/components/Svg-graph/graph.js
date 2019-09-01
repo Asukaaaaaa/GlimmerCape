@@ -54,7 +54,9 @@ const SankeyGraph = {
         }
 
         let Color, piece, values, blocks, gap, maxValue
-        Color = BaseColor // TODO
+        let nlen = 0
+        for (let attr in nodes) nlen++
+        Color = nlen > BaseColor.length ? (NormalColor) : BaseColor // TODO
         const len = maxYear - minYear + 1
         piece = 20000 / len
         values = new Array(len).fill(0)
@@ -114,7 +116,9 @@ const CircularGraph = {
         })
 
         let Color, r, gap, peri
-        Color = BaseColor //TODO
+        let nlen = 0
+        for (let attr in nodes) nlen++
+        Color = nlen > BaseColor.length ? (NormalColor) : BaseColor //TODO
         r = 4000
         gap = PI / 6 / nodeNum // (2 PI / 12)
         peri = PI / 6 * 11
