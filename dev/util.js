@@ -1,4 +1,32 @@
 
+const debounce = (f, time) => {
+    let handle = -1
+    return (...args) => {
+        if (handle > -1) {
+            handle && clearTimeout(handle)
+            handle = setTimeout(() => f(...args), time)
+        } else if (handle === -1) {
+            f(...args)
+            handle = 0
+        }
+    }
+}
+const throttle = (f, time) => {
+    let last
+    return (...args) => {
+        let now = new Date().getTime()
+        if (now - last > time || !last) {
+            last = now
+            f(...args)
+        }
+    }
+}
+
+const _ = {
+    debounce,
+    throttle
+}
+
 const ClassNames = (...args) => args.reduce((acc, val, i) => val ? (acc += val + ' ') : acc, '')
 
 const BaseColor = ['#60acfc', '#32d3eb', '#5bc49f', '#feb64d', '#ff7c7c', '#9287e7']
@@ -31,6 +59,7 @@ const imgs = {
 }
 
 export {
+    _,
     ClassNames,
     BaseColor,
     NormalColor,

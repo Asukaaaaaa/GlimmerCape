@@ -7,7 +7,7 @@ import CircleFlow from './circle-flow/circle-flow'
 
 import style from './graph.css'
 
-import { ClassNames, BaseColor, NormalColor, ExtendColor, host, imgs } from '../../util'
+import { _, ClassNames, BaseColor, NormalColor, ExtendColor, host, imgs } from '../../util'
 
 /**
  * Sankey
@@ -307,7 +307,7 @@ export default class Graph extends Component {
                 <div className={style.download}>
                     <a>
                         <img src={imgs.download}
-                            onClick={e => { // TODO
+                            onClick={e => { // TODO export image
                                 /*
                                 const img = new Image(),
                                     canvas = this.imgLoader.current, context = canvas.getContext('2d'),
@@ -340,5 +340,42 @@ export default class Graph extends Component {
         ) : (
                 null
             )
+    }
+}
+
+export class Svg extends Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            focus: [0.5, 0.5], scale: 1
+        }
+        this.box = props.viewBox.split(' ').map(v => Number.parseFloat(v))
+    }
+
+    componentDidUpdate(props, state) {
+        this.box = props.viewBox.split(' ').map(v => Number.parseFloat(v))
+    }
+
+    viewScale(e) {
+        const scale = this.state.scale + e.deltaY / e.target.clientHeight
+        this.setState({
+            focus: [e.offsetX / e.target.clientWidth, e.offsetY / e.target.clientHeight],
+            scale: scale > 1 ? scale : 1
+        })
+    }
+    getViewBox(box = this.box, focus = this.state.focus, scale = this.state.scale) {
+        const w = box[2] * scale, h = box[3] * scale,
+            x = box[0] + (box[2] - w) * focus[0],
+            y = box[1] + (box[3] - h) * focus[1]
+        return `${x} ${y} ${w} ${h}`
+    }
+
+    render() {
+        return (
+            <svg {...this.props} viewBox={this.getViewBox()}
+                onWheel={e => _.throttle(this.viewScale, 33)(e)}>
+                {this.props.children}
+            </svg>
+        )
     }
 }

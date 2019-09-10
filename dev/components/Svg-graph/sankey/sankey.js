@@ -3,6 +3,7 @@ import React, { Component, useState } from 'react'
 import style from './sankey.css'
 
 import { ClassNames, BaseColor, NormalColor, ExtendColor } from '../../../util'
+import { Svg } from '../graph';
 
 
 const Block = ({ inactive, rect, info, color }) => (
@@ -143,11 +144,11 @@ export default class Sankey extends Component {
         const that = this.props.that
         const Head = this.Head(), Blocks = this.Blocks(), Belts = this.Belts()
         return (
-            <svg viewBox='0 0 20000 10000' preserveAspectRatio='xMinYMin meet'>
+            <Svg viewBox='0 0 20000 10000' preserveAspectRatio='xMinYMin meet'>
                 <g className={style.head}>{Head}</g>
                 <g className={style.belts} onMouseOver={this.handleHoverBelt.bind(that)} onMouseOut={this.handleResetState.bind(that)}>{Belts}</g>
                 <g className={style.blocks} onClick={this.handleClickBlock.bind(this)} onMouseOver={this.handleHoverBlock.bind(that)} onMouseOut={this.handleResetState.bind(that)}>{Blocks}</g>
-            </svg>
+            </Svg>
         )
     }
 }
