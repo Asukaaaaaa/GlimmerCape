@@ -267,10 +267,8 @@ export default class ProjectDetail extends Component {
                 }>
                     <TabPane tab="数据中心" key="data">
                         < Table dataSource={state.datasets} >
-                            <ColumnGroup title="数据集">
-                                <Column title="ID" dataIndex="datasetId" key="id" />
-                                <Column title="名称" dataIndex="datasetName" key="name" />
-                            </ColumnGroup>
+                            {/*<Column title="ID" dataIndex="datasetId" key="id" />*/}
+                            <Column title="数据集名称" dataIndex="datasetName" key="name" />
                             <Column title="周期数目" dataIndex="periodNum" key="pnum" />
                             <Column title="数据条数" dataIndex="datasetNum" key="dnum" />
                             <Column title="上传时间" dataIndex="createTime" key="time"
@@ -289,16 +287,14 @@ export default class ProjectDetail extends Component {
                     </TabPane>
                     <TabPane tab="模型中心" key="model">
                         < Table dataSource={state.models} >
-                            <ColumnGroup title="模型">
-                                <Column title="ID" dataIndex="modelId" key="id" />
-                                <Column title="名称" dataIndex="modelName" key="name" />
-                                <Column title="状态" dataIndex="modelStatus" key="status"
-                                    render={text => (
-                                        <Tag color={['geekblue', 'green', 'volcano'][text]} key={text}>
-                                            {Mapping.modelStatus[text]}
-                                        </Tag>
-                                    )} />
-                            </ColumnGroup>
+                            {/*<Column title="ID" dataIndex="modelId" key="id" />*/}
+                            <Column title="模型名称" dataIndex="modelName" key="name" />
+                            <Column title="状态" dataIndex="modelStatus" key="status"
+                                render={text => (
+                                    <Tag color={['geekblue', 'green', 'volcano'][text]} key={text}>
+                                        {Mapping.modelStatus[text]}
+                                    </Tag>
+                                )} />
                             <Column title="社区选择" dataIndex="detectorFlag" key=""
                                 render={text => Mapping.detectorFlag[text]} />
                             <Column title="相似度系数" dataIndex="similarityThreshold" key="similarT" />
