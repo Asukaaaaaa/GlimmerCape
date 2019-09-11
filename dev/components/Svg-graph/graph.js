@@ -347,33 +347,58 @@ export class Svg extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            focus: [0.5, 0.5], scale: 1
+            focus: [0.5, 0.5],
+            bias: [0, 0],
+            scale: 1
         }
         this.box = props.viewBox.split(' ').map(v => Number.parseFloat(v))
+        this.svg = React.createRef()
     }
 
-    componentDidUpdate(props, state) {
+    componentDidMount() {
+        this.svg.current.addEventListener('wheel',
+            _.throttle(this.viewScale.bind(this), 25),
+            { passive: false })
+        const f = this.viewMove.bind(this)
+        this.svg.current.onmousedown = this.svg.current.onmouseup = f
+        this.svg.current.onmouseover = _.throttle(f, 25)
+    }
+    componentWillReceiveProps(props) {
         this.box = props.viewBox.split(' ').map(v => Number.parseFloat(v))
     }
 
     viewScale(e) {
-        const scale = this.state.scale + e.deltaY / e.target.clientHeight
+        e.preventDefault()
+        const scale = this.state.scale - e.deltaY / e.currentTarget.clientHeight * 3
         this.setState({
-            focus: [e.offsetX / e.target.clientWidth, e.offsetY / e.target.clientHeight],
+            focus: [e.offsetX / e.currentTarget.clientWidth, e.offsetY / e.currentTarget.clientHeight],
+            bias: [0, 0],
             scale: scale > 1 ? scale : 1
         })
     }
+    viewMove(e) {
+        if (e.type === 'mousedown') {
+            this.dragging = true
+        } else if (e.type === 'mouseup') {
+            this.dragging = false
+        } else if (e.type === 'mouseover' && this.dragging) {
+            const { focus, scale } = this.state
+            this.setState({
+                bias: [e.deltaX / e.currentTarget.clientWidth / scale, e.deltaY / e.currentTarget.clientHeight / scale]
+            })
+        }
+    }
     getViewBox(box = this.box, focus = this.state.focus, scale = this.state.scale) {
-        const w = box[2] * scale, h = box[3] * scale,
-            x = box[0] + (box[2] - w) * focus[0],
-            y = box[1] + (box[3] - h) * focus[1]
+        const w = box[2] / scale, h = box[3] / scale,
+            x = box[0] + (box[2] - w) * focus[0] - w * bias[0],
+            y = box[1] + (box[3] - h) * focus[1] - h * bias[1]
         return `${x} ${y} ${w} ${h}`
     }
 
     render() {
         return (
             <svg {...this.props} viewBox={this.getViewBox()}
-                onWheel={e => _.throttle(this.viewScale.bind(this), 33)(e)}>
+                ref={this.svg}>
                 {this.props.children}
             </svg>
         )

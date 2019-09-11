@@ -3,7 +3,7 @@ import React, { Component, useState } from 'react'
 import style from './sankey.css'
 
 import { ClassNames, BaseColor, NormalColor, ExtendColor } from '../../../util'
-import { Svg } from '../graph';
+import { Svg } from '../graph'
 
 
 const Block = ({ inactive, rect, info, color }) => (
