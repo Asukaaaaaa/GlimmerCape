@@ -373,7 +373,7 @@ export class Svg extends Component {
     render() {
         return (
             <svg {...this.props} viewBox={this.getViewBox()}
-                onWheel={e => _.throttle(this.viewScale, 33)(e)}>
+                onWheel={e => _.throttle(this.viewScale.bind(this), 33)(e)}>
                 {this.props.children}
             </svg>
         )
