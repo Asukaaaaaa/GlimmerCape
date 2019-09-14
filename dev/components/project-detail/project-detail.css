@@ -5,8 +5,8 @@
 
 .main > button {
     position: absolute;
-    top: 99px;
-    right: 40px;
+    top: 75px;
+    right: 30px;
     z-index: 997;
 }
 

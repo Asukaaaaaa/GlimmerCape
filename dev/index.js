@@ -7,28 +7,39 @@ import SignForm from './pages/sign/sign'
 
 import style from './index.css'
 
+const MainContext = React.createContext()
+
 class App extends Component {
     constructor(props) {
         super(props)
-        this.state = { user: null }
+        this.state = {
+            user: {},
+            setUser: user => this.setState({ user })
+        }
     }
     render() {
         return (
-            <Router>
-                <Route
-                    render={() => (
-                        <Redirect to={this.state.user ? '/' : '/sign'} /> // TODO
-                    )}
-                />
-                <Switch>
-                    <Route path='/sign'
-                        render={() => <SignForm handleSign={user => this.setState({ user })} />}
+            <MainContext.Provider value={this.state}>
+                <Router>
+                    <Route
+                        render={() => (
+                            <Redirect to={this.state.user.account ? '/' : '/sign'} /> // TODO
+                        )}
                     />
-                    <Route path='/' component={Main} />
-                </Switch>
-            </Router >
+                    <Switch>
+                        <Route path='/sign'
+                            render={() => <SignForm handleSign={user => this.setState({ user })} />}
+                        />
+                        <Route path='/' component={Main} />
+                    </Switch>
+                </Router >
+            </MainContext.Provider>
         )
     }
 }
 
 ReactDOM.render(<App />, document.getElementById('root'))
+
+export {
+    MainContext
+}

@@ -357,11 +357,14 @@ export class Svg extends Component {
 
     componentDidMount() {
         this.svg.current.addEventListener('wheel',
-            _.throttle(this.viewScale.bind(this), 25),
+            _.throttle(this.viewScale.bind(this), 33),
             { passive: false })
         const f = this.viewMove.bind(this)
         this.svg.current.onmousedown = this.svg.current.onmouseup = f
-        this.svg.current.onmouseover = _.throttle(f, 25)
+        this.svg.current.addEventListener('mousemove',
+            _.throttle(f, 33),
+            { passive: false }
+        )
     }
     componentWillReceiveProps(props) {
         this.box = props.viewBox.split(' ').map(v => Number.parseFloat(v))
@@ -377,18 +380,22 @@ export class Svg extends Component {
         })
     }
     viewMove(e) {
+        e.preventDefault()
         if (e.type === 'mousedown') {
             this.dragging = true
         } else if (e.type === 'mouseup') {
             this.dragging = false
-        } else if (e.type === 'mouseover' && this.dragging) {
-            const { focus, scale } = this.state
+        } else if (e.type === 'mousemove' && this.dragging) {
+            const { focus, bias, scale } = this.state
             this.setState({
-                bias: [e.deltaX / e.currentTarget.clientWidth / scale, e.deltaY / e.currentTarget.clientHeight / scale]
+                bias: [
+                    bias[0] + e.movementX / e.currentTarget.clientWidth,
+                    bias[1] + e.movementY / e.currentTarget.clientHeight
+                ]
             })
         }
     }
-    getViewBox(box = this.box, focus = this.state.focus, scale = this.state.scale) {
+    getViewBox(box = this.box, { focus, bias, scale } = this.state) {
         const w = box[2] / scale, h = box[3] / scale,
             x = box[0] + (box[2] - w) * focus[0] - w * bias[0],
             y = box[1] + (box[3] - h) * focus[1] - h * bias[1]
