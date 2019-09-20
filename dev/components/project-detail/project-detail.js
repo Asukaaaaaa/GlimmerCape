@@ -278,9 +278,20 @@ export default class ProjectDetail extends Component {
                             <Column title="Action" key="action"
                                 render={(text, record) => (
                                     <span>
-                                        <Link to={`/dataset/${record.datasetId}`}>查看</Link>
+                                        <a download={`${record.datasetId}_${record.datasetName}`}
+                                            href={`${host}/dataset/downloadDataset?dataset_id=${record.datasetId}`}
+                                        >下载</a>
                                         <Divider type="vertical" />
-                                        <a>删除</a>
+                                        <a onClick={
+                                            e => $.post(host + '/dataset/deleteDataset', {
+                                                dataset_id: record.datasetId
+                                            }, res => {
+                                                // todo
+                                                if (res.resultCode === '1000') {
+                                                    this.update()
+                                                }
+                                            })
+                                        }>删除</a>
                                     </span>
                                 )} />
                         </ Table>
@@ -307,7 +318,16 @@ export default class ProjectDetail extends Component {
                                     <span>
                                         <Link to={`/model/${record.modelId}`}>查看</Link>
                                         <Divider type="vertical" />
-                                        <a>删除</a>
+                                        <a onClick={
+                                            e => $.post(host + '/model/deleteModel', {
+                                                dataset_id: record.modelId
+                                            }, res => {
+                                                // todo
+                                                if (res.resultCode === '1000') {
+                                                    this.update()
+                                                }
+                                            })
+                                        }>删除</a>
                                     </span>
                                 )} />
                         </ Table>

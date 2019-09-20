@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
 
-import { Tabs, Table, Row, Col, Statistic, Icon } from 'antd'
+import { Tabs, Table, Icon, Button } from 'antd'
 const { TabPane } = Tabs, { Column } = Table
 
+import Charts from '../charts/charts'
 import SvgGraph from '../Svg-graph/graph'
 
 import { host } from '../../util'
@@ -46,27 +47,44 @@ export default class ModelDetail extends Component {
                         }}
                     />
                 </div>
-                <div className={style.table}>
+                <div className={style.right}>
+                    <Charts type='radar'/>
+                </div>
+                {/*<div className={style.table}>
                     <div>
                         <Icon type='bar-chart' />
                         <span>社区信息</span>
                     </div>
                     <Table dataSource={state.clusterData} bordered pagination={false} scroll={{ y: 480 }}
                         title={() => (
-                            <Row gutter={16}>
-                                <Col span={12}>
-                                    <Statistic title="社区ID" value={state.node.id} />
-                                </Col>
-                                <Col span={12}>
-                                    <Statistic title="元素数量" value={state.node.num} />
-                                </Col>
-                            </Row>)}>
-                        <Column width='25%' title="词汇" dataIndex="key" key="key" render={(text, record) => <div style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>{text}</div>} />
-                        <Column width='30%' title="Z-value" dataIndex="z_value" key="z_value" render={(text, record) => <div style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>{text}</div>} />
-                        <Column width='30%' title="P-value" dataIndex="p_value" key="p_value" render={(text, record) => <div style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>{text}</div>} />
-                        <Column title="词频" dataIndex="weight" key="weight" />
+                            <div className={style['t-head']}>
+                                <div className={style['t-head-left']}>
+                                    <div>{state.node.name}</div>
+                                    <div>{state.node.year}</div>
+                                    <div>{state.node.num}</div>
+                                </div>
+                                <div className={style['t-head-right']}>
+                                    <a download={`${state.node.year}_${state.node.name}`}
+                                        href={`${host}/result/ExportClusterInfo?model_id=${this.props.match.params.id}&cluster_id=${state.node.id}&label=${state.node.year}`}>
+                                        <Button type="primary" shape="round" icon="download" disabled={!state.node.name}>
+                                            导出社区信息
+                                        </Button>
+                                    </a>
+                                </div>
+                            </div>
+                        )}>
+                        <Column width='25%' title="词汇" dataIndex="key" key="key"
+                            render={(text, record) => <div style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>{text}</div>} />
+                        <Column width='30%' title="Z-value" dataIndex="z_value" key="z_value"
+                            render={(text, record) => <div style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>{text}</div>}
+                            sorter={(a, b) => b.z_value - a.z_value} />
+                        <Column width='30%' title="P-value" dataIndex="p_value" key="p_value"
+                            render={(text, record) => <div style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>{text}</div>}
+                            sorter={(a, b) => b.p_value - a.p_value} />
+                        <Column title="词频" dataIndex="weight" key="weight"
+                            sorter={(a, b) => b.weight - a.weight} />
                     </Table>
-                </div>
+                        </div>*/}
             </div>
         )
     }

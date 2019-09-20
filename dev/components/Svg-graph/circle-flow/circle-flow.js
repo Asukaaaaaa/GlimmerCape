@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 
+import { Svg } from '../graph'
+
 import style from './circle-flow.css'
 
 const { cos, sin, PI } = Math,
@@ -88,9 +90,9 @@ export default class CircleFlow extends Component {
 
     render() {
         return (
-            <svg viewBox='0 0 20000 15000' preserveAspectRatio='xMinYMin meet' >
+            <Svg viewBox='0 0 20000 15000' preserveAspectRatio='xMinYMin meet' >
                 {this.Content()}
-            </svg>
+            </Svg>
         )
     }
 }

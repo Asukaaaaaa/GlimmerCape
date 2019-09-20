@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 
+import { Svg } from '../graph'
+
 import style from './scatter.css'
 
 export default class Scatter extends Component {
@@ -106,7 +108,7 @@ export default class Scatter extends Component {
         const { datas } = props, x = datas[state.index].range.xBase,
             w = datas[state.index].range.w, h = datas[state.index].range.h
         return (
-            <svg viewBox={`${x} 0 ${w} ${h}`} preserveAspectRatio='xMinYMin meet'
+            <Svg viewBox={`${x} 0 ${w} ${h}`} preserveAspectRatio='xMinYMin meet'
                 onWheel={e => {
                     let i = (e.deltaY < 0 ? -1 : 1) + state.index
                     i < 0 && (i = 0)
@@ -117,7 +119,7 @@ export default class Scatter extends Component {
                 {this.Infos()}
                 {this._Axis}
                 {this._Nodes}
-            </svg>
+            </Svg>
         )
     }
 }

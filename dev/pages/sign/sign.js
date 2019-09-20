@@ -10,7 +10,15 @@ class NormalLoginForm extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            sign: 'in'
+            sign: 'in',
+            user: {
+                "account": "xian",
+                "createTime": 1564385615000,
+                "password": "1212",
+                "phone": "18505637269",
+                "photo": "hhhhh",
+                "userId": 1
+            }
         }
 
         window.user_id = 1 //TODO
@@ -111,14 +119,13 @@ class NormalLoginForm extends React.Component {
                         valuePropName: 'checked',
                         initialValue: true,
                     })(<Checkbox>Remember me</Checkbox>)}
-                    <a className={style["login-form-forgot"]} onClick={e => this.props.handleSign({})}>
+                    <a className={style["login-form-forgot"]} onClick={e => this.props.handleSign(this.state.user)}>
                         Skip~~
                     </a>
                     <Button type="primary" htmlType="submit" className={style["login-form-button"]}>
                         Sign
                     </Button>
-                    Or <a
-                        onClick={() => this.setState({ sign: this.state.sign === 'in' ? 'up' : 'in' })}>
+                    Or <a onClick={() => this.setState({ sign: this.state.sign === 'in' ? 'up' : 'in' })}>
                         Sign {this.state.sign === 'in' ? 'up' : 'in'}!</a>
                 </Form.Item>
             </Form>
