@@ -376,7 +376,7 @@ export class Svg extends Component {
             y = box[1] + (box[3] - h) * focus[1]
         return `${x} ${y} ${w} ${h}`
     }
-
+ 
     render() {
         return (
             <svg {...this.props} viewBox={this.getViewBox()}
