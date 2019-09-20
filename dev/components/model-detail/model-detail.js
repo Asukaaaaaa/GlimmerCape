@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import { Tabs, Table, Icon, Button } from 'antd'
 const { TabPane } = Tabs, { Column } = Table
 
+import Charts from '../charts/charts'
 import SvgGraph from '../Svg-graph/graph'
 
 import { host } from '../../util'
@@ -46,7 +47,10 @@ export default class ModelDetail extends Component {
                         }}
                     />
                 </div>
-                <div className={style.table}>
+                <div className={style.right}>
+                    <Charts type='radar'/>
+                </div>
+                {/*<div className={style.table}>
                     <div>
                         <Icon type='bar-chart' />
                         <span>社区信息</span>
@@ -80,7 +84,7 @@ export default class ModelDetail extends Component {
                         <Column title="词频" dataIndex="weight" key="weight"
                             sorter={(a, b) => b.weight - a.weight} />
                     </Table>
-                </div>
+                        </div>*/}
             </div>
         )
     }
