@@ -8,6 +8,8 @@ import SvgGraph from '../Svg-graph/graph'
 
 import { host } from '../../util'
 import style from './model-detail.css'
+import radarData from '../../../static/radar.json'
+import forceData from '../../../static/2013.json'
 
 export default class ModelDetail extends Component {
     constructor(props) {
@@ -15,7 +17,6 @@ export default class ModelDetail extends Component {
 
         // TODO
         this.state = {
-            graph: 'sankey',
             node: {}
         }
     }
@@ -24,32 +25,37 @@ export default class ModelDetail extends Component {
         const { state } = this
         return (
             <div className={style.main}>
-                <div className={style.graph}>
-                    <Tabs defaultActiveKey={state.graph}
-                        onChange={key => {
-                            if (key === 'circle-flow' && !state.node.name)
-                                return
-                            this.setState({ graph: key })
-                        }}
-                        tabBarExtraContent={<span>{`${state.node.name || ''}.${state.node.year || ''}`}</span>}>
-                        <TabPane tab='网络流形' key="sankey" />
-                        <TabPane tab={<span><Icon type='dot-chart' />ZP分布</span>} key="scatter" />
-                        <TabPane tab={<span><Icon style={{ color: state.node.name ? '#1890ff' : '' }} type='dot-chart' />社区演化</span>} key="circle-flow" />
-                    </Tabs>
-                    <SvgGraph graph={state.graph} data={state.clusterData} id={this.props.match.params.id}
-                        handleSelectNode={info => {
-                            this.setState({ node: info })
-                            $.post(host + '/result/getPickedClusterInfo', {
-                                model_id: this.props.match.params.id,
-                                cluster_id: info.id,
-                                label: info.year
-                            }, res => res.resultDesc === 'Success' && this.setState({ clusterData: JSON.parse(res.data).cluster_nodes }))
-                        }}
-                    />
-                </div>
-                <div className={style.right}>
-                    <Charts type='radar'/>
-                </div>
+                <Tabs defaultActiveKey={'sankey'}
+                    tabBarExtraContent={<span>{`${state.node.name || ''}.${state.node.year || ''}`}</span>}>
+                    <TabPane tab='网络流形' key="sankey">
+                        <div className={style.container}>
+                            <div className={style.graph}>
+                                <SvgGraph graph='sankey' data={state.clusterData} id={this.props.match.params.id}
+                                    handleSelectNode={info => {
+                                        this.setState({ node: info })
+                                        $.post(host + '/result/getPickedClusterInfo', {
+                                            model_id: this.props.match.params.id,
+                                            cluster_id: info.id,
+                                            label: info.year
+                                        }, res => res.resultDesc === 'Success' && this.setState({ clusterData: JSON.parse(res.data).cluster_nodes }))
+                                    }}
+                                />
+                            </div>
+                            <div className={style.right}>
+                                <Charts type='radar' width='400' height='400' data={radarData} />
+                            </div>
+                        </div>
+                    </TabPane>
+                    <TabPane tab={<span><Icon type='dot-chart' />ZP分布</span>} key="scatter">
+                        <div className={style.container}>
+                            <Charts type='force' width='1000' height='800' data={forceData} />
+                        </div>
+                    </TabPane>
+                    <TabPane tab={<span><Icon style={{ color: state.node.name ? '#1890ff' : '' }} type='dot-chart' />社区演化</span>} key="circle-flow" >
+                        <SvgGraph graph='circle-flow' data={state.clusterData} id={this.props.match.params.id}/>
+                    </TabPane>
+                </Tabs>
+
                 {/*<div className={style.table}>
                     <div>
                         <Icon type='bar-chart' />

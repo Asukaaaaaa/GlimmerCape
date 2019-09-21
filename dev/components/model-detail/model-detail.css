@@ -1,46 +1,19 @@
 .main {
     height: calc(100% - 64px);
+}
+
+.container {
     display: flex;
 }
 
 .graph {
-    flex-basis: 64%;
+    min-width: 1000px;
+    width: calc(100% - 400px);
 }
-.graph > div:first-of-type {
-    height: 45px;
-    padding: 0 5px;
-}
-.graph > div:nth-of-type(2) {
+.graph > div {
     height: calc(100% - 50px);
 }
 
-.table {
-    flex-basis: 36%;
-    max-width: 36%;
-}
-.table > div:first-of-type {
-    height: 42px;
-    font-size: 18px;
-    text-align: center;
-}
-.table > div:nth-of-type(2) {
-    height: calc(100% - 42px);
-}
-
-.t-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.t-head-left > div:first-of-type {
-    font-size: 15px;
-}
-.t-head-left > div:not(:first-of-type) {
-    display: inline-block;
-    padding-right: 20px;
-    color: rgba(0,0,0,0.85);
-    font-size: 24px;
-}
-.t-head-right > a {
-    display: inline-block;
+.right {
+    width: 400px;
 }

@@ -274,7 +274,7 @@ export default class Graph extends Component {
     }
 
     init(props = this.props) {
-        let { graph } = props, data = this.data[graph]
+        let { graph } = props, data = this.data[graph] || props.data
         graph = {
             'sankey': SankeyGraph,
             'scatter': ScatterGraph,
