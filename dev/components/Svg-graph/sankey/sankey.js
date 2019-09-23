@@ -25,7 +25,7 @@ export default class Sankey extends Component {
         for (let i = minYear; i <= maxYear; ++i) {
             res.push(
                 <g key={i}>
-                    <rect x={piece * (i - minYear) + 10} y='0' width={piece - 20} height='200'></rect>
+                    <rect x={piece * (i - minYear) + 10} y='0' width={piece - 20} height='200' value={'' + i}></rect>
                     <text x={piece * (i - minYear + 0.5)} y='100'>{i}</text>
                 </g>
             )
@@ -145,7 +145,13 @@ export default class Sankey extends Component {
         const Head = this.Head(), Blocks = this.Blocks(), Belts = this.Belts()
         return (
             <Svg viewBox='0 0 20000 10000' preserveAspectRatio='xMinYMin meet'>
-                <g className={style.head}>{Head}</g>
+                <g className={style.head}
+                    onClick={e => {
+                        const v = e.target.getAttribute('value')
+                        v && this.props.that.props.setCtx({ on: 'GroupView', group: e.target.value })
+                    }}>
+                    {Head}
+                </g>
                 <g className={style.belts} onMouseOver={this.handleHoverBelt.bind(that)} onMouseOut={this.handleResetState.bind(that)}>{Belts}</g>
                 <g className={style.blocks} onClick={this.handleClickBlock.bind(this)} onMouseOver={this.handleHoverBlock.bind(that)} onMouseOut={this.handleResetState.bind(that)}>{Blocks}</g>
             </Svg>

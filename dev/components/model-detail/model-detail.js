@@ -11,51 +11,45 @@ import style from './model-detail.css'
 import radarData from '../../../static/radar.json'
 import forceData from '../../../static/2013.json'
 
-export default class ModelDetail extends Component {
-    constructor(props) {
-        super(props)
-
-        // TODO
-        this.state = {
-            node: {}
-        }
-    }
-
-    render() {
-        const { state } = this
-        return (
-            <div className={style.main}>
-                <Tabs defaultActiveKey={'sankey'}
-                    tabBarExtraContent={<span>{`${state.node.name || ''}.${state.node.year || ''}`}</span>}>
-                    <TabPane tab='网络流形' key="sankey">
-                        <div className={style.container}>
-                            <div className={style.graph}>
-                                <SvgGraph graph='sankey' data={state.clusterData} id={this.props.match.params.id}
-                                    handleSelectNode={info => {
-                                        this.setState({ node: info })
-                                        $.post(host + '/result/getPickedClusterInfo', {
-                                            model_id: this.props.match.params.id,
-                                            cluster_id: info.id,
-                                            label: info.year
-                                        }, res => res.resultDesc === 'Success' && this.setState({ clusterData: JSON.parse(res.data).cluster_nodes }))
-                                    }}
-                                />
-                            </div>
-                            <div className={style.right}>
-                                <Charts type='radar' width='400' height='400' data={radarData} />
-                            </div>
-                        </div>
-                    </TabPane>
-                    <TabPane tab={<span><Icon type='dot-chart' />ZP分布</span>} key="scatter">
-                        <div className={style.container}>
-                            <Charts type='force' width='1000' height='800' data={forceData} />
-                        </div>
-                    </TabPane>
-                    <TabPane tab={<span><Icon style={{ color: state.node.name ? '#1890ff' : '' }} type='dot-chart' />社区演化</span>} key="circle-flow" >
-                        <SvgGraph graph='circle-flow' data={state.clusterData} id={this.props.match.params.id}/>
-                    </TabPane>
-                </Tabs>
-
+const MainView = ({ mid, setCtx }) => {
+    return (
+        <div className={style.container}>
+            <div className={style.graph}>
+                <SvgGraph graph='sankey' mid={mid} setCtx={setCtx} />
+                {/*handleSelectNode={info => {
+                    this.setState({ node: info })
+                    $.post(host + '/result/getPickedClusterInfo', {
+                        model_id: this.props.match.params.id,
+                        cluster_id: info.id,
+                        label: info.year
+                    }, res => res.resultDesc === 'Success' && this.setState({ clusterData: JSON.parse(res.data).cluster_nodes }))
+                }}*/}
+            </div>
+            <div className={style.right}>
+                <Charts type='radar' width='400' height='300' data={radarData} />
+            </div>
+        </div>
+    )
+}
+const GroupView = () => {
+    return (
+        <div className={style.container}>
+            <div className={style.graph}>
+                <Charts type='force' width='1000' height='600' data={forceData} />
+            </div>
+            <div className={style.right}>
+                <SvgGraph graph='scatter' />
+            </div>
+        </div>
+    )
+}
+const ClusterView = () => {
+    return (
+        <div className={style.container}>
+            <div className={style.graph}>
+                <SvgGraph graph='circular' />
+            </div>
+            <div className={style.right}>
                 {/*<div className={style.table}>
                     <div>
                         <Icon type='bar-chart' />
@@ -91,6 +85,32 @@ export default class ModelDetail extends Component {
                             sorter={(a, b) => b.weight - a.weight} />
                     </Table>
                         </div>*/}
+            </div>
+        </div>
+    )
+}
+const Loading = () => (
+    <div>
+
+    </div>
+)
+
+export default class ModelDetail extends Component {
+    constructor(props) {
+        super(props)
+
+        this.views = { MainView, GroupView, ClusterView, Loading }
+        this.state = {
+            on: 'MainView',
+            mid: props.match.params.id,
+            setCtx: this.setState.bind(this)
+        }
+    }
+
+    render() {
+        return (
+            <div className={style.main}>
+                {this.views[this.state.on](this.state)}
             </div>
         )
     }

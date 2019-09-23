@@ -242,51 +242,50 @@ const CircleFlowGraph = {
 export default class Graph extends Component {
     constructor(props) {
         super(props)
+
         this.state = {
             active: false, ok: false,
         }
-        this.data = {}
-        Promise.all([
-            new Promise((resolve, reject) => $.post(host + '/result/getEvoFile', {
-                model_id: props.id
-            }, res => {
-                if (res.resultDesc === 'Success') {
-                    fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).then(res => {
-                        this.data.sankey = res
-                        resolve('sankey')
-                    })
-                }
-            })),
-            new Promise((resolve, reject) => $.post(host + '/result/getZpFile', {
-                model_id: props.id
-            }, res => {
-                if (res.resultDesc === 'Success') {
-                    fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).catch(console.log).then(res => {
-                        this.data.scatter = res
-                        resolve('scatter')
-                    })
-                }
-            }))]).then(vs => {
-                this.init()
-            })
-
         this.imgLoader = React.createRef()
     }
 
     init(props = this.props) {
-        let { graph } = props, data = this.data[graph] || props.data
-        graph = {
-            'sankey': SankeyGraph,
-            'scatter': ScatterGraph,
-            'circle-flow': CircleFlowGraph
-            // 'circular': CircularGraph,
-        }[graph]
-        if (graph) {
-            graph.init(this, data)
-            this.Content = graph.render.bind(graph)
-            this.viewPort = graph.viewPort
+        if (props.graph === 'sankey') {
+            new Promise((resolve, reject) => $.post(host + '/result/getEvoFile', {
+                model_id: props.mid
+            }, res => {
+                if (res.resultDesc === 'Success') {
+                    fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).then(res => {
+                        resolve(res)
+                    })
+                }
+            })).then(data => {
+                SankeyGraph.init(this, data)
+                this.Content = SankeyGraph.render.bind(SankeyGraph)
+                this.viewPort = SankeyGraph.viewPort
+                this.setState({ ok: true })
+            })
+        } else if (props.graph === 'scatter') {
+            new Promise((resolve, reject) => $.post(host + '/result/getZpFile', {
+                model_id: props.mid
+            }, res => {
+                if (res.resultDesc === 'Success') {
+                    fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).catch(console.log).then(res => {
+                        resolve(res)
+                    })
+                }
+            })).then(data => {
+                ScatterGraph.init(this, data)
+                this.Content = ScatterGraph.render.bind(ScatterGraph)
+                this.viewPort = ScatterGraph.viewPort
+                this.setState({ ok: true })
+            })
+        } else if (props.graph === 'circular') {
+            // todo
         }
-        this.setState({ ok: true })
+    }
+    componentDidMount() {
+        this.init()
     }
     componentWillReceiveProps(_) {
         this.init(_)
@@ -325,17 +324,17 @@ export default class Graph extends Component {
                     </a>
                 </div>
                 {Content()}
-                {state.active ?
+                {state.active &&
                     <div style={{ left: state.x, top: state.y }} className={style.follow}>
                         <span style={{ backgroundColor: this.nodes[state.src.name].color }} className={style[`${state.active.split('-')[0]}-f`]}></span>
                         <span>{`${state.src.name}.${state.src.year || ''}`}</span>
-                        {state.tar ?
+                        {state.tar &&
                             <span>
                                 {' ---->  '}
                                 <span>{`${state.tar.name}.${state.tar.year}`}</span>
-                            </span> : null}
+                            </span>}
                         {state.value ? ` : ${state.value.toFixed(2)}` : ''}
-                    </div> : null}
+                    </div>}
             </div>
         ) : (
                 null
@@ -401,7 +400,7 @@ export class Svg extends Component {
             y = box[1] + (box[3] - h) * focus[1] - h * bias[1]
         return `${x} ${y} ${w} ${h}`
     }
- 
+
     render() {
         return (
             <svg {...this.props} viewBox={this.getViewBox()}
