@@ -184,8 +184,8 @@ const ScatterGraph = {
  */
 
 const CircleFlowGraph = {
-    init(that) {
-        const nodes = that.props.data
+    init(that, data) {
+        const nodes = data
         const froms = [], _froms = [],
             tos = [], _tos = [],
             origins = {}, aims = {}
@@ -250,39 +250,30 @@ export default class Graph extends Component {
     }
 
     init(props = this.props) {
-        if (props.graph === 'sankey') {
-            new Promise((resolve, reject) => $.post(host + '/result/getEvoFile', {
-                model_id: props.mid
-            }, res => {
-                if (res.resultDesc === 'Success') {
-                    fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).then(res => {
-                        resolve(res)
-                    })
-                }
-            })).then(data => {
-                SankeyGraph.init(this, data)
-                this.Content = SankeyGraph.render.bind(SankeyGraph)
-                this.viewPort = SankeyGraph.viewPort
-                this.setState({ ok: true })
-            })
+        const graph = {
+            'sankey': SankeyGraph,
+            'scatter': ScatterGraph,
+            'circular': CircleFlowGraph
+        }[props.graph]
+        graph.init(this, props.data)
+        this.Content = graph.render.bind(graph)
+        this.viewPort = graph.viewPort
+        this.setState({ ok: true })
+        /* if (props.graph === 'sankey') {
+            SankeyGraph.init(this, props.data)
+            this.Content = SankeyGraph.render.bind(SankeyGraph)
+            this.viewPort = SankeyGraph.viewPort
+            this.setState({ ok: true })
         } else if (props.graph === 'scatter') {
-            new Promise((resolve, reject) => $.post(host + '/result/getZpFile', {
-                model_id: props.mid
-            }, res => {
-                if (res.resultDesc === 'Success') {
-                    fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).catch(console.log).then(res => {
-                        resolve(res)
-                    })
-                }
-            })).then(data => {
-                ScatterGraph.init(this, data)
-                this.Content = ScatterGraph.render.bind(ScatterGraph)
-                this.viewPort = ScatterGraph.viewPort
-                this.setState({ ok: true })
-            })
+            ScatterGraph.init(this, props.data)
+            this.Content = ScatterGraph.render.bind(ScatterGraph)
+            this.viewPort = ScatterGraph.viewPort
+            this.setState({ ok: true })
         } else if (props.graph === 'circular') {
+            CircleFlowGraph.init(this, props.data)
+            this.Content =
             // todo
-        }
+        }*/
     }
     componentDidMount() {
         this.init()

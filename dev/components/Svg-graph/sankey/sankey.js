@@ -148,7 +148,7 @@ export default class Sankey extends Component {
                 <g className={style.head}
                     onClick={e => {
                         const v = e.target.getAttribute('value')
-                        v && this.props.that.props.setCtx({ on: 'GroupView', group: e.target.value })
+                        v && this.props.that.props.setCtx({ on: 'GroupView', group: v })
                     }}>
                     {Head}
                 </g>

@@ -15,15 +15,7 @@ const MainView = ({ mid, setCtx }) => {
     return (
         <div className={style.container}>
             <div className={style.graph}>
-                <SvgGraph graph='sankey' mid={mid} setCtx={setCtx} />
-                {/*handleSelectNode={info => {
-                    this.setState({ node: info })
-                    $.post(host + '/result/getPickedClusterInfo', {
-                        model_id: this.props.match.params.id,
-                        cluster_id: info.id,
-                        label: info.year
-                    }, res => res.resultDesc === 'Success' && this.setState({ clusterData: JSON.parse(res.data).cluster_nodes }))
-                }}*/}
+                <SvgGraph graph='sankey' data={viewData.MainView} setCtx={setCtx} />
             </div>
             <div className={style.right}>
                 <Charts type='radar' width='400' height='300' data={radarData} />
@@ -31,23 +23,23 @@ const MainView = ({ mid, setCtx }) => {
         </div>
     )
 }
-const GroupView = () => {
+const GroupView = ({ mid, group, getClusterData }) => {
     return (
         <div className={style.container}>
             <div className={style.graph}>
-                <Charts type='force' width='1000' height='600' data={forceData} />
+                <Charts type='force' width='1000' height='600' data={forceData} getClusterData={getClusterData} />
             </div>
             <div className={style.right}>
-                <SvgGraph graph='scatter' />
+                <SvgGraph graph='scatter' data={[viewData.GroupView.find(v => v.label == group)]} />
             </div>
         </div>
     )
 }
-const ClusterView = () => {
+const ClusterView = ({ }) => {
     return (
         <div className={style.container}>
             <div className={style.graph}>
-                <SvgGraph graph='circular' />
+                <SvgGraph graph='circular' data={viewData.ClusterView} />
             </div>
             <div className={style.right}>
                 {/*<div className={style.table}>
@@ -95,6 +87,8 @@ const Loading = () => (
     </div>
 )
 
+const viewData = {}
+
 export default class ModelDetail extends Component {
     constructor(props) {
         super(props)
@@ -103,13 +97,55 @@ export default class ModelDetail extends Component {
         this.state = {
             on: 'MainView',
             mid: props.match.params.id,
-            setCtx: this.setState.bind(this)
+            setCtx: this.setState.bind(this),
+            getClusterData: this.getClusterData.bind(this)
         }
+        $.post(host + '/result/getEvoFile', {
+            model_id: this.state.mid
+        }, res => {
+            if (res.resultDesc === 'Success') {
+                fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).then(res => {
+                    viewData.MainView = res
+                    this.state.on === 'Loading' && this.setState({ on: 'MainView' })
+                })
+            }
+        })
+        $.post(host + '/result/getZpFile', {
+            model_id: this.state.mid
+        }, res => {
+            if (res.resultDesc === 'Success') {
+                fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).catch(console.log).then(res => {
+                    viewData.GroupView = res
+                    // this.state.on === 'Loading' && this.setState({ on: 'GroupView' })
+                })
+            }
+        })
+    }
+    componentDidMount() {
+        // todo
+    }
+    static getDerivedStateFromProps(props, state) {
+        viewData[state.on] || (state.on = 'Loading')
+        return state
+    }
+
+    getClusterData(cid) {
+        this.setState({ on: 'Loading' })
+        $.post(host + '/result/getPickedClusterInfo', {
+            model_id: this.state.mid,
+            cluster_id: cid,
+            label: this.state.group
+        }, res => {
+            if (res.resultDesc === 'Success') {
+                viewData.ClusterView = JSON.parse(res.data).cluster_nodes
+                this.setState({ on: 'ClusterView' })
+            }
+        })
     }
 
     render() {
         return (
-            <div className={style.main}>
+            <div className={style.main} >
                 {this.views[this.state.on](this.state)}
             </div>
         )

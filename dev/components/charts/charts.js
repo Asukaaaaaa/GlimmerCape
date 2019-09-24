@@ -17,11 +17,18 @@ export default class Charts extends PureComponent {
         const catagory = [], nodes = [], links = []
         this.props.data.forEach(v => {
             const srcId = nodes.length
+            const info = {
+                sNodeName: v.source_nodeName,
+                sNodeId: v.source_nodeID,
+                clusterName: v.clusterName,
+                clusterId: v.clusterId,
+            }
             nodes.push({
                 catagory: catagory.length - 1,
                 id: srcId,
                 name: v.source_nodeName,
-                value: 1
+                value: 1,
+                _origin_: info
             })
             v.target.forEach(t => {
                 links.push({
@@ -32,7 +39,8 @@ export default class Charts extends PureComponent {
                     catagory: catagory.length - 1,
                     id: nodes.length,
                     name: t.target_nodeName,
-                    value: 1
+                    value: 1,
+                    _origin_: info
                 })
             })
             catagory.push({
@@ -67,6 +75,12 @@ export default class Charts extends PureComponent {
                 },
                 edges: links
             }]
+        })
+        this.chart.on('click', params => {
+            if (params.componentType === "series" &&
+                params.componentSubType === "graph") {
+                this.props.getClusterData(params.data._origin_.clusterId)
+            }
         })
     }
     setRadar() {
