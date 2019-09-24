@@ -198,7 +198,7 @@ const CircleFlowGraph = {
                 if (origins[v.origin]) {
                     origins[v.origin].counts++
                 } else {
-                    const node = that.data.sankey.nodes.find(n => n.ID === v.origin)
+                    const node = that.sankey.nodes.find(n => n.ID === v.origin)
                     origins[v.origin] = {
                         name: node.name,
                         year: node.group,
@@ -214,7 +214,7 @@ const CircleFlowGraph = {
                 if (aims[v.aim]) {
                     aims[v.aim].counts++
                 } else {
-                    const node = that.data.sankey.nodes.find(n => n.ID === v.aim)
+                    const node = that.sankey.nodes.find(n => n.ID === v.aim)
                     aims[v.aim] = {
                         name: node.name,
                         year: node.group,
@@ -255,6 +255,10 @@ export default class Graph extends Component {
             'scatter': ScatterGraph,
             'circular': CircleFlowGraph
         }[props.graph]
+        if (props.graph === 'circular') {
+            this.sankey = props._data
+            SankeyGraph.init(this, props._data)
+        }
         graph.init(this, props.data)
         this.Content = graph.render.bind(graph)
         this.viewPort = graph.viewPort

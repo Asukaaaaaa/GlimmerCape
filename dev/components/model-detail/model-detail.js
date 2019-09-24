@@ -39,7 +39,7 @@ const ClusterView = ({ }) => {
     return (
         <div className={style.container}>
             <div className={style.graph}>
-                <SvgGraph graph='circular' data={viewData.ClusterView} />
+                <SvgGraph graph='circular' data={viewData.ClusterView} _data={viewData.MainView} />
             </div>
             <div className={style.right}>
                 {/*<div className={style.table}>
