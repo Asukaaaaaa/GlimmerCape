@@ -7,81 +7,124 @@ export default class Charts extends PureComponent {
         super(props)
         this.canvas = React.createRef()
         this.maps = {
+            'dbMap': this.setDbMap.bind(this),
             'force': this.setForce.bind(this),
             'radar': this.setRadar.bind(this)
         }
     }
 
-    setForce() {
-        this.chart.showLoading();
-        const catagory = [], nodes = [], links = []
+    setDbMap() {
+        const clusters = []
         this.props.data.forEach(v => {
-            const srcId = nodes.length
-            const info = {
-                sNodeName: v.source_nodeName,
-                sNodeId: v.source_nodeID,
-                clusterName: v.clusterName,
-                clusterId: v.clusterId,
-            }
-            nodes.push({
-                catagory: catagory.length - 1,
-                id: srcId,
-                name: v.source_nodeName,
-                value: 1,
-                _origin_: info
-            })
+            let pclst = clusters.findIndex(clst => clst.name === v.clusterName)
+            pclst === -1 &&
+                (pclst = clusters.push({
+                    name: v.clusterName,
+                    id: v.clusterId,
+                    label: {
+                        show: true
+                    },
+                    nodes: [],
+                    links: []
+                }) - 1)
+            const clst = clusters[pclst]
+            clst.nodes[v.source_nodeName] ||
+                ((clst.nodes[v.source_nodeName] = true) &&
+                    clst.nodes.push({
+                        catagory: pclst,
+                        name: v.source_nodeName,
+                        id: v.source_nodeID,
+                        symbolSize: 5,
+                    }));
             v.target.forEach(t => {
-                links.push({
-                    source: srcId,
-                    target: nodes.length
-                })
-                nodes.push({
-                    catagory: catagory.length - 1,
-                    id: nodes.length,
-                    name: t.target_nodeName,
-                    value: 1,
-                    _origin_: info
-                })
+                clst.nodes[t.target_nodeName] ||
+                    ((clst.nodes[t.target_nodeName] = true) &&
+                        clst.nodes.push({
+                            catagory: pclst,
+                            name: t.target_nodeName,
+                            id: t.target_nodeID,
+                            symbolSize: 5,
+                        }));
+                (clst.links[`${v.source_nodeName}_${t.target_nodeName}`] &&
+                    clst.links[`${v.target_nodeName}_${t.source_nodeName}`]) ||
+                    ((clst.links[`${v.source_nodeName}_${t.target_nodeName}`] = true) &&
+                        clst.links.push({
+                            // id: clst.links.length,
+                            source: v.source_nodeName,
+                            target: t.target_nodeName
+                        }));
             })
-            catagory.push({
-                name: v.clusterName,
-                keyword: {}
-            })
+            clst.catagory = pclst
+            clst.symbolSize = Math.sqrt(clst.nodes.length) + 15
         })
-        this.chart.hideLoading()
-        this.chart.setOption({
-            legend: {
-                data: this.props.data.map(v => v.clusterName)
-            },
+        const categories = clusters.map(v => ({ name: v.name }))
+        const option = {
+            legend: [{
+                type: 'scroll',
+                left: 'left',
+                orient: 'vertical',
+                data: categories.map(ctgr => ctgr.name),
+            }],
             series: [{
+                name: "cluster map",
                 type: 'graph',
                 layout: 'force',
-                animation: false,
-                label: {
+                force: {
+                    // 使用默认值
+                },
+                zlevel: 0,
+                data: clusters,
+                links: [],
+                categories,
+                roam: true,
+                focusNodeAdjacency: true,
+                itemStyle: {
                     normal: {
-                        position: 'right',
-                        formatter: '{b}'
+                        borderColor: '#fff',
+                        borderWidth: 1,
+                        shadowBlur: 10,
+                        shadowColor: 'rgba(0, 0, 0, 0.3)'
                     }
                 },
-                draggable: false,
-                data: nodes,
-                categories: catagory,
-                force: {
-                    // initLayout: 'circular'
-                    // repulsion: 20,
-                    edgeLength: 5,
-                    repulsion: 20,
-                    gravity: 0.2
+                lineStyle: {
+                    color: 'source',
+                    curveness: 0.3
                 },
-                edges: links
+                emphasis: {
+                    lineStyle: {
+                        width: 10
+                    }
+                }
             }]
-        })
+        }
+        this.chart.setOption(option)
         this.chart.on('click', params => {
-            if (params.componentType === "series" &&
-                params.componentSubType === "graph") {
-                this.props.getClusterData(params.data._origin_.clusterId)
+            if (params.seriesName === 'cluster map') {
+                this.chart.showLoading()
+                if (option.series[1]) {
+                    delete option.series[1]
+                } else {
+                    const clst = clusters.find(v => v.name === params.data.name), series = option.series[1]
+                    option.series[1] = {
+                        name: 'cluster map2',
+                        type: 'graph',
+                        layout: 'force',
+                        force: {},
+                        zlevel: 1,
+                        data: clst.nodes,
+                        links: clst.links,
+                        categories,
+                        roam: true,
+                        focusNodeAdjacency: true,
+                    }
+                }
+                this.chart.setOption(option)
+                this.chart.hideLoading()
             }
         })
+    }
+    setForce() {
+        // todo
     }
     setRadar() {
         this.chart.setOption({
@@ -90,10 +133,11 @@ export default class Charts extends PureComponent {
             },
             tooltip: {},
             legend: {
-                data: this.props.data.map(v => v.label)
+                data: this.props.data.map(v => v.label),
+                left: 'left',
+                orient: 'vertical'
             },
             radar: {
-                // shape: 'circle',
                 name: {
                     textStyle: {
                         color: '#fff',
@@ -112,9 +156,8 @@ export default class Charts extends PureComponent {
                 ]
             },
             series: [{
-                name: '预算 vs 开销（Budget vs spending）',
+                name: '',
                 type: 'radar',
-                // areaStyle: {normal: {}},
                 data: this.props.data.map(v => ({
                     value: [v.edge_num, v.max_degree, v.density, v.coummunity_num, v.node_num, v.average_degree], // todo
                     name: v.label
@@ -125,7 +168,9 @@ export default class Charts extends PureComponent {
 
     init() {
         this.chart = echarts.init(this.canvas.current)//, null, {renderer: 'svg'})
+        this.chart.showLoading()
         this.maps[this.props.type]()
+        this.chart.hideLoading()
     }
     componentDidMount() {
         this.init()

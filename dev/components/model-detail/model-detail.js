@@ -27,7 +27,7 @@ const GroupView = ({ mid, group, getClusterData }) => {
     return (
         <div className={style.container}>
             <div className={style.graph}>
-                <Charts type='force' width='1000' height='600' data={forceData} getClusterData={getClusterData} />
+                <Charts type='dbMap' width='1000' height='600' data={forceData} getClusterData={getClusterData} />
             </div>
             <div className={style.right}>
                 <SvgGraph graph='scatter' data={[viewData.GroupView.find(v => v.label == group)]} />
