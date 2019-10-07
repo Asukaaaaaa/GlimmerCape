@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 
-import { Tabs, Table, Icon, Button } from 'antd'
-const { TabPane } = Tabs, { Column } = Table
+import { Tabs, Table, Icon, Button, Steps } from 'antd'
+const { TabPane } = Tabs, { Column } = Table, { Step } = Steps
 
 import Charts from '../charts/charts'
 import SvgGraph from '../Svg-graph/graph'
@@ -144,10 +144,17 @@ export default class ModelDetail extends Component {
     }
 
     render() {
+        const steps = ['MainView', 'GroupView', 'ClusterView']
         return (
             <div className={style.main} >
+                <Steps className={style.steps}
+                    current={steps.indexOf(this.state.on)} onChange={s => this.setState({ on: steps[s] })}>
+                    <Step title="Main" description="" />
+                    <Step title="Group" description="" />
+                    <Step title="Cluster" description="" />
+                </Steps>
                 {this.views[this.state.on](this.state)}
-            </div>
+            </div >
         )
     }
 }
