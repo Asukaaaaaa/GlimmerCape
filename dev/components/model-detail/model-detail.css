@@ -1,9 +1,18 @@
 .main {
     height: calc(100% - 64px);
+    position: relative;
 }
 
 .container {
     display: flex;
+}
+
+.steps {
+    position: absolute;
+    top: -45px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 450px;
 }
 
 .graph {
