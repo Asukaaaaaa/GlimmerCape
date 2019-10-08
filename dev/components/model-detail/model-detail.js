@@ -15,10 +15,10 @@ const MainView = ({ mid, setCtx }) => {
     return (
         <div className={style.container}>
             <div className={style.graph}>
-                <SvgGraph graph='sankey' data={viewData.MainView} setCtx={setCtx} />
+                <SvgGraph graph='sankey' data={viewData.MainView[1]} setCtx={setCtx} />
             </div>
             <div className={style.right}>
-                <Charts type='radar' width='400' height='300' data={radarData} />
+                <Charts type='radar' width='400' height='300' data={viewData.MainView[0]} />
             </div>
         </div>
     )
@@ -27,10 +27,10 @@ const GroupView = ({ mid, group, getClusterData }, that) => {
     return (
         <div className={style.container}>
             <div className={style.graph}>
-                <Charts type='dbMap' width='1000' height='600' data={forceData} getClusterData={getClusterData.bind(that)} />
+                <Charts type='dbMap' width='1000' height='600' data={viewData.GroupView[0]} getClusterData={getClusterData.bind(that)} />
             </div>
             <div className={style.right}>
-                <SvgGraph graph='scatter' data={[viewData.GroupView.find(v => v.label == group)]} />
+                <SvgGraph graph='scatter' data={[viewData.GroupView[1].find(v => v.label == group)]} />
             </div>
         </div>
     )
@@ -97,32 +97,66 @@ export default class ModelDetail extends Component {
         this.state = {
             on: 'MainView',
             mid: props.match.params.id,
-            setCtx: this.setState.bind(this),
+            setCtx: obj => {
+                this.setState(obj)
+                Promise.all([
+                    new Promise((resolve, reject) => {
+                        $.post(host + '/result/getGraphInfo', {
+                            model_id: this.state.mid,
+                            label: obj.group
+                        }, res => {
+                            if (res.resultDesc === 'Success') {
+                                fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).catch(console.log).then(res => {
+                                    resolve(res)
+                                })
+                            }
+                        })
+                    }),
+                    new Promise((resolve, reject) => {
+                        $.post(host + '/result/getZpFile', {
+                            model_id: this.state.mid
+                        }, res => {
+                            if (res.resultDesc === 'Success') {
+                                fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).catch(console.log).then(res => {
+                                    resolve(res)
+                                })
+                            }
+                        })
+                    })]).then(val => {
+                        viewData.GroupView = val
+                        this.state.on === 'Loading' && this.setState({ on: 'GroupView' })
+                    })
+            },
             getClusterData: this.getClusterData.bind(this)
         }
-        $.post(host + '/result/getEvoFile', {
-            model_id: this.state.mid
-        }, res => {
-            if (res.resultDesc === 'Success') {
-                fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).then(res => {
-                    viewData.MainView = res
-                    this.state.on === 'Loading' && this.setState({ on: 'MainView' })
-                })
-            }
-        })
-        $.post(host + '/result/getZpFile', {
-            model_id: this.state.mid
-        }, res => {
-            if (res.resultDesc === 'Success') {
-                fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).catch(console.log).then(res => {
-                    viewData.GroupView = res
-                    // this.state.on === 'Loading' && this.setState({ on: 'GroupView' })
-                })
-            }
-        })
     }
     componentDidMount() {
-        // todo
+        Promise.all([
+            new Promise((resolve, reject) => {
+                $.post(host + '/result/getRadarPath', {
+                    model_id: this.state.mid
+                }, res => {
+                    if (res.resultDesc === 'Success') {
+                        fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).then(res => {
+                            resolve(res)
+                        })
+                    }
+                })
+            }),
+            new Promise((resolve, reject) => {
+                $.post(host + '/result/getEvoFile', {
+                    model_id: this.state.mid
+                }, res => {
+                    if (res.resultDesc === 'Success') {
+                        fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).then(res => {
+                            resolve(res)
+                        })
+                    }
+                })
+            })]).then(val => {
+                viewData.MainView = val
+                this.state.on === 'Loading' && this.setState({ on: 'MainView' })
+            })
     }
     static getDerivedStateFromProps(props, state) {
         viewData[state.on] || (state.on = 'Loading')

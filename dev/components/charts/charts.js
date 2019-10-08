@@ -29,8 +29,8 @@ export default class Charts extends PureComponent {
                     links: []
                 }) - 1)
             const clst = clusters[pclst]
-            if (!isNumber(clst.nodes[v.source_nodeName])) {
-                clst.nodes[v.source_nodeName] = clst.nodes.length
+            if (!isNumber(clst.nodes['n' + v.source_nodeName])) {
+                clst.nodes['n' + v.source_nodeName] = clst.nodes.length
                 clst.nodes.push({
                     catagory: pclst,
                     name: v.source_nodeName,
@@ -39,8 +39,8 @@ export default class Charts extends PureComponent {
                 })
             }
             v.target.forEach(t => {
-                if (!isNumber(clst.nodes[t.target_nodeName])) {
-                    clst.nodes[t.target_nodeName] = clst.nodes.length
+                if (!isNumber(clst.nodes['n' + t.target_nodeName])) {
+                    clst.nodes['n' + t.target_nodeName] = clst.nodes.length
                     clst.nodes.push({
                         catagory: pclst,
                         name: t.target_nodeName,
@@ -51,10 +51,10 @@ export default class Charts extends PureComponent {
                         },
                     })
                 }
-                if (!(clst.links[`${v.source_nodeName}_${t.target_nodeName}`] &&
-                    clst.links[`${v.target_nodeName}_${t.source_nodeName}`])) {
-                    clst.links[`${v.source_nodeName}_${t.target_nodeName}`] = true
-                    const ps = clst.nodes[v.source_nodeName], pt = clst.nodes[t.target_nodeName]
+                if (!(clst.links[`${'n' + v.source_nodeName}_${'n' + t.target_nodeName}`] &&
+                    clst.links[`${'n' + v.target_nodeName}_${'n' + t.source_nodeName}`])) {
+                    clst.links[`${'n' + v.source_nodeName}_${'n' + t.target_nodeName}`] = true
+                    const ps = clst.nodes['n' + v.source_nodeName], pt = clst.nodes['n' + t.target_nodeName]
                     clst.links.push({
                         source: ps,
                         target: pt
