@@ -8,6 +8,7 @@ import SvgGraph from '../Svg-graph/graph'
 
 import { host } from '../../util'
 import style from './model-detail.css'
+import ClusterData from '../../../static/cluster.json'
 
 const MainView = ({ setCtx, group }) => {
     return (
@@ -47,7 +48,7 @@ const ClusterView = ({ }) => {
     return (
         <div className={style.container}>
             <div className={style.graph}>
-                <SvgGraph graph='circular' data={viewData.ClusterView} _data={viewData.MainView} />
+                <SvgGraph graph='circular' data={viewData.ClusterView.cluster_nodes} _data={viewData.MainView[1]} />
             </div>
             <div className={style.right}>
                 <div>
@@ -60,7 +61,7 @@ const ClusterView = ({ }) => {
                 <div><span>密度</span></div>
                 <div><span>平均度</span></div>
                 <div><span>最大度</span></div>
-                <Table dataSource={viewData.ClusterView.cluster_nodes} bordered pagination={false} scroll={{ y: 300 }}>
+                <Table dataSource={viewData.ClusterView.cluster_nodes} bordered pagination={false} scroll={{ y: 600 }}>
                     <Column width='30%' title="词汇" dataIndex="key" key="key"
                         render={(text, record) => <div style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>{text}</div>} />
                     <Column width='30%' title="Z-value" dataIndex="z_value" key="z_value"

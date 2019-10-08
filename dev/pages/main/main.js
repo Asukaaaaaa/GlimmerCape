@@ -15,8 +15,6 @@ import style from './main.css'
 
 import { ClassNames } from '../../util'
 
-import CircleFlowData from '../../../static/circle-flow.json'
-
 export default class Main extends Component {
     constructor(props) {
         super(props)
