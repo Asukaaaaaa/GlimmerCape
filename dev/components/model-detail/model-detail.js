@@ -9,7 +9,7 @@ import SvgGraph from '../Svg-graph/graph'
 import { host } from '../../util'
 import style from './model-detail.css'
 
-const MainView = ({ mid, setCtx, cluster }) => {
+const MainView = ({ setCtx, group }) => {
     return (
         <div className={style.container}>
             <div className={style.graph}>
@@ -18,28 +18,20 @@ const MainView = ({ mid, setCtx, cluster }) => {
             <div className={style.right}>
                 <Charts type='radar' width='400' height='300' data={viewData.MainView[0]} />
                 <div className={style.table}>
-                    <div>
-                        <Icon type='bar-chart' />
-                        <span>社区信息</span>
-                    </div>
-                    <Table dataSource={cluster && cluster.cluster_nodes} bordered pagination={false} scroll={{ y: 300 }}>
-                        <Column width='30%' title="词汇" dataIndex="key" key="key"
+                    <Table dataSource={null} bordered pagination={false} scroll={{ y: 300 }}>
+                        <Column width='30%' title="词汇" dataIndex="word" key="0"
                             render={(text, record) => <div style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>{text}</div>} />
-                        <Column width='30%' title="Z-value" dataIndex="z_value" key="z_value"
-                            render={(text, record) => <span>{record.z_value.toFixed(5) + '...'}</span>}
-                            sorter={(a, b) => b.z_value - a.z_value} />
-                        <Column width='30%' title="P-value" dataIndex="p_value" key="p_value"
-                            render={(text, record) => <span>{record.p_value.toFixed(5) + '...'}</span>}
-                            sorter={(a, b) => b.p_value - a.p_value} />
-                        <Column width='10%' title="词频" dataIndex="weight" key="weight"
-                            sorter={(a, b) => b.weight - a.weight} />
+                        <Column width='30%' title="2013" dataIndex="2013" key="1"
+                            sorter={(a, b) => b['2013'] - a['2013']} />
+                        <Column width='30%' title="2014" dataIndex="2014" key="2"
+                            sorter={(a, b) => b['2014'] - a['2014']} />
                     </Table>
                 </div>
             </div>
         </div>
     )
 }
-const GroupView = ({ mid, group, setCtx }) => {
+const GroupView = ({ group, setCtx }) => {
     return (
         <div className={style.container}>
             <div className={style.graph}>
@@ -58,13 +50,34 @@ const ClusterView = ({ }) => {
                 <SvgGraph graph='circular' data={viewData.ClusterView} _data={viewData.MainView} />
             </div>
             <div className={style.right}>
-
+                <div>
+                    <Icon type='bar-chart' />
+                    <span>社区信息</span>
+                </div>
+                <div><span>年份</span></div>
+                <div><span>节点数</span></div>
+                <div><span>边数</span></div>
+                <div><span>密度</span></div>
+                <div><span>平均度</span></div>
+                <div><span>最大度</span></div>
+                <Table dataSource={viewData.ClusterView.cluster_nodes} bordered pagination={false} scroll={{ y: 300 }}>
+                    <Column width='30%' title="词汇" dataIndex="key" key="key"
+                        render={(text, record) => <div style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>{text}</div>} />
+                    <Column width='30%' title="Z-value" dataIndex="z_value" key="z_value"
+                        render={(text, record) => <span>{record.z_value.toFixed(5) + '...'}</span>}
+                        sorter={(a, b) => b.z_value - a.z_value} />
+                    <Column width='30%' title="P-value" dataIndex="p_value" key="p_value"
+                        render={(text, record) => <span>{record.p_value.toFixed(5) + '...'}</span>}
+                        sorter={(a, b) => b.p_value - a.p_value} />
+                    <Column width='10%' title="词频" dataIndex="weight" key="weight"
+                        sorter={(a, b) => b.weight - a.weight} />
+                </Table>
             </div>
         </div>
     )
 }
 const Loading = () => (
-    <Spin style={{ height: '100%' }} indicator={<Icon type="loading" style={{ fontSize: 24 }} spin />} ></Spin>
+    <Spin className={style.loading} indicator={<Icon type="loading" style={{ fontSize: 24 }} spin />} />
 )
 
 const viewData = {}
@@ -77,7 +90,7 @@ export default class ModelDetail extends Component {
         this.state = {
             on: 'MainView',
             mid: props.match.params.id,
-            setCtx: (obj, mode) => {
+            setCtx: ((obj, mode) => {
                 if (mode === 'SetGroup') {
                     this.setState({
                         on: 'Loading',
@@ -110,20 +123,8 @@ export default class ModelDetail extends Component {
                             viewData.GroupView = val
                             this.setState({ on: 'GroupView' })
                         })
-                } else if (mode === 'PickCluster') {
-                    this.setState({ loadPickedCluster: true })
-                    $.post(host + '/result/getPickedClusterInfo', {
-                        model_id: this.state.mid,
-                        cluster_id: obj.cluster.id,
-                        label: obj.cluster.year
-                    }, res => {
-                        if (res.resultDesc === 'Success') {
-                            this.setState({
-                                loadPickedCluster: false,
-                                cluster: JSON.parse(res.data)
-                            })
-                        }
-                    })
+                } else if (mode === 'GetCoword') {
+                    // todo
                 } else if (mode === 'GetCluster') { // todo
                     this.setState({ on: 'Loading' })
                     $.post(host + '/result/getPickedClusterInfo', {
@@ -137,7 +138,7 @@ export default class ModelDetail extends Component {
                         }
                     })
                 }
-            }
+            }).bind(this)
         }
     }
     componentDidMount() {
@@ -157,6 +158,18 @@ export default class ModelDetail extends Component {
             new Promise((resolve, reject) => {
                 $.post(host + '/result/getEvoFile', {
                     model_id: this.state.mid
+                }, res => {
+                    if (res.resultDesc === 'Success') {
+                        fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).then(res => {
+                            resolve(res)
+                        })
+                    }
+                })
+            }),
+            new Promise((resolve, reject) => {
+                $.post(host + '/result/getCoword', {
+                    model_id: this.state.mid,
+                    // label: '2013'
                 }, res => {
                     if (res.resultDesc === 'Success') {
                         fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).then(res => {
