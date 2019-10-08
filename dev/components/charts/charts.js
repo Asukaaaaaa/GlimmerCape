@@ -114,34 +114,30 @@ export default class Charts extends PureComponent {
         this.chart.on('click', params => {
             if (params.seriesName === 'cluster map') {
                 this.chart.showLoading()
-                if (option.series[1]) {
-                    delete option.legend[1]
-                    delete option.series[1]
-                } else {
-                    const clst = clusters.find(v => v.name === params.data.name)
-                    this.clst = clst
-                    option.legend[1] = {
-                        show: false,
-                        selected: {
-                            'cluster map': false,
-                            'cluster map2': true
-                        }
-                    }
-                    option.series[1] = {
-                        name: 'cluster map2',
-                        type: 'graph',
-                        layout: 'force',
-                        force: {
-                            edgeLength: [10, 500],
-                            layoutAnimation: false
-                        },
-                        zlevel: 1,
-                        data: clst.nodes,
-                        links: clst.links,
-                        categories,
-                        roam: true,
-                        focusNodeAdjacency: true,
-                    }
+                const clst = clusters.find(v => v.name === params.data.name)
+                this.clst = clst
+                option.legend[1] = {
+                    show: true,
+                    left: 'center',
+                    selectedMode: 'single',
+                    selected: { 'cluster map': false, 'cluster map2': true },
+                    data: ['cluster map', 'cluster map2']
+                }
+                option.series[1] = {
+                    name: 'cluster map2',
+                    type: 'graph',
+                    layout: 'force',
+                    force: {
+                        repulsion: [1, 100],
+                        edgeLength: [10, 500],
+                        layoutAnimation: false
+                    },
+                    zlevel: 1,
+                    data: clst.nodes,
+                    links: clst.links,
+                    categories,
+                    roam: true,
+                    focusNodeAdjacency: true,
                 }
                 this.chart.setOption(option)
                 this.chart.hideLoading()
