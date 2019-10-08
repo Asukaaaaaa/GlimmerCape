@@ -142,8 +142,9 @@ export default class Charts extends PureComponent {
                 this.chart.setOption(option)
                 this.chart.hideLoading()
             } else if (params.seriesName === 'cluster map2') {
-                this.chart.showLoading()
-                this.props.getClusterData(this.clst.id)
+                this.props.setCtx({
+                    id: params.data.id
+                }, 'GetCluster')
             }
         })
     }
@@ -171,12 +172,12 @@ export default class Charts extends PureComponent {
                     }
                 },
                 indicator: [
-                    { name: '（edge_num）', max: this.props.data.reduce((acc, v) => acc > v.edge_num ? acc : v.edge_num, 0) },
-                    { name: '（max_degree', max: this.props.data.reduce((acc, v) => acc > v.max_degree ? acc : v.max_degree, 0) },
-                    { name: '（density）', max: this.props.data.reduce((acc, v) => acc > v.density ? acc : v.density, 0) },
-                    { name: '（community_num）', max: this.props.data.reduce((acc, v) => acc > v.coummunity_num ? acc : v.coummunity_num, 0) },
-                    { name: '（node_num）', max: this.props.data.reduce((acc, v) => acc > v.node_num ? acc : v.node_num, 0) },
-                    { name: '（average_degree）', max: this.props.data.reduce((acc, v) => acc > v.average_degree ? acc : v.average_degree, 0) }
+                    { name: '边数', max: this.props.data.reduce((acc, v) => acc > v.edge_num ? acc : v.edge_num, 0) },
+                    { name: '最大度', max: this.props.data.reduce((acc, v) => acc > v.max_degree ? acc : v.max_degree, 0) },
+                    { name: '密度', max: this.props.data.reduce((acc, v) => acc > v.density ? acc : v.density, 0) },
+                    { name: '社区数', max: this.props.data.reduce((acc, v) => acc > v.coummunity_num ? acc : v.coummunity_num, 0) },
+                    { name: '节点数', max: this.props.data.reduce((acc, v) => acc > v.node_num ? acc : v.node_num, 0) },
+                    { name: '平均度', max: this.props.data.reduce((acc, v) => acc > v.average_degree ? acc : v.average_degree, 0) }
                 ]
             },
             series: [{

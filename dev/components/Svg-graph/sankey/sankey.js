@@ -121,7 +121,7 @@ export default class Sankey extends Component {
     }
     handleClickBlock(e) {
         const { that, nodes } = this.props, info = JSON.parse(e.target.parentNode.getAttribute('name')).src
-        that.props.handleSelectNode(info)
+        that.props.setCtx({ cluster: info }, 'PickCluster')
     }
     handleHoverBlock(e) {
         this.setState({
@@ -148,7 +148,7 @@ export default class Sankey extends Component {
                 <g className={style.head}
                     onClick={e => {
                         const v = e.target.getAttribute('value')
-                        v && this.props.that.props.setCtx({ on: 'GroupView', group: v })
+                        v && this.props.that.props.setCtx({ group: v }, 'SetGroup')
                     }}>
                     {Head}
                 </g>

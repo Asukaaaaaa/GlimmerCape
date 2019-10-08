@@ -353,8 +353,8 @@ export class Svg extends Component {
         this.svg.current.addEventListener('wheel',
             _.throttle(this.viewScale.bind(this), 33),
             { passive: false })
-        const f = this.viewMove.bind(this)
-        this.svg.current.onmousedown = this.svg.current.onmouseup = f
+        // const f = this.viewMove.bind(this)
+        // this.svg.current.onmousedown = this.svg.current.onmouseup = f
         /* this.svg.current.addEventListener('mousemove',
             _.throttle(f, 33),
             { passive: false }

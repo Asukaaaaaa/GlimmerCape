@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import { Tabs, Table, Icon, Button, Steps } from 'antd'
+import { Tabs, Table, Icon, Button, Steps, Spin } from 'antd'
 const { TabPane } = Tabs, { Column } = Table, { Step } = Steps
 
 import Charts from '../charts/charts'
@@ -8,10 +8,8 @@ import SvgGraph from '../Svg-graph/graph'
 
 import { host } from '../../util'
 import style from './model-detail.css'
-import radarData from '../../../static/radar.json'
-import forceData from '../../../static/2013.json'
 
-const MainView = ({ mid, setCtx }) => {
+const MainView = ({ mid, setCtx, cluster }) => {
     return (
         <div className={style.container}>
             <div className={style.graph}>
@@ -19,15 +17,33 @@ const MainView = ({ mid, setCtx }) => {
             </div>
             <div className={style.right}>
                 <Charts type='radar' width='400' height='300' data={viewData.MainView[0]} />
+                <div className={style.table}>
+                    <div>
+                        <Icon type='bar-chart' />
+                        <span>社区信息</span>
+                    </div>
+                    <Table dataSource={cluster && cluster.cluster_nodes} bordered pagination={false} scroll={{ y: 300 }}>
+                        <Column width='30%' title="词汇" dataIndex="key" key="key"
+                            render={(text, record) => <div style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>{text}</div>} />
+                        <Column width='30%' title="Z-value" dataIndex="z_value" key="z_value"
+                            render={(text, record) => <span>{record.z_value.toFixed(5) + '...'}</span>}
+                            sorter={(a, b) => b.z_value - a.z_value} />
+                        <Column width='30%' title="P-value" dataIndex="p_value" key="p_value"
+                            render={(text, record) => <span>{record.p_value.toFixed(5) + '...'}</span>}
+                            sorter={(a, b) => b.p_value - a.p_value} />
+                        <Column width='10%' title="词频" dataIndex="weight" key="weight"
+                            sorter={(a, b) => b.weight - a.weight} />
+                    </Table>
+                </div>
             </div>
         </div>
     )
 }
-const GroupView = ({ mid, group, getClusterData }, that) => {
+const GroupView = ({ mid, group, setCtx }) => {
     return (
         <div className={style.container}>
             <div className={style.graph}>
-                <Charts type='dbMap' width='1000' height='600' data={viewData.GroupView[0]} getClusterData={getClusterData.bind(that)} />
+                <Charts type='dbMap' width='1000' height='600' data={viewData.GroupView[0]} setCtx={setCtx} />
             </div>
             <div className={style.right}>
                 <SvgGraph graph='scatter' data={[viewData.GroupView[1].find(v => v.label == group)]} />
@@ -42,49 +58,13 @@ const ClusterView = ({ }) => {
                 <SvgGraph graph='circular' data={viewData.ClusterView} _data={viewData.MainView} />
             </div>
             <div className={style.right}>
-                {/*<div className={style.table}>
-                    <div>
-                        <Icon type='bar-chart' />
-                        <span>社区信息</span>
-                    </div>
-                    <Table dataSource={state.clusterData} bordered pagination={false} scroll={{ y: 480 }}
-                        title={() => (
-                            <div className={style['t-head']}>
-                                <div className={style['t-head-left']}>
-                                    <div>{state.node.name}</div>
-                                    <div>{state.node.year}</div>
-                                    <div>{state.node.num}</div>
-                                </div>
-                                <div className={style['t-head-right']}>
-                                    <a download={`${state.node.year}_${state.node.name}`}
-                                        href={`${host}/result/ExportClusterInfo?model_id=${this.props.match.params.id}&cluster_id=${state.node.id}&label=${state.node.year}`}>
-                                        <Button type="primary" shape="round" icon="download" disabled={!state.node.name}>
-                                            导出社区信息
-                                        </Button>
-                                    </a>
-                                </div>
-                            </div>
-                        )}>
-                        <Column width='25%' title="词汇" dataIndex="key" key="key"
-                            render={(text, record) => <div style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>{text}</div>} />
-                        <Column width='30%' title="Z-value" dataIndex="z_value" key="z_value"
-                            render={(text, record) => <div style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>{text}</div>}
-                            sorter={(a, b) => b.z_value - a.z_value} />
-                        <Column width='30%' title="P-value" dataIndex="p_value" key="p_value"
-                            render={(text, record) => <div style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>{text}</div>}
-                            sorter={(a, b) => b.p_value - a.p_value} />
-                        <Column title="词频" dataIndex="weight" key="weight"
-                            sorter={(a, b) => b.weight - a.weight} />
-                    </Table>
-                        </div>*/}
+
             </div>
         </div>
     )
 }
 const Loading = () => (
-    <div>
-
-    </div>
+    <Spin style={{ height: '100%' }} indicator={<Icon type="loading" style={{ fontSize: 24 }} spin />} ></Spin>
 )
 
 const viewData = {}
@@ -97,40 +77,71 @@ export default class ModelDetail extends Component {
         this.state = {
             on: 'MainView',
             mid: props.match.params.id,
-            setCtx: obj => {
-                this.setState(obj)
-                Promise.all([
-                    new Promise((resolve, reject) => {
-                        $.post(host + '/result/getGraphInfo', {
-                            model_id: this.state.mid,
-                            label: obj.group
-                        }, res => {
-                            if (res.resultDesc === 'Success') {
-                                fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).catch(console.log).then(res => {
-                                    resolve(res)
-                                })
-                            }
-                        })
-                    }),
-                    new Promise((resolve, reject) => {
-                        $.post(host + '/result/getZpFile', {
-                            model_id: this.state.mid
-                        }, res => {
-                            if (res.resultDesc === 'Success') {
-                                fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).catch(console.log).then(res => {
-                                    resolve(res)
-                                })
-                            }
-                        })
-                    })]).then(val => {
-                        viewData.GroupView = val
-                        this.state.on === 'Loading' && this.setState({ on: 'GroupView' })
+            setCtx: (obj, mode) => {
+                if (mode === 'SetGroup') {
+                    this.setState({
+                        on: 'Loading',
+                        ...obj
                     })
-            },
-            getClusterData: this.getClusterData.bind(this)
+                    Promise.all([
+                        new Promise((resolve, reject) => {
+                            $.post(host + '/result/getGraphInfo', {
+                                model_id: this.state.mid,
+                                label: obj.group
+                            }, res => {
+                                if (res.resultDesc === 'Success') {
+                                    fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).catch(console.log).then(res => {
+                                        resolve(res)
+                                    })
+                                }
+                            })
+                        }),
+                        new Promise((resolve, reject) => {
+                            $.post(host + '/result/getZpFile', {
+                                model_id: this.state.mid
+                            }, res => {
+                                if (res.resultDesc === 'Success') {
+                                    fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).catch(console.log).then(res => {
+                                        resolve(res)
+                                    })
+                                }
+                            })
+                        })]).then(val => {
+                            viewData.GroupView = val
+                            this.setState({ on: 'GroupView' })
+                        })
+                } else if (mode === 'PickCluster') {
+                    this.setState({ loadPickedCluster: true })
+                    $.post(host + '/result/getPickedClusterInfo', {
+                        model_id: this.state.mid,
+                        cluster_id: obj.cluster.id,
+                        label: obj.cluster.year
+                    }, res => {
+                        if (res.resultDesc === 'Success') {
+                            this.setState({
+                                loadPickedCluster: false,
+                                cluster: JSON.parse(res.data)
+                            })
+                        }
+                    })
+                } else if (mode === 'GetCluster') { // todo
+                    this.setState({ on: 'Loading' })
+                    $.post(host + '/result/getPickedClusterInfo', {
+                        model_id: this.state.mid,
+                        cluster_id: obj.id,
+                        label: this.state.group
+                    }, res => {
+                        if (res.resultDesc === 'Success') {
+                            viewData.ClusterView = val
+                            this.setState({ on: 'ClusterView' })
+                        }
+                    })
+                }
+            }
         }
     }
     componentDidMount() {
+        this.setState({ on: 'Loading' })
         Promise.all([
             new Promise((resolve, reject) => {
                 $.post(host + '/result/getRadarPath', {
@@ -155,26 +166,12 @@ export default class ModelDetail extends Component {
                 })
             })]).then(val => {
                 viewData.MainView = val
-                this.state.on === 'Loading' && this.setState({ on: 'MainView' })
+                this.setState({ on: 'MainView' })
             })
     }
     static getDerivedStateFromProps(props, state) {
         viewData[state.on] || (state.on = 'Loading')
         return state
-    }
-
-    getClusterData(cid) {
-        this.setState({ on: 'Loading' })
-        $.post(host + '/result/getPickedClusterInfo', {
-            model_id: this.state.mid,
-            cluster_id: cid,
-            label: this.state.group
-        }, res => {
-            if (res.resultDesc === 'Success') {
-                viewData.ClusterView = JSON.parse(res.data).cluster_nodes
-                this.setState({ on: 'ClusterView' })
-            }
-        })
     }
 
     render() {

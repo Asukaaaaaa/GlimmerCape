@@ -5,6 +5,7 @@
 
 .container {
     display: flex;
+    height: 100%;
 }
 
 .steps {
@@ -27,4 +28,6 @@
 
 .right {
     width: 400px;
+    display: flex;
+    flex-direction: column;
 }
