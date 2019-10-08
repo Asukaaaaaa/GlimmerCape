@@ -1,6 +1,7 @@
 import React, { Component, PureComponent } from 'react'
 import echarts from 'echarts'
 import style from './charts.css'
+import { isNumber } from 'util'
 
 export default class Charts extends PureComponent {
     constructor(props) {
@@ -28,34 +29,46 @@ export default class Charts extends PureComponent {
                     links: []
                 }) - 1)
             const clst = clusters[pclst]
-            clst.nodes[v.source_nodeName] ||
-                ((clst.nodes[v.source_nodeName] = true) &&
+            if (!isNumber(clst.nodes[v.source_nodeName])) {
+                clst.nodes[v.source_nodeName] = clst.nodes.length
+                clst.nodes.push({
+                    catagory: pclst,
+                    name: v.source_nodeName,
+                    id: v.source_nodeID,
+                    symbolSize: 6,
+                })
+            }
+            v.target.forEach(t => {
+                if (!isNumber(clst.nodes[t.target_nodeName])) {
+                    clst.nodes[t.target_nodeName] = clst.nodes.length
                     clst.nodes.push({
                         catagory: pclst,
-                        name: v.source_nodeName,
-                        id: v.source_nodeID,
-                        symbolSize: 5,
-                    }));
-            v.target.forEach(t => {
-                clst.nodes[t.target_nodeName] ||
-                    ((clst.nodes[t.target_nodeName] = true) &&
-                        clst.nodes.push({
-                            catagory: pclst,
-                            name: t.target_nodeName,
-                            id: t.target_nodeID,
-                            symbolSize: 5,
-                        }));
-                (clst.links[`${v.source_nodeName}_${t.target_nodeName}`] &&
-                    clst.links[`${v.target_nodeName}_${t.source_nodeName}`]) ||
-                    ((clst.links[`${v.source_nodeName}_${t.target_nodeName}`] = true) &&
-                        clst.links.push({
-                            // id: clst.links.length,
-                            source: v.source_nodeName,
-                            target: t.target_nodeName
-                        }));
+                        name: t.target_nodeName,
+                        id: t.target_nodeID,
+                        symbolSize: 6,
+                        label: {
+                            show: true
+                        },
+                    })
+                }
+                if (!(clst.links[`${v.source_nodeName}_${t.target_nodeName}`] &&
+                    clst.links[`${v.target_nodeName}_${t.source_nodeName}`])) {
+                    clst.links[`${v.source_nodeName}_${t.target_nodeName}`] = true
+                    const ps = clst.nodes[v.source_nodeName], pt = clst.nodes[t.target_nodeName]
+                    clst.links.push({
+                        source: ps,
+                        target: pt
+                    })
+                    if (clst.nodes[ps].symbolSize < 20)
+                        clst.nodes[ps].symbolSize += 3
+                    else if (clst.nodes[ps].symbolSize < 40)
+                        clst.nodes[ps].symbolSize += 1
+                    else if (clst.nodes[ps].symbolSize < 60)
+                        clst.nodes[ps].symbolSize += 0.1
+                }
             })
             clst.catagory = pclst
-            clst.symbolSize = Math.sqrt(clst.nodes.length) + 15
+            clst.symbolSize = Math.sqrt(clst.nodes.length) + 25
         })
         const categories = clusters.map(v => ({ name: v.name }))
         const option = {
@@ -102,14 +115,26 @@ export default class Charts extends PureComponent {
             if (params.seriesName === 'cluster map') {
                 this.chart.showLoading()
                 if (option.series[1]) {
+                    delete option.legend[1]
                     delete option.series[1]
                 } else {
-                    const clst = clusters.find(v => v.name === params.data.name), series = option.series[1]
+                    const clst = clusters.find(v => v.name === params.data.name)
+                    this.clst = clst
+                    option.legend[1] = {
+                        show: false,
+                        selected: {
+                            'cluster map': false,
+                            'cluster map2': true
+                        }
+                    }
                     option.series[1] = {
                         name: 'cluster map2',
                         type: 'graph',
                         layout: 'force',
-                        force: {},
+                        force: {
+                            edgeLength: [10, 500],
+                            layoutAnimation: false
+                        },
                         zlevel: 1,
                         data: clst.nodes,
                         links: clst.links,
@@ -120,6 +145,9 @@ export default class Charts extends PureComponent {
                 }
                 this.chart.setOption(option)
                 this.chart.hideLoading()
+            } else if (params.seriesName === 'cluster map2') {
+                this.chart.showLoading()
+                this.props.getClusterData(this.clst.id)
             }
         })
     }

@@ -18,8 +18,10 @@
 .graph {
     min-width: 1000px;
     width: calc(100% - 400px);
+    min-height: 600px;
 }
-.graph > div {
+
+.graph>div {
     height: calc(100% - 50px);
 }
 

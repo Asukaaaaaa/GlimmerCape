@@ -355,10 +355,10 @@ export class Svg extends Component {
             { passive: false })
         const f = this.viewMove.bind(this)
         this.svg.current.onmousedown = this.svg.current.onmouseup = f
-        this.svg.current.addEventListener('mousemove',
+        /* this.svg.current.addEventListener('mousemove',
             _.throttle(f, 33),
             { passive: false }
-        )
+        )*/
     }
     componentWillReceiveProps(props) {
         this.box = props.viewBox.split(' ').map(v => Number.parseFloat(v))

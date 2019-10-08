@@ -23,11 +23,11 @@ const MainView = ({ mid, setCtx }) => {
         </div>
     )
 }
-const GroupView = ({ mid, group, getClusterData }) => {
+const GroupView = ({ mid, group, getClusterData }, that) => {
     return (
         <div className={style.container}>
             <div className={style.graph}>
-                <Charts type='dbMap' width='1000' height='600' data={forceData} getClusterData={getClusterData} />
+                <Charts type='dbMap' width='1000' height='600' data={forceData} getClusterData={getClusterData.bind(that)} />
             </div>
             <div className={style.right}>
                 <SvgGraph graph='scatter' data={[viewData.GroupView.find(v => v.label == group)]} />
@@ -153,7 +153,7 @@ export default class ModelDetail extends Component {
                     <Step title="Group" description="" />
                     <Step title="Cluster" description="" />
                 </Steps>
-                {this.views[this.state.on](this.state)}
+                {this.views[this.state.on](this.state, this)}
             </div >
         )
     }
