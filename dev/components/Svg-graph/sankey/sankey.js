@@ -119,9 +119,9 @@ export default class Sankey extends Component {
     handleResetState() {
         this.setState({ active: false, src: null, tar: null })
     }
-    handleClickBlock(e) {
+    handleDbClickBlock(e) {
         const { that, nodes } = this.props, info = JSON.parse(e.target.parentNode.getAttribute('name')).src
-        that.props.setCtx({ cluster: info }, 'PickCluster')
+        that.props.setCtx(info, 'GetCluster')
     }
     handleHoverBlock(e) {
         this.setState({
@@ -153,7 +153,21 @@ export default class Sankey extends Component {
                     {Head}
                 </g>
                 <g className={style.belts} onMouseOver={this.handleHoverBelt.bind(that)} onMouseOut={this.handleResetState.bind(that)}>{Belts}</g>
-                <g className={style.blocks} onClick={this.handleClickBlock.bind(this)} onMouseOver={this.handleHoverBlock.bind(that)} onMouseOut={this.handleResetState.bind(that)}>{Blocks}</g>
+                <g className={style.blocks}
+                    onClick={
+                        (() => {
+                            let last = 0
+                            return e => {
+                                if (e.timeStamp - last < 300)
+                                    this.handleDbClickBlock(e)
+                                last = e.timeStamp
+                            }
+                        })()
+                    }
+                    onMouseOver={this.handleHoverBlock.bind(that)}
+                    onMouseOut={this.handleResetState.bind(that)}>
+                    {Blocks}
+                </g>
             </Svg>
         )
     }

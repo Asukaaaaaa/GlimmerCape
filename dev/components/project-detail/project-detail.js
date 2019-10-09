@@ -1,7 +1,7 @@
 import React, { Component, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { Tabs, Table, Divider, Tag, Button, Icon, Modal, Form, Input, Upload, Select, message } from 'antd'
+import { Tabs, Table, Divider, Tag, Button, Icon, Modal, Form, Input, Upload, Select, Spin, message } from 'antd'
 const { TabPane } = Tabs, { Column, ColumnGroup } = Table, { Option } = Select
 
 import { host } from '../../util'
@@ -94,17 +94,17 @@ const ModelForm = ({ form, datasets, handleSubmit, pid }) => {
                             project_id: pid,
                             ...values
                         }
+                        handleSubmit('exit')
                         for (let attr in data) {
                             data['model.' + attr] = data[attr]
                             delete data[attr]
                         }
                         $.post(host + '/model/createModel', data, res => {
                             if (res.resultDesc === 'Success') {
-                                handleSubmit()
+                                message.success(`${values.model_name} 创建成功!`)
                             }
                         }).fail(e => {
-                            message.warning('some error occured')
-                            handleSubmit()
+                            message.warning(`创建 ${values.model_name} 时发生了错误!`)
                         })
                     }
                 })
@@ -120,7 +120,7 @@ const ModelForm = ({ form, datasets, handleSubmit, pid }) => {
             <Form.Item label='选择数据集'>
                 {getFieldDecorator('dataset_id', {
                     // initialValue: datasets.length ? '0' : '',
-                    rules: [{required: true, message: 'Should select an dataset'}],
+                    rules: [{ required: true, message: 'Should select an dataset' }],
                     getValueFromEvent: e => e
                 })(
                     <Select
@@ -236,7 +236,7 @@ export default class ProjectDetail extends Component {
         })
     }
 
-    handleSubmit(values) {
+    handleSubmit(mode) {
         /*
         if (this.state.tabOn === 'data') {
             this.state.datasets.unshift(values)
@@ -245,7 +245,7 @@ export default class ProjectDetail extends Component {
             this.state.models, unshift(values)
             this.setState({ models: this.state.models })
         }*/
-        this.update()
+        mode || this.update()
         this.setState({ visible: false })
     }
 
@@ -262,9 +262,11 @@ export default class ProjectDetail extends Component {
                     visible={this.state.visible} destroyOnClose
                     onCancel={e => this.setState({ visible: false })}
                 >
-                    {state.tabOn === 'data' ?
-                        <WrappedDataForm handleSubmit={this.handleSubmit.bind(this)} pid={props.match.params.id} /> :
-                        <WrappedModelForm datasets={state.datasets} handleSubmit={this.handleSubmit.bind(this)} pid={props.match.params.id} />}
+                    <Spin spinning={false}>
+                        {state.tabOn === 'data' ?
+                            <WrappedDataForm handleSubmit={this.handleSubmit.bind(this)} pid={props.match.params.id} /> :
+                            <WrappedModelForm datasets={state.datasets} handleSubmit={this.handleSubmit.bind(this)} pid={props.match.params.id} />}
+                    </Spin>
                 </Modal>
                 <Tabs className={style.tabs} defaultActiveKey={state.tabOn} tabPosition='left' onChange={
                     key => this.setState({ tabOn: key })

@@ -65,7 +65,7 @@ const ClusterView = ({ }) => {
                         <div><span>平均度</span></div>
                         <div><span>最大度</span></div>
                     </div>
-                    <div>
+                    <div style={{ fontWeight: 'bold' }}>
                         <div><span>{data.label}</span></div>
                         <div><span>{data.cluster_nodesnum}</span></div>
                         <div><span>{data.cluster_edgesnum}</span></div>
@@ -144,7 +144,7 @@ export default class ModelDetail extends Component {
                     $.post(host + '/result/getPickedClusterInfo', {
                         model_id: this.state.mid,
                         cluster_id: obj.id,
-                        label: this.state.group
+                        label: obj.year || this.state.group
                     }, res => {
                         if (res.resultDesc === 'Success') {
                             viewData.ClusterView = JSON.parse(res.data)
