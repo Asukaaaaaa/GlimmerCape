@@ -102,9 +102,11 @@ const ModelForm = ({ form, datasets, handleSubmit, pid }) => {
                         $.post(host + '/model/createModel', data, res => {
                             if (res.resultDesc === 'Success') {
                                 message.success(`${values.model_name} 创建成功!`)
+                                handleSubmit('update')
                             }
                         }).fail(e => {
                             message.warning(`创建 ${values.model_name} 时发生了错误!`)
+                            handleSubmit('update')
                         })
                     }
                 })
@@ -245,8 +247,8 @@ export default class ProjectDetail extends Component {
             this.state.models, unshift(values)
             this.setState({ models: this.state.models })
         }*/
-        mode || this.update()
-        this.setState({ visible: false })
+        mode === 'update' && this.update()
+        mode === 'exit' && this.setState({ visible: false })
     }
 
     render() {
