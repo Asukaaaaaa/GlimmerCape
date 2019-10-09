@@ -1,7 +1,7 @@
 import React, { Component, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { Tabs, Table, Divider, Tag, Button, Icon, Modal, Form, Input, Upload, Select } from 'antd'
+import { Tabs, Table, Divider, Tag, Button, Icon, Modal, Form, Input, Upload, Select, message } from 'antd'
 const { TabPane } = Tabs, { Column, ColumnGroup } = Table, { Option } = Select
 
 import { host } from '../../util'
@@ -102,6 +102,9 @@ const ModelForm = ({ form, datasets, handleSubmit, pid }) => {
                             if (res.resultDesc === 'Success') {
                                 handleSubmit()
                             }
+                        }).fail(e => {
+                            message.warning('some error occured')
+                            handleSubmit()
                         })
                     }
                 })
@@ -109,14 +112,15 @@ const ModelForm = ({ form, datasets, handleSubmit, pid }) => {
         >
             <Form.Item label='模型名称'>
                 {getFieldDecorator('model_name', {
-                    rules: [{ required: true, message: 'Please input model name!' }],
+                    rules: [{ required: true, message: 'Please input model name' }],
                 })(
                     <Input placeholder="Model Name" />,
                 )}
             </Form.Item>
             <Form.Item label='选择数据集'>
                 {getFieldDecorator('dataset_id', {
-                    initialValue: datasets.length ? '0' : '',
+                    // initialValue: datasets.length ? '0' : '',
+                    rules: [{required: true, message: 'Should select an dataset'}],
                     getValueFromEvent: e => e
                 })(
                     <Select

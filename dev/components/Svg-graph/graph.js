@@ -298,7 +298,7 @@ export default class Graph extends Component {
                 onMouseMove={e => state.active && this.setState({ x: e.clientX, y: e.clientY })}
             >
                 <canvas ref={this.imgLoader} />
-                <div className={style.download}>
+                {/*<div className={style.download}>
                     <a>
                         <img src={imgs.download}
                             onClick={e => { // TODO export image
@@ -314,10 +314,10 @@ export default class Graph extends Component {
                                     e.target.onclick = null
                                 }
                                 img.src = 'data:image/svg+xml;base64,' + btoa($('~ svg', canvas)[0].outerHTML)
-                                */
+                                //
                             }} />
                     </a>
-                </div>
+                        </div>*/}
                 {Content()}
                 {state.active &&
                     <div style={{ left: state.x, top: state.y }} className={style.follow}>

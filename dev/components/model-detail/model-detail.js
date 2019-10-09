@@ -45,23 +45,36 @@ const GroupView = ({ group, setCtx }) => {
     )
 }
 const ClusterView = ({ }) => {
+    const data = viewData.ClusterView
     return (
         <div className={style.container}>
             <div className={style.graph}>
-                <SvgGraph graph='circular' data={viewData.ClusterView.cluster_nodes} _data={viewData.MainView[1]} />
+                <SvgGraph graph='circular' data={data.cluster_nodes} _data={viewData.MainView[1]} />
             </div>
             <div className={style.right}>
                 <div>
                     <Icon type='bar-chart' />
                     <span>社区信息</span>
                 </div>
-                <div><span>年份</span></div>
-                <div><span>节点数</span></div>
-                <div><span>边数</span></div>
-                <div><span>密度</span></div>
-                <div><span>平均度</span></div>
-                <div><span>最大度</span></div>
-                <Table dataSource={viewData.ClusterView.cluster_nodes} bordered pagination={false} scroll={{ y: 600 }}>
+                <div style={{ display: 'flex' }} >
+                    <div style={{ marginRight: '50px' }}>
+                        <div><span>年份</span></div>
+                        <div><span>节点数</span></div>
+                        <div><span>边数</span></div>
+                        <div><span>密度</span></div>
+                        <div><span>平均度</span></div>
+                        <div><span>最大度</span></div>
+                    </div>
+                    <div>
+                        <div><span>{data.label}</span></div>
+                        <div><span>{data.cluster_nodesnum}</span></div>
+                        <div><span>{data.cluster_edgesnum}</span></div>
+                        <div><span>{data.cluster_density}</span></div>
+                        <div><span>{data.cluster_avdegree}</span></div>
+                        <div><span>{data.cluster_maxdegree}</span></div>
+                    </div>
+                </div>
+                <Table dataSource={viewData.ClusterView.cluster_nodes} bordered pagination={false} scroll={{ y: 450 }}>
                     <Column width='30%' title="词汇" dataIndex="key" key="key"
                         render={(text, record) => <div style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>{text}</div>} />
                     <Column width='30%' title="Z-value" dataIndex="z_value" key="z_value"
@@ -134,7 +147,7 @@ export default class ModelDetail extends Component {
                         label: this.state.group
                     }, res => {
                         if (res.resultDesc === 'Success') {
-                            viewData.ClusterView = val
+                            viewData.ClusterView = JSON.parse(res.data)
                             this.setState({ on: 'ClusterView' })
                         }
                     })

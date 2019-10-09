@@ -142,8 +142,9 @@ export default class Charts extends PureComponent {
                 this.chart.setOption(option)
                 this.chart.hideLoading()
             } else if (params.seriesName === 'cluster map2') {
+                const clst = clusters[params.data.catagory]
                 this.props.setCtx({
-                    id: params.data.id
+                    id: clst.id
                 }, 'GetCluster')
             }
         })

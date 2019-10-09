@@ -2,15 +2,20 @@
     text-anchor: middle;
     dominant-baseline: central;
 }
+
 .self {
-    fill: #f7f7f7;
+    /*fill: #f7f7f7;*/
+    fill: lightgray;
 }
+
 .out {
     /*fill: #60ACFC;*/
 }
+
 .lines path {
     stroke-width: 20;
 }
-.active > .main circle:not(:hover) {
+
+.active>.main circle:not(:hover) {
     opacity: 0.15;
 }
