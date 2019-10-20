@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
 
-import { Tabs, Table, Icon, Button, Steps, Spin } from 'antd'
-const { TabPane } = Tabs, { Column } = Table, { Step } = Steps
+import { Tabs, Icon, Button, Steps, Spin } from 'antd'
+const { TabPane } = Tabs, { Step } = Steps
 
+import Table, { Column } from '../table/table'
 import Charts from '../charts/charts'
 import SvgGraph from '../Svg-graph/graph'
 
@@ -18,16 +19,14 @@ const MainView = ({ setCtx, group }) => {
             </div>
             <div className={style.right}>
                 <Charts type='radar' width='400' height='300' data={viewData.MainView[0]} />
-                <div className={style.table}>
-                    <Table dataSource={null} bordered pagination={false} scroll={{ y: 300 }}>
-                        <Column width='30%' title="词汇" dataIndex="word" key="0"
-                            render={(text, record) => <div style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>{text}</div>} />
-                        <Column width='30%' title="2013" dataIndex="2013" key="1"
-                            sorter={(a, b) => b['2013'] - a['2013']} />
-                        <Column width='30%' title="2014" dataIndex="2014" key="2"
-                            sorter={(a, b) => b['2014'] - a['2014']} />
-                    </Table>
-                </div>
+                <Table className={style.table} data={null}>
+                    <Column width='30%' title="词汇" dataIndex="word" key="0"
+                        render={(text, record) => <div style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>{text}</div>} />
+                    <Column width='30%' title="2013" dataIndex="2013" key="1"
+                        sorter={(a, b) => b['2013'] - a['2013']} />
+                    <Column width='30%' title="2014" dataIndex="2014" key="2"
+                        sorter={(a, b) => b['2014'] - a['2014']} />
+                </Table>
             </div>
         </div>
     )
@@ -105,7 +104,8 @@ export default class ModelDetail extends Component {
             on: 'MainView',
             mid: props.match.params.id,
             setCtx: ((obj, mode) => {
-                if (mode === 'SetGroup') {
+                if (mode === 'SetGroup')
+                {
                     this.setState({
                         on: 'Loading',
                         ...obj
@@ -116,7 +116,8 @@ export default class ModelDetail extends Component {
                                 model_id: this.state.mid,
                                 label: obj.group
                             }, res => {
-                                if (res.resultDesc === 'Success') {
+                                if (res.resultDesc === 'Success')
+                                {
                                     fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).catch(console.log).then(res => {
                                         resolve(res)
                                     })
@@ -127,7 +128,8 @@ export default class ModelDetail extends Component {
                             $.post(host + '/result/getZpFile', {
                                 model_id: this.state.mid
                             }, res => {
-                                if (res.resultDesc === 'Success') {
+                                if (res.resultDesc === 'Success')
+                                {
                                     fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).catch(console.log).then(res => {
                                         resolve(res)
                                     })
@@ -137,16 +139,19 @@ export default class ModelDetail extends Component {
                             viewData.GroupView = val
                             this.setState({ on: 'GroupView' })
                         })
-                } else if (mode === 'GetCoword') {
+                } else if (mode === 'GetCoword')
+                {
                     // todo
-                } else if (mode === 'GetCluster') { // todo
+                } else if (mode === 'GetCluster')
+                { // todo
                     this.setState({ on: 'Loading' })
                     $.post(host + '/result/getPickedClusterInfo', {
                         model_id: this.state.mid,
                         cluster_id: obj.id,
                         label: obj.year || this.state.group
                     }, res => {
-                        if (res.resultDesc === 'Success') {
+                        if (res.resultDesc === 'Success')
+                        {
                             viewData.ClusterView = JSON.parse(res.data)
                             this.setState({ on: 'ClusterView' })
                         }
@@ -162,7 +167,8 @@ export default class ModelDetail extends Component {
                 $.post(host + '/result/getRadarPath', {
                     model_id: this.state.mid
                 }, res => {
-                    if (res.resultDesc === 'Success') {
+                    if (res.resultDesc === 'Success')
+                    {
                         fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).then(res => {
                             resolve(res)
                         })
@@ -173,7 +179,8 @@ export default class ModelDetail extends Component {
                 $.post(host + '/result/getEvoFile', {
                     model_id: this.state.mid
                 }, res => {
-                    if (res.resultDesc === 'Success') {
+                    if (res.resultDesc === 'Success')
+                    {
                         fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).then(res => {
                             resolve(res)
                         })
@@ -185,7 +192,8 @@ export default class ModelDetail extends Component {
                     model_id: this.state.mid,
                     // label: '2013'
                 }, res => {
-                    if (res.resultDesc === 'Success') {
+                    if (res.resultDesc === 'Success')
+                    {
                         fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).then(res => {
                             resolve(res)
                         })
