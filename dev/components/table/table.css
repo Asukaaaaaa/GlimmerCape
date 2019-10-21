@@ -1,0 +1,31 @@
+.main {
+  text-align: center;
+  box-sizing: border-box;
+  padding: 5px;
+}
+.main > table {
+  border-collapse: collapse;
+}
+
+.head,
+.body {
+  border-top: 1px solid #ddd;
+  border-left: 1px solid #ddd;
+  table-layout: fixed;
+  width: 100%;
+}
+.head th,
+.body td {
+  border-right: 1px solid #ddd;
+}
+
+.head {
+  height: 25px;
+}
+.body {
+  height: calc(100% - 35px);
+}
+
+.body tr {
+  border-bottom: 1px solid #ddd;
+}

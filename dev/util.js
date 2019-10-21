@@ -27,7 +27,7 @@ const _ = {
     throttle
 }
 
-const ClassNames = (...args) => args.reduce((acc, val, i) => val ? (acc += val + ' ') : acc, '')
+const ClassNames = (...args) => args.reduce((acc, val, i) => acc + (val || '') + ' ', '')
 
 const BaseColor = ['#60acfc', '#32d3eb', '#5bc49f', '#feb64d', '#ff7c7c', '#9287e7']
 const color = []
