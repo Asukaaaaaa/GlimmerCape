@@ -3,8 +3,8 @@ const common = require('./webpack.common')
 
 module.exports = Object.assign(common, {
     entry: {
-        // main: './dev/index.js',
-        test: './dev/test.js'
+        main: './dev/index.js',
+        // test: './dev/test.js'
     },
     output: {
         path: path.join(__dirname, '/docs'),

@@ -22,6 +22,9 @@ export default class Table extends Component {
             data: this.state.data.sort(props.sorter)
         })
     }
+    handleWheel(e) {
+
+    }
     render() {
         const { data, cols } = this.state
         const page = data.slice(0, 10),
@@ -33,20 +36,23 @@ export default class Table extends Component {
                     <tbody>
                         <tr onClick={this.handleSort.bind(this)}>
                             {this.props.children}
+                            <th className={style.gutter}></th>
                         </tr>
                     </tbody>
                 </table>
-                <table className={style.body}>
-                    <tbody>
-                        {page.map((v, i) => (
-                            <tr key={i}>
-                                {cols.map(({ dataIndex }, i) => (
-                                    <td key={i}>{v[dataIndex]}</td>
-                                ))}
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                <div className={style['body-wrapper']} onWheel={this.handleWheel.bind(this)}>
+                    <table className={style.body}>
+                        <tbody>
+                            {page.map((v, i) => (
+                                <tr key={i}>
+                                    {cols.map(({ dataIndex }, i) => (
+                                        <td key={i}>{v[dataIndex]}</td>
+                                    ))}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         )
     }

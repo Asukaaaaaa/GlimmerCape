@@ -43,5 +43,4 @@
 
 .right > div:nth-of-type(2) {
     height: calc(100% - 300px);
-    overflow: hidden;
 }
