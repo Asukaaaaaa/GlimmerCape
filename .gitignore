@@ -1,5 +1,5 @@
+.vscode
 node_modules
 
 static/media
 static/gantz
-#static
