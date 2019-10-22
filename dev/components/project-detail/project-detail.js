@@ -328,7 +328,7 @@ export default class ProjectDetail extends Component {
                                         <Divider type="vertical" />
                                         <a onClick={
                                             e => $.post(host + '/model/deleteModel', {
-                                                dataset_id: record.modelId
+                                                model_id: record.modelId
                                             }, res => {
                                                 // todo
                                                 if (res.resultCode === '1000') {
