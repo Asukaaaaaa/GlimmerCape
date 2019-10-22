@@ -26,6 +26,10 @@
 .body td {
   border-right: 1px solid #ddd;
   border-bottom: 1px solid #ddd;
+  height: 40px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .head {

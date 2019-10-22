@@ -22,7 +22,7 @@ const MainView = ({ setCtx, group }) => {
             <div className={style.right}>
                 <Charts type='radar' width='400' height='300' data={viewData.MainView[0]} />
                 <Table className={style.table} data={viewData.MainView[2]}>
-                    <Column title="词汇" dataIndex="word" key="-1" />
+                    <Column width='30%' title="词汇" dataIndex="word" key="-1" />
                     {names.map((v, i) => (
                         <Column title={v} dataIndex={v} key={i}
                             sorter={(a, b) => b[v] - a[v]} />
@@ -75,7 +75,7 @@ const ClusterView = ({ }) => {
                     </div>
                 </div>
                 <Table data={viewData.ClusterView.cluster_nodes}>
-                    <Column title="词汇" dataIndex="key" key="key" />
+                    <Column width='30%' title="词汇" dataIndex="key" key="key" />
                     <Column title="Z-value" dataIndex="z_value" key="z_value"
                         render={(text, record) => <span>{record.z_value.toFixed(5) + '...'}</span>}
                         sorter={(a, b) => b.z_value - a.z_value} />
