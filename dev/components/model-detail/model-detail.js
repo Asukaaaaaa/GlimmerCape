@@ -22,7 +22,7 @@ const MainView = ({ setCtx, group }) => {
             <div className={style.right}>
                 <Charts type='radar' width='400' height='300' data={viewData.MainView[0]} />
                 <Table className={style.table} data={viewData.MainView[2]}>
-                    <Column title="词汇" dataIndex="word" key="-1" />
+                    <Column width='30%' title="词汇" dataIndex="word" key="-1" />
                     {names.map((v, i) => (
                         <Column title={v} dataIndex={v} key={i}
                             sorter={(a, b) => b[v] - a[v]} />
@@ -74,16 +74,15 @@ const ClusterView = ({ }) => {
                         <div><span>{data.cluster_maxdegree}</span></div>
                     </div>
                 </div>
-                <Table dataSource={viewData.ClusterView.cluster_nodes} bordered pagination={false} scroll={{ y: 450 }}>
-                    <Column width='30%' title="词汇" dataIndex="key" key="key"
-                        render={(text, record) => <div style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>{text}</div>} />
-                    <Column width='30%' title="Z-value" dataIndex="z_value" key="z_value"
+                <Table data={viewData.ClusterView.cluster_nodes}>
+                    <Column width='30%' title="词汇" dataIndex="key" key="key" />
+                    <Column title="Z-value" dataIndex="z_value" key="z_value"
                         render={(text, record) => <span>{record.z_value.toFixed(5) + '...'}</span>}
                         sorter={(a, b) => b.z_value - a.z_value} />
-                    <Column width='30%' title="P-value" dataIndex="p_value" key="p_value"
+                    <Column title="P-value" dataIndex="p_value" key="p_value"
                         render={(text, record) => <span>{record.p_value.toFixed(5) + '...'}</span>}
                         sorter={(a, b) => b.p_value - a.p_value} />
-                    <Column width='10%' title="词频" dataIndex="weight" key="weight"
+                    <Column title="词频" dataIndex="weight" key="weight"
                         sorter={(a, b) => b.weight - a.weight} />
                 </Table>
             </div>
