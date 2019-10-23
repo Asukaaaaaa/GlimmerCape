@@ -16,7 +16,8 @@ const DataForm = ({ form, handleSubmit, pid }) => {
             onSubmit={e => {
                 e.preventDefault()
                 form.validateFields((err, values) => {
-                    if (!err) {
+                    if (!err)
+                    {
                         const formData = new FormData()
                         formData.append('project_id', pid)
                         formData.append('dataset_name', values.name)
@@ -29,11 +30,18 @@ const DataForm = ({ form, handleSubmit, pid }) => {
                             contentType: false,
                             data: formData,
                             success: res => {
-                                if (res.resultDesc === 'Success') {
-                                    handleSubmit()
+                                if (res.resultDesc === 'Success')
+                                {
+                                    message.success({ content: `创建 ${values.name} 成功.`, key: 'loadDataset' })
+                                    handleSubmit('update')
                                 }
                             }
+                        }).fail(e => {
+                            message.warning({ content: `创建 ${values.name} 时发生了错误!`, key: 'loadDataset' })
+                            handleSubmit('update')
                         })
+                        message.loading({ content: '创建中...', key: 'loadDataset', duration: 999 })
+                        handleSubmit('exit')
                     }
                 })
             }}
@@ -89,25 +97,29 @@ const ModelForm = ({ form, datasets, handleSubmit, pid }) => {
             onSubmit={e => {
                 e.preventDefault()
                 form.validateFields((err, values) => {
-                    if (!err) {
+                    if (!err)
+                    {
                         let data = {
                             project_id: pid,
                             ...values
                         }
-                        handleSubmit('exit')
-                        for (let attr in data) {
+                        for (let attr in data)
+                        {
                             data['model.' + attr] = data[attr]
                             delete data[attr]
                         }
                         $.post(host + '/model/createModel', data, res => {
-                            if (res.resultDesc === 'Success') {
-                                message.success(`${values.model_name} 创建成功!`)
+                            if (res.resultDesc === 'Success')
+                            {
+                                message.success({ content: `创建 ${values.model_name} 成功.`, key: 'loadModel' })
                                 handleSubmit('update')
                             }
                         }).fail(e => {
-                            message.warning(`创建 ${values.model_name} 时发生了错误!`)
+                            message.warning({ content: `创建 ${values.model_name} 时发生了错误!`, key: 'loadModel' })
                             handleSubmit('update')
                         })
+                        message.loading({ content: '创建中...', key: 'loadModel', duration: 999 })
+                        handleSubmit('exit')
                     }
                 })
             }}
@@ -216,6 +228,12 @@ export default class ProjectDetail extends Component {
         project_id = this.props.match.id
         this.update()
     }
+    componentDidMount() {
+        this.updateHandle = setInterval(() => this.handleSubmit('update'), 2000)
+    }
+    componentWillUnmount() {
+        clearInterval(this.updateHandle)
+    }
 
     update() {
         $.post(host + '/dataset/getDatasetList', {
@@ -223,7 +241,8 @@ export default class ProjectDetail extends Component {
             page_num: 1,
             page_size: 100
         }, res => {
-            if (res.resultDesc === 'Success') {
+            if (res.resultDesc === 'Success')
+            {
                 this.setState({ datasets: res.data.list })
             }
         })
@@ -232,7 +251,8 @@ export default class ProjectDetail extends Component {
             page_num: 1,
             page_size: 100
         }, res => {
-            if (res.resultDesc === 'Success') {
+            if (res.resultDesc === 'Success')
+            {
                 this.setState({ models: res.data.list })
             }
         })
@@ -295,7 +315,8 @@ export default class ProjectDetail extends Component {
                                                 dataset_id: record.datasetId
                                             }, res => {
                                                 // todo
-                                                if (res.resultCode === '1000') {
+                                                if (res.resultCode === '1000')
+                                                {
                                                     this.update()
                                                 }
                                             })
@@ -331,7 +352,8 @@ export default class ProjectDetail extends Component {
                                                 model_id: record.modelId
                                             }, res => {
                                                 // todo
-                                                if (res.resultCode === '1000') {
+                                                if (res.resultCode === '1000')
+                                                {
                                                     this.update()
                                                 }
                                             })
