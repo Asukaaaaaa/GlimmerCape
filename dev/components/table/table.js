@@ -7,6 +7,32 @@ export default class Table extends PureComponent {
     componentWillMount() {
         this.init(this.props)
     }
+    componentDidMount() {
+        $(`.${style.main} > div:nth-child(2) .${style['body-wrapper']}`).scroll(function (e) {
+            $(`.${style.fixed} .${style['body-wrapper']}`).prop('scrollTop', $(this).prop('scrollTop'))
+        })
+        $(`.${style.fixed} .${style['body-wrapper']}`).scroll(function (e) {
+            $(`.${style.main} > div:nth-child(2) .${style['body-wrapper']}`).prop('scrollTop', $(this).prop('scrollTop'))
+        })
+
+        const getRowIndex = target => {
+            if (target.tagName === 'TR') {
+                return $(target).index()
+            } else if (target.tagName === 'TD') {
+                return $(target).parent('tr').index()
+            }
+        }
+        $(`.${style.main} > div:nth-child(2) .${style.body} tr`).hover(function (e) {
+            $(`.${style.fixed} .${style['body-wrapper']} tr:nth-child(${getRowIndex(e.target) + 1})`).addClass(style.hover)
+        }, function (e) {
+            $(`.${style.fixed} .${style['body-wrapper']} tr:nth-child(${getRowIndex(e.target) + 1})`).removeClass(style.hover)
+        })
+        $(`.${style.fixed} .${style.body} tr`).hover(function (e) {
+            $(`.${style.main} > div:nth-child(2) .${style['body-wrapper']} tr:nth-child(${getRowIndex(e.target) + 1})`).addClass(style.hover)
+        }, function (e) {
+            $(`.${style.main} > div:nth-child(2) .${style['body-wrapper']} tr:nth-child(${getRowIndex(e.target) + 1})`).removeClass(style.hover)
+        })
+    }
     componentWillReceiveProps(props) {
         this.init(props)
     }
@@ -17,14 +43,14 @@ export default class Table extends PureComponent {
             i: 1
         })
     }
-    handleSort(e) {
+    handleSort = e => {
         const props = this.state.cols.find(v => v.title === e.target.textContent)
         this.setState({
             data: this.state.data.sort(props.sorter),
             activeSort: props.title
         })
     }
-    handleWheel(e) {
+    handleWheel = e => {
         const { offsetHeight, scrollTop, scrollHeight } = e.currentTarget
         const height = offsetHeight + scrollTop
         if (height >= scrollHeight - 1) {
@@ -34,39 +60,74 @@ export default class Table extends PureComponent {
         }
     }
     render() {
-        const { data, cols } = this.state
-        const page = data.slice(0, this.state.i * 100)
-        // subpage = data.slice(10, 20)
+        let { data, cols } = this.state
+        const fixedCols = cols.slice(0, 1)
+        data = data.slice(0, this.state.i * 100)
+        cols = cols.slice(1)
 
         return (
             <div className={style.main}>
-                <table className={style.head}>
-                    <tbody>
-                        <tr onClick={this.handleSort.bind(this)}>
-                            {this.props.children.flat().map(({ props }, i) => (
-                                <th className={ClassNames(this.state.activeSort === props.title && style.active)}
-                                    key={i}>
-                                    {props.title}
-                                </th>
-                            ))}
-                            <th className={style.gutter}></th>
-                        </tr>
-                    </tbody>
-                </table>
-                <div className={style['body-wrapper']} onWheel={this.handleWheel.bind(this)}>
-                    <table className={style.body}>
-                        <tbody>
-                            {page.map((v, i) => (
-                                <tr key={i}>
-                                    {cols.map(({ dataIndex }, i) => (
-                                        <td key={i}>{v[dataIndex]}</td>
+                <div className={style.fixed}>
+                    <div className={style['head-wrapper']}>
+                        <table className={style.head}>
+                            <tbody>
+                                <tr>
+                                    {fixedCols.map((props, i) => (
+                                        <th key={i}>
+                                            {props.title}
+                                        </th>
                                     ))}
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div className={style['body-wrapper']}>
+                        <table className={style.body}>
+                            <tbody>
+                                {data.map((v, i) => (
+                                    <tr>
+                                        {fixedCols.map((props, i) => (
+                                            <td key={i}>
+                                                {v[props.dataIndex]}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
+                <div>
+                    <div className={style['head-wrapper']}>
+                        <table className={style.head}>
+                            <tbody>
+                                <tr onClick={this.handleSort}>
+                                    {cols.map((props, i) => (
+                                        <th className={ClassNames(this.state.activeSort === props.title && style.active)}
+                                            key={i}>
+                                            {props.title}
+                                        </th>
+                                    ))}
+                                    <th className={style.gutter}></th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div className={style['body-wrapper']} onWheel={this.handleWheel}>
+                        <table className={style.body}>
+                            <tbody>
+                                {data.map((v, i) => (
+                                    <tr key={i}>
+                                        {cols.map(({ dataIndex }, i) => (
+                                            <td key={i}>{v[dataIndex]}</td>
+                                        ))}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div >
+            </div >
         )
     }
 }

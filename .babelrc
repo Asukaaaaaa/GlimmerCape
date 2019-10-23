@@ -1,7 +1,7 @@
 {
     "presets": [
         "@babel/env",
-        "@babel/react",
+        "@babel/react"
     ],
     "plugins": [
         [
@@ -10,6 +10,9 @@
                 "libraryName": "antd",
                 "style": "css"
             }
+        ],
+        [
+            "@babel/plugin-proposal-class-properties"
         ]
     ]
 }
