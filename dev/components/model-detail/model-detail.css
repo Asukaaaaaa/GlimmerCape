@@ -40,21 +40,36 @@
   flex-direction: column;
 }
 .right > div:last-child {
-  height: calc(100% - 300px);
+  min-height: calc(100% - 300px);
 }
 
 .cinfo {
-  height: 300px;
+  /*height: 200px;*/
 }
-.cinfo .c2 div {
+.cinfo > div:first-child {
+  text-align: center;
+  font-size: 1.5em;
+  font-weight: bold;
+  padding: 10px 0;
+}
+.c2 div {
   position: relative;
   display: inline-block;
   width: 50%;
+  padding: 2px 15px;
 }
-.cinfo .c2 div:first::after {
-  content: '';
+.c2 span {
   position: absolute;
+  top: 0;
+  right: 15px;
+  max-width: 50px;
+  overflow: hidden;
+}
+.c2 div:first-child::after {
+  content: "";
+  position: absolute;
+  top: 15%;
   right: 0;
-  height: 15px;
-  border: 1px solid;
+  height: 70%;
+  border-left: 1px solid;
 }

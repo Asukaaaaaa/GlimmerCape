@@ -67,19 +67,16 @@ const ClusterView = ({ }) => {
                         <div>平均度<span>{data.cluster_avdegree}</span></div>
                         <div>最大度<span>{data.cluster_maxdegree}</span></div>
                     </div>
+                    <div className={style.c2}>
+                        <div>密度<span>{data.cluster_density}</span></div>
+                    </div>
                 </div>
                 {/*<div style={{ display: 'flex' }} >
                     <div style={{ marginRight: '50px' }}>
                         <div><span>年份</span></div>
-                        <div><span>节点数</span></div>
-                        <div><span>边数</span></div>
-                        <div><span>密度</span></div>
-                        <div><span>平均度</span></div>
-                        <div><span>最大度</span></div>
                     </div>
                     <div style={{ fontWeight: 'bold' }}>
                         <div><span>{data.label}</span></div>
-                        <div><span>{data.cluster_density}</span></div>
                     </div>
             </div>*/}
                 <Table data={viewData.ClusterView.cluster_nodes}>
