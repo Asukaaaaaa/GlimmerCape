@@ -49,14 +49,26 @@ const ClusterView = ({ }) => {
     return (
         <div className={style.container}>
             <div className={style.graph}>
-                <SvgGraph graph='circular' data={data.cluster_nodes} _data={viewData.MainView[1]} />
+                {
+                    //<SvgGraph graph='circular' data={data.cluster_nodes} _data={viewData.MainView[1]} />
+                }
             </div>
             <div className={style.right}>
-                <div>
-                    <Icon type='bar-chart' />
-                    <span>社区信息</span>
+                <div className={style.cinfo}>
+                    <div>
+                        <Icon type='bar-chart' />
+                        <span>{data.cluster_name}</span>
+                    </div>
+                    <div className={style.c2}>
+                        <div>节点数<span>{data.cluster_nodesnum}</span></div>
+                        <div>边数<span>{data.cluster_edgesnum}</span></div>
+                    </div>
+                    <div className={style.c2}>
+                        <div>平均度<span>{data.cluster_avdegree}</span></div>
+                        <div>最大度<span>{data.cluster_maxdegree}</span></div>
+                    </div>
                 </div>
-                <div style={{ display: 'flex' }} >
+                {/*<div style={{ display: 'flex' }} >
                     <div style={{ marginRight: '50px' }}>
                         <div><span>年份</span></div>
                         <div><span>节点数</span></div>
@@ -67,20 +79,14 @@ const ClusterView = ({ }) => {
                     </div>
                     <div style={{ fontWeight: 'bold' }}>
                         <div><span>{data.label}</span></div>
-                        <div><span>{data.cluster_nodesnum}</span></div>
-                        <div><span>{data.cluster_edgesnum}</span></div>
                         <div><span>{data.cluster_density}</span></div>
-                        <div><span>{data.cluster_avdegree}</span></div>
-                        <div><span>{data.cluster_maxdegree}</span></div>
                     </div>
-                </div>
+            </div>*/}
                 <Table data={viewData.ClusterView.cluster_nodes}>
                     <Column width='30%' title="词汇" dataIndex="key" key="key" />
                     <Column title="Z-value" dataIndex="z_value" key="z_value"
-                        render={(text, record) => <span>{record.z_value.toFixed(5) + '...'}</span>}
                         sorter={(a, b) => b.z_value - a.z_value} />
                     <Column title="P-value" dataIndex="p_value" key="p_value"
-                        render={(text, record) => <span>{record.p_value.toFixed(5) + '...'}</span>}
                         sorter={(a, b) => b.p_value - a.p_value} />
                     <Column title="词频" dataIndex="weight" key="weight"
                         sorter={(a, b) => b.weight - a.weight} />

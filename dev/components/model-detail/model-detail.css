@@ -29,7 +29,6 @@
   width: calc(100% - 400px);
   min-height: 600px;
 }
-
 .graph > div {
   height: calc(100% - 50px);
 }
@@ -40,7 +39,22 @@
   display: flex;
   flex-direction: column;
 }
-
 .right > div:last-child {
   height: calc(100% - 300px);
+}
+
+.cinfo {
+  height: 300px;
+}
+.cinfo .c2 div {
+  position: relative;
+  display: inline-block;
+  width: 50%;
+}
+.cinfo .c2 div:first::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  height: 15px;
+  border: 1px solid;
 }

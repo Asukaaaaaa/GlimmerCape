@@ -12,7 +12,7 @@ export default class Table extends PureComponent {
             $(`.${style.fixed} .${style['body-wrapper']}`).prop('scrollTop', $(this).prop('scrollTop'))
         })
         $(`.${style.fixed} .${style['body-wrapper']}`).scroll(function (e) {
-            $(`.${style.main} > div:nth-child(2) .${style['body-wrapper']}`).prop('scrollTop', $(this).prop('scrollTop'))
+            // $(`.${style.main} > div:nth-child(2) .${style['body-wrapper']}`).prop('scrollTop', $(this).prop('scrollTop'))
         })
 
         const getRowIndex = target => {
