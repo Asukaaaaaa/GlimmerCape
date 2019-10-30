@@ -45,12 +45,20 @@
 
 .cinfo {
   /*height: 200px;*/
+  padding: 15px 0;
 }
 .cinfo > div:first-child {
   text-align: center;
   font-size: 1.5em;
   font-weight: bold;
-  padding: 10px 0;
+  padding: 0 0 5px;
+}
+.ctitle2 {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.4em;
+  font-weight: 600;
+  padding: 0 15px 5px;
 }
 .c2 div {
   position: relative;

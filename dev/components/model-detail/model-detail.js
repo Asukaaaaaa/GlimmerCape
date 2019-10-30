@@ -57,7 +57,11 @@ const ClusterView = ({ }) => {
                 <div className={style.cinfo}>
                     <div>
                         <Icon type='bar-chart' />
+                        <span>社区信息</span>
+                    </div>
+                    <div className={style.ctitle2}>
                         <span>{data.cluster_name}</span>
+                        <span>{data.label}</span>
                     </div>
                     <div className={style.c2}>
                         <div>节点数<span>{data.cluster_nodesnum}</span></div>
@@ -71,14 +75,6 @@ const ClusterView = ({ }) => {
                         <div>密度<span>{data.cluster_density}</span></div>
                     </div>
                 </div>
-                {/*<div style={{ display: 'flex' }} >
-                    <div style={{ marginRight: '50px' }}>
-                        <div><span>年份</span></div>
-                    </div>
-                    <div style={{ fontWeight: 'bold' }}>
-                        <div><span>{data.label}</span></div>
-                    </div>
-            </div>*/}
                 <Table data={viewData.ClusterView.cluster_nodes}>
                     <Column width='30%' title="词汇" dataIndex="key" key="key" />
                     <Column title="Z-value" dataIndex="z_value" key="z_value"
