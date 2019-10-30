@@ -20,14 +20,16 @@ const MainView = ({ setCtx, group }) => {
                 <SvgGraph graph='sankey' data={viewData.MainView[1]} setCtx={setCtx} />
             </div>
             <div className={style.right}>
-                <Charts type='radar' width='400' height='300' data={viewData.MainView[0]} />
-                <Table className={style.table} data={viewData.MainView[2]}>
-                    <Column width='30%' title="词汇" dataIndex="word" key="-1" />
-                    {names.map((v, i) => (
-                        <Column title={v} dataIndex={v} key={i}
-                            sorter={(a, b) => b[v] - a[v]} />
-                    ))}
-                </Table>
+                <Charts type='radar' width='400px' height='300px' data={viewData.MainView[0]} />
+                <div style={{ height: 'calc(100% - 300px)' }}>
+                    <Table data={viewData.MainView[2]}>
+                        <Column width='30%' title="词汇" dataIndex="word" key="-1" />
+                        {names.map((v, i) => (
+                            <Column title={v} dataIndex={v} key={i}
+                                sorter={(a, b) => b[v] - a[v]} />
+                        ))}
+                    </Table>
+                </div>
             </div>
         </div>
     )
@@ -36,7 +38,7 @@ const GroupView = ({ group, setCtx }) => {
     return (
         <div className={style.container}>
             <div className={style.graph}>
-                <Charts type='dbMap' width='1000' height='600' data={viewData.GroupView[0]} setCtx={setCtx} />
+                <Charts type='group' width='1000' height='600' data={viewData.GroupView[0]} setCtx={setCtx} />
             </div>
             <div className={style.right}>
                 <SvgGraph graph='scatter' data={[viewData.GroupView[1].find(v => v.label == group)]} />
@@ -75,15 +77,17 @@ const ClusterView = ({ }) => {
                         <div>密度<span>{data.cluster_density}</span></div>
                     </div>
                 </div>
-                <Table data={viewData.ClusterView.cluster_nodes}>
-                    <Column width='30%' title="词汇" dataIndex="key" key="key" />
-                    <Column title="Z-value" dataIndex="z_value" key="z_value"
-                        sorter={(a, b) => b.z_value - a.z_value} />
-                    <Column title="P-value" dataIndex="p_value" key="p_value"
-                        sorter={(a, b) => b.p_value - a.p_value} />
-                    <Column title="词频" dataIndex="weight" key="weight"
-                        sorter={(a, b) => b.weight - a.weight} />
-                </Table>
+                <div style={{ minHeight: 'calc(100% - 300px)' }}>
+                    <Table data={viewData.ClusterView.cluster_nodes}>
+                        <Column width='30%' title="词汇" dataIndex="key" key="key" />
+                        <Column title="Z-value" dataIndex="z_value" key="z_value"
+                            sorter={(a, b) => b.z_value - a.z_value} />
+                        <Column title="P-value" dataIndex="p_value" key="p_value"
+                            sorter={(a, b) => b.p_value - a.p_value} />
+                        <Column title="词频" dataIndex="weight" key="weight"
+                            sorter={(a, b) => b.weight - a.weight} />
+                    </Table>
+                </div>
             </div>
         </div>
     )
@@ -103,7 +107,8 @@ export default class ModelDetail extends Component {
             on: 'MainView',
             mid: props.match.params.id,
             setCtx: ((obj, mode) => {
-                if (mode === 'SetGroup') {
+                if (mode === 'SetGroup')
+                {
                     this.setState({
                         on: 'Loading',
                         ...obj
@@ -114,7 +119,8 @@ export default class ModelDetail extends Component {
                                 model_id: this.state.mid,
                                 label: obj.group
                             }, res => {
-                                if (res.resultDesc === 'Success') {
+                                if (res.resultDesc === 'Success')
+                                {
                                     fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).catch(console.log).then(res => {
                                         resolve(res)
                                     })
@@ -125,7 +131,8 @@ export default class ModelDetail extends Component {
                             $.post(host + '/result/getZpFile', {
                                 model_id: this.state.mid
                             }, res => {
-                                if (res.resultDesc === 'Success') {
+                                if (res.resultDesc === 'Success')
+                                {
                                     fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).catch(console.log).then(res => {
                                         resolve(res)
                                     })
@@ -135,16 +142,19 @@ export default class ModelDetail extends Component {
                             viewData.GroupView = val
                             this.setState({ on: 'GroupView' })
                         })
-                } else if (mode === 'GetCoword') {
+                } else if (mode === 'GetCoword')
+                {
                     // todo
-                } else if (mode === 'GetCluster') { // todo
+                } else if (mode === 'GetCluster')
+                { // todo
                     this.setState({ on: 'Loading' })
                     $.post(host + '/result/getPickedClusterInfo', {
                         model_id: this.state.mid,
                         cluster_id: obj.id,
                         label: obj.year || this.state.group
                     }, res => {
-                        if (res.resultDesc === 'Success') {
+                        if (res.resultDesc === 'Success')
+                        {
                             viewData.ClusterView = JSON.parse(res.data)
                             this.setState({ on: 'ClusterView' })
                         }
@@ -160,7 +170,8 @@ export default class ModelDetail extends Component {
                 $.post(host + '/result/getRadarPath', {
                     model_id: this.state.mid
                 }, res => {
-                    if (res.resultDesc === 'Success') {
+                    if (res.resultDesc === 'Success')
+                    {
                         fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).then(res => {
                             resolve(res)
                         })
@@ -171,7 +182,8 @@ export default class ModelDetail extends Component {
                 $.post(host + '/result/getEvoFile', {
                     model_id: this.state.mid
                 }, res => {
-                    if (res.resultDesc === 'Success') {
+                    if (res.resultDesc === 'Success')
+                    {
                         fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).then(res => {
                             resolve(res)
                         })
@@ -183,7 +195,8 @@ export default class ModelDetail extends Component {
                     model_id: this.state.mid,
                     // label: '2013'
                 }, res => {
-                    if (res.resultDesc === 'Success') {
+                    if (res.resultDesc === 'Success')
+                    {
                         fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).then(res => {
                             resolve(res)
                         })

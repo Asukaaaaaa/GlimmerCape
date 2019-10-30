@@ -6,15 +6,55 @@ import { isNumber } from 'util'
 export default class Charts extends PureComponent {
     constructor(props) {
         super(props)
-        this.canvas = React.createRef()
+        this.chart = React.createRef()
         this.maps = {
-            'dbMap': this.setDbMap.bind(this),
-            'force': this.setForce.bind(this),
-            'radar': this.setRadar.bind(this)
+            'cluster': this.setClusterMap,
+            'group': this.setGroupMap,
+            'radar': this.setRadar
         }
     }
 
-    setDbMap() {
+    setClusterMap = ({ name }) => {
+        this.clst = this.clusters.find(v => v.name === name)
+        const option = {
+            title: {
+                text: name,
+                top: 'top',
+                left: 'center',
+            },
+            legend: [{
+                show: true,
+                selected: {
+                    '全部': true
+                },
+                selectedMode: 'single',
+                data: ['全部', '前驱', '后继']
+            }],
+            series: [{
+                name: '全部',
+                type: 'graph',
+                layout: 'force',
+                force: {
+                    repulsion: [1, 100],
+                    edgeLength: [10, 500],
+                    // layoutAnimation: false
+                },
+                zlevel: 1,
+                data: this.clst.nodes,
+                links: this.clst.links,
+                roam: true,
+                focusNodeAdjacency: true,
+            }, {
+                name: '前驱',
+                type: 'graph'
+            }, {
+                name: '后继',
+                type: 'graph'
+            }]
+        }
+        this.chart.setOption(option)
+    }
+    setGroupMap = () => {
         const clusters = []
         this.props.data.forEach(v => {
             let pclst = clusters.findIndex(clst => clst.name === v.clusterName)
@@ -29,7 +69,8 @@ export default class Charts extends PureComponent {
                     links: []
                 }) - 1)
             const clst = clusters[pclst]
-            if (!isNumber(clst.nodes['n' + v.source_nodeName])) {
+            if (!isNumber(clst.nodes['n' + v.source_nodeName]))
+            {
                 clst.nodes['n' + v.source_nodeName] = clst.nodes.length
                 clst.nodes.push({
                     catagory: pclst,
@@ -39,7 +80,8 @@ export default class Charts extends PureComponent {
                 })
             }
             v.target.forEach(t => {
-                if (!isNumber(clst.nodes['n' + t.target_nodeName])) {
+                if (!isNumber(clst.nodes['n' + t.target_nodeName]))
+                {
                     clst.nodes['n' + t.target_nodeName] = clst.nodes.length
                     clst.nodes.push({
                         catagory: pclst,
@@ -52,7 +94,8 @@ export default class Charts extends PureComponent {
                     })
                 }
                 if (!(clst.links[`${'n' + v.source_nodeName}_${'n' + t.target_nodeName}`] &&
-                    clst.links[`${'n' + v.target_nodeName}_${'n' + t.source_nodeName}`])) {
+                    clst.links[`${'n' + v.target_nodeName}_${'n' + t.source_nodeName}`]))
+                {
                     clst.links[`${'n' + v.source_nodeName}_${'n' + t.target_nodeName}`] = true
                     const ps = clst.nodes['n' + v.source_nodeName], pt = clst.nodes['n' + t.target_nodeName]
                     clst.links.push({
@@ -67,9 +110,10 @@ export default class Charts extends PureComponent {
                         clst.nodes[ps].symbolSize += 0.1
                 }
             })
-            clst.catagory = pclst
-            clst.symbolSize = Math.sqrt(clst.nodes.length) + 25
+            clst.category = pclst
+            clst.symbolSize = clst.nodes.length + 15
         })
+        this.clusters = clusters
         const categories = clusters.map(v => ({ name: v.name }))
         const option = {
             legend: [{
@@ -84,6 +128,7 @@ export default class Charts extends PureComponent {
                 layout: 'force',
                 force: {
                     // 使用默认值
+                    repulsion: 100
                 },
                 zlevel: 0,
                 data: clusters,
@@ -112,52 +157,14 @@ export default class Charts extends PureComponent {
         }
         this.chart.setOption(option)
         this.chart.on('click', params => {
-            if (params.seriesName === 'cluster map') {
-                this.chart.showLoading()
-                const clst = clusters.find(v => v.name === params.data.name)
-                this.clst = clst
-                option.legend[1] = {
-                    show: true,
-                    left: 'center',
-                    selectedMode: 'single',
-                    selected: { 'cluster map': false, 'cluster map2': true },
-                    data: ['cluster map', 'cluster map2']
-                }
-                option.series[1] = {
-                    name: 'cluster map2',
-                    type: 'graph',
-                    layout: 'force',
-                    force: {
-                        repulsion: [1, 100],
-                        edgeLength: [10, 500],
-                        layoutAnimation: false
-                    },
-                    zlevel: 1,
-                    data: clst.nodes,
-                    links: clst.links,
-                    categories,
-                    roam: true,
-                    focusNodeAdjacency: true,
-                }
-                this.chart.setOption(option)
-                this.chart.hideLoading()
-            } else if (params.seriesName === 'cluster map2') {
-                const clst = clusters[params.data.catagory]
-                this.props.setCtx({
-                    id: clst.id
-                }, 'GetCluster')
-            }
+            params.seriesName === 'cluster map' && this.setClusterMap(params.data)
         })
     }
-    setForce() {
-        // todo
-    }
-    setRadar() {
+    setRadar = () => {
         this.chart.setOption({
-            title: {
-                // text: '基础雷达图'
+            tooltip: {
+                renderMode: 'richText'
             },
-            tooltip: {},
             legend: {
                 data: this.props.data.map(v => v.label),
                 left: 'left',
@@ -182,33 +189,32 @@ export default class Charts extends PureComponent {
                 ]
             },
             series: [{
-                name: '',
                 type: 'radar',
                 data: this.props.data.map(v => ({
-                    value: [v.edge_num, v.max_degree, v.density, v.coummunity_num, v.node_num, v.average_degree], // todo
+                    value: [v.edge_num, v.max_degree, v.density, v.coummunity_num, v.node_num, v.average_degree],
                     name: v.label
                 }))
             }]
         })
     }
 
-    init() {
-        this.chart = echarts.init(this.canvas.current)//, null, {renderer: 'svg'})
+    init(type = this.props.type) {
         this.chart.showLoading()
-        this.maps[this.props.type]()
+        this.maps[type]()
         this.chart.hideLoading()
     }
     componentDidMount() {
+        this.chart = echarts.init(this.chart.current)
         this.init()
-    }
-    componentWillReceiveProps() {
-        // this.init()
     }
 
     render() {
         return (
-            <div>
-                <canvas ref={this.canvas} width={this.props.width} height={this.props.height} />
+            <div ref={this.chart}
+                style={{
+                    width: this.props.width,
+                    height: this.props.height
+                }}>
             </div>
         )
     }

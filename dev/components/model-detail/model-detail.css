@@ -39,9 +39,6 @@
   display: flex;
   flex-direction: column;
 }
-.right > div:last-child {
-  min-height: calc(100% - 300px);
-}
 
 .cinfo {
   /*height: 200px;*/
