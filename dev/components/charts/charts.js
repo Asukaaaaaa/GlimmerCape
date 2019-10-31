@@ -53,6 +53,9 @@ export default class Charts extends PureComponent {
             }]
         }
         this.chart.setOption(option)
+        this.chart.on('click', param => {
+
+        })
     }
     setGroupMap = () => {
         const clusters = []
@@ -123,7 +126,7 @@ export default class Charts extends PureComponent {
                 data: categories.map(ctgr => ctgr.name),
             }],
             series: [{
-                name: "cluster map",
+                name: "group map",
                 type: 'graph',
                 layout: 'force',
                 force: {
@@ -157,7 +160,14 @@ export default class Charts extends PureComponent {
         }
         this.chart.setOption(option)
         this.chart.on('click', params => {
-            params.seriesName === 'cluster map' && this.setClusterMap(params.data)
+            if (params.seriesName === 'group map')
+            {
+                this.setClusterMap(params.data)
+                this.props.setSelect({
+                    id: params.data.id,
+                    name: params.data.name
+                })
+            }
         })
     }
     setRadar = () => {
