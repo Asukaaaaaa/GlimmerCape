@@ -34,9 +34,9 @@ const MainView = ({ setCtx, group }) => {
         </div>
     )
 }
-const ClusterSider = (data) => {
+const ClusterSider = ({ data }) => {
     return (
-        <div>
+        <div style={{ display: 'contents' }}>
             <div className={style.cinfo}>
                 <div>
                     <Icon type='bar-chart' />
@@ -75,13 +75,16 @@ const ClusterSider = (data) => {
 const GroupView = ({ group, setCtx }) => {
     const [sider, setSider] = useState('scatter')
     const [select, setSelect] = useState({})
-    let data = null
+    const [data, setData] = useState({})
     useEffect(() => {
-        setSider('loading')
-        select.id && setCtx(select, 'GetCluster').then(res => {
-            data = res
-            setSider('cluster')
-        })
+        if (select.id)
+        {
+            setSider('loading')
+            setCtx(select, 'GetCluster').then(res => {
+                setData(res)
+                setSider('cluster')
+            })
+        }
     }, [select])
     return (
         <div className={style.container}>
@@ -155,7 +158,6 @@ export default class ModelDetail extends Component {
                     // todo
                 } else if (mode === 'GetCluster')
                 {
-                    this.setState({ on: 'loading' })
                     return new Promise((resolve, reject) => $.post(host + '/result/getPickedClusterInfo', {
                         model_id: this.state.mid,
                         cluster_id: obj.id,
