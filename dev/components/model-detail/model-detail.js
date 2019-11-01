@@ -74,22 +74,24 @@ const ClusterSider = ({ data }) => {
 }
 const GroupView = ({ group, setCtx }) => {
     const [sider, setSider] = useState('scatter')
-    const [select, setSelect] = useState({})
-    const [data, setData] = useState({})
-    useEffect(() => {
-        if (select.id)
-        {
+    const [select, setSelect] = useState()
+    const [data, setData] = useState()
+    const setSelect_ = (obj) => {
+        setSelect(obj)
+        if (obj.id) {
             setSider('loading')
-            setCtx(select, 'GetCluster').then(res => {
+            return setCtx(obj, 'GetCluster').then(res => {
                 setData(res)
                 setSider('cluster')
+                return res
             })
         }
-    }, [select])
+        return
+    }
     return (
         <div className={style.container}>
             <div className={style.graph}>
-                <Charts type='group' width='1000' height='600' data={viewData.group[0]} setSelect={setSelect} />
+                <Charts type='group' width='1000' height='600' data={viewData.group[0]} setSelect={setSelect_} clusters={viewData.main[1].nodes} />
             </div>
             <div className={style.right}>
                 {{
@@ -118,8 +120,7 @@ export default class ModelDetail extends Component {
             on: 'main',
             mid: props.match.params.id,
             setCtx: ((obj, mode) => {
-                if (mode === 'SetGroup')
-                {
+                if (mode === 'SetGroup') {
                     this.setState({
                         on: 'loading',
                         ...obj
@@ -130,8 +131,7 @@ export default class ModelDetail extends Component {
                                 model_id: this.state.mid,
                                 label: obj.group
                             }, res => {
-                                if (res.resultDesc === 'Success')
-                                {
+                                if (res.resultDesc === 'Success') {
                                     fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).catch(console.log).then(res => {
                                         resolve(res)
                                     })
@@ -142,8 +142,7 @@ export default class ModelDetail extends Component {
                             $.post(host + '/result/getZpFile', {
                                 model_id: this.state.mid
                             }, res => {
-                                if (res.resultDesc === 'Success')
-                                {
+                                if (res.resultDesc === 'Success') {
                                     fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).catch(console.log).then(res => {
                                         resolve(res)
                                     })
@@ -153,18 +152,15 @@ export default class ModelDetail extends Component {
                             viewData.group = val
                             this.setState({ on: 'group' })
                         })
-                } else if (mode === 'GetCoword')
-                {
+                } else if (mode === 'GetCoword') {
                     // todo
-                } else if (mode === 'GetCluster')
-                {
+                } else if (mode === 'GetCluster') {
                     return new Promise((resolve, reject) => $.post(host + '/result/getPickedClusterInfo', {
                         model_id: this.state.mid,
                         cluster_id: obj.id,
                         label: obj.year || this.state.group
                     }, res => {
-                        if (res.resultDesc === 'Success')
-                        {
+                        if (res.resultDesc === 'Success') {
                             resolve(JSON.parse(res.data))
                         }
                     }))
@@ -179,8 +175,7 @@ export default class ModelDetail extends Component {
                 $.post(host + '/result/getRadarPath', {
                     model_id: this.state.mid
                 }, res => {
-                    if (res.resultDesc === 'Success')
-                    {
+                    if (res.resultDesc === 'Success') {
                         fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).then(res => {
                             resolve(res)
                         })
@@ -191,8 +186,7 @@ export default class ModelDetail extends Component {
                 $.post(host + '/result/getEvoFile', {
                     model_id: this.state.mid
                 }, res => {
-                    if (res.resultDesc === 'Success')
-                    {
+                    if (res.resultDesc === 'Success') {
                         fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).then(res => {
                             resolve(res)
                         })
@@ -204,8 +198,7 @@ export default class ModelDetail extends Component {
                     model_id: this.state.mid,
                     // label: '2013'
                 }, res => {
-                    if (res.resultDesc === 'Success')
-                    {
+                    if (res.resultDesc === 'Success') {
                         fetch(host + res.data.split('Web_NEview')[1]).then(r => r.json()).then(res => {
                             resolve(res)
                         })

@@ -6,7 +6,7 @@ import { isNumber } from 'util'
 export default class Charts extends PureComponent {
     constructor(props) {
         super(props)
-        this.chart = React.createRef()
+        this.chartRef = React.createRef()
         this.maps = {
             'cluster': this.setClusterMap,
             'group': this.setGroupMap,
@@ -14,14 +14,69 @@ export default class Charts extends PureComponent {
         }
     }
 
-    setClusterMap = ({ name }) => {
-        this.clst = this.clusters.find(v => v.name === name)
+    setClusterMap = (data) => {
+        this.clst = this.clusters.find(v => v.name === data.cluster_name)
+        const froms = [[], []], tos = [[], []]
+        data.cluster_nodes.forEach(v => {
+            if (v.origin !== 'null') {
+                froms[0].push({
+                    name: v.key,
+                    id: v.id,
+                    info: v
+                })
+                if (!froms[v.origin]) {
+                    const c = this.props.clusters.find(c => c.ID === v.origin)
+                    froms[0].push({
+                        name: c.name,
+                        id: c.ID,
+                        info: c
+                    })
+                    froms[1].push({
+                        source: '' + c.ID,
+                        target: '' + v.id
+                    })
+                    froms[v.origin] = c
+                } else {
+                    const c = froms[v.origin]
+                    froms[1].push({
+                        source: '' + c.ID,
+                        target: '' + v.id
+                    })
+                }
+            }
+            if (v.aim !== 'null') {
+                tos[0].push({
+                    name: v.key,
+                    id: v.id,
+                    info: v
+                })
+                if (!tos[v.aim]) {
+                    const c = this.props.clusters.find(c => c.ID === v.aim)
+                    tos[0].push({
+                        name: c.name,
+                        id: c.ID,
+                        info: c
+                    })
+                    tos[1].push({
+                        source: '' + v.id,
+                        target: '' + c.ID
+                    })
+                    tos[v.aim] = c
+                } else {
+                    const c = tos[v.aim]
+                    tos[1].push({
+                        source: '' + v.id,
+                        target: '' + c.ID,
+                    })
+                }
+            }
+        })
         const option = {
-            title: {
+            /* title: {
                 text: name,
                 top: 'top',
                 left: 'center',
-            },
+            },*/
             legend: [{
                 show: true,
                 selected: {
@@ -39,17 +94,63 @@ export default class Charts extends PureComponent {
                     edgeLength: [10, 500],
                     // layoutAnimation: false
                 },
-                zlevel: 1,
                 data: this.clst.nodes,
                 links: this.clst.links,
                 roam: true,
                 focusNodeAdjacency: true,
+                label: {
+                    show: true
+                },
+                itemStyle: {
+                    color: '#333333',
+                    borderColor: '#fff',
+                    borderWidth: 1,
+                    shadowBlur: 10,
+                    shadowColor: 'rgba(0, 0, 0, 0.3)'
+                },
+                lineStyle: {
+                    color: 'gray',
+                    // curveness: 0.3
+                },
+                emphasis: {
+                    lineStyle: {
+                        width: 10
+                    }
+                }
             }, {
                 name: '前驱',
-                type: 'graph'
+                type: 'graph',
+                layout: 'force',
+                force: {
+                    repulsion: 100,
+                    edgeLength: 100,
+                    // layoutAnimation: false
+                },
+                data: froms[0],
+                links: froms[1],
+                edgeSymbol: ['none', 'arrow'],
+                roam: true,
+                focusNodeAdjacency: true,
+                label: {
+                    show: true
+                },
             }, {
                 name: '后继',
-                type: 'graph'
+                type: 'graph',
+                layout: 'force',
+                force: {
+                    repulsion: 100,
+                    edgeLength: 100,
+                    // layoutAnimation: false
+                },
+                data: tos[0],
+                links: tos[1],
+                edgeSymbol: ['none', 'arrow'],
+                roam: true,
+                focusNodeAdjacency: true,
+                label: {
+                    show: true
+                },
             }]
         }
         this.chart.setOption(option)
@@ -64,16 +165,12 @@ export default class Charts extends PureComponent {
             pclst === -1 &&
                 (pclst = clusters.push({
                     name: v.clusterName,
-                    id: v.clusterId,
-                    label: {
-                        show: true
-                    },
+                    cid: v.clusterId,
                     nodes: [],
                     links: []
                 }) - 1)
             const clst = clusters[pclst]
-            if (!isNumber(clst.nodes['n' + v.source_nodeName]))
-            {
+            if (!isNumber(clst.nodes['n' + v.source_nodeName])) {
                 clst.nodes['n' + v.source_nodeName] = clst.nodes.length
                 clst.nodes.push({
                     catagory: pclst,
@@ -83,34 +180,27 @@ export default class Charts extends PureComponent {
                 })
             }
             v.target.forEach(t => {
-                if (!isNumber(clst.nodes['n' + t.target_nodeName]))
-                {
+                if (!isNumber(clst.nodes['n' + t.target_nodeName])) {
                     clst.nodes['n' + t.target_nodeName] = clst.nodes.length
                     clst.nodes.push({
                         catagory: pclst,
                         name: t.target_nodeName,
                         id: t.target_nodeID,
                         symbolSize: 6,
-                        label: {
-                            show: true
-                        },
                     })
                 }
                 if (!(clst.links[`${'n' + v.source_nodeName}_${'n' + t.target_nodeName}`] &&
-                    clst.links[`${'n' + v.target_nodeName}_${'n' + t.source_nodeName}`]))
-                {
+                    clst.links[`${'n' + v.target_nodeName}_${'n' + t.source_nodeName}`])) {
                     clst.links[`${'n' + v.source_nodeName}_${'n' + t.target_nodeName}`] = true
                     const ps = clst.nodes['n' + v.source_nodeName], pt = clst.nodes['n' + t.target_nodeName]
                     clst.links.push({
-                        source: ps,
-                        target: pt
+                        source: '' + clst.nodes[ps].id,
+                        target: '' + clst.nodes[pt].id
                     })
-                    if (clst.nodes[ps].symbolSize < 20)
+                    if (clst.nodes[ps].symbolSize < 30)
                         clst.nodes[ps].symbolSize += 3
-                    else if (clst.nodes[ps].symbolSize < 40)
+                    else
                         clst.nodes[ps].symbolSize += 1
-                    else if (clst.nodes[ps].symbolSize < 60)
-                        clst.nodes[ps].symbolSize += 0.1
                 }
             })
             clst.category = pclst
@@ -139,6 +229,9 @@ export default class Charts extends PureComponent {
                 categories,
                 roam: true,
                 focusNodeAdjacency: true,
+                label: {
+                    show: true
+                },
                 itemStyle: {
                     normal: {
                         borderColor: '#fff',
@@ -147,26 +240,19 @@ export default class Charts extends PureComponent {
                         shadowColor: 'rgba(0, 0, 0, 0.3)'
                     }
                 },
-                lineStyle: {
-                    color: 'source',
-                    curveness: 0.3
-                },
-                emphasis: {
-                    lineStyle: {
-                        width: 10
-                    }
-                }
             }]
         }
         this.chart.setOption(option)
         this.chart.on('click', params => {
-            if (params.seriesName === 'group map')
-            {
-                this.setClusterMap(params.data)
+            if (params.seriesName === 'group map') {
                 this.props.setSelect({
-                    id: params.data.id,
+                    id: params.data.cid,
                     name: params.data.name
+                }).then(res => {
+                    this.setClusterMap(res)
+                    this.chart.hideLoading()
                 })
+                this.chart.showLoading()
             }
         })
     }
@@ -214,13 +300,13 @@ export default class Charts extends PureComponent {
         this.chart.hideLoading()
     }
     componentDidMount() {
-        this.chart = echarts.init(this.chart.current)
+        this.chart = echarts.init(this.chartRef.current)
         this.init()
     }
 
     render() {
         return (
-            <div ref={this.chart}
+            <div ref={this.chartRef}
                 style={{
                     width: this.props.width,
                     height: this.props.height
