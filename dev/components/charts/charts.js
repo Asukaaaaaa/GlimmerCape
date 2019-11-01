@@ -7,6 +7,7 @@ export default class Charts extends PureComponent {
     constructor(props) {
         super(props)
         this.chartRef = React.createRef()
+        this.loaderRef = React.createRef()
         this.maps = {
             'cluster': this.setClusterMap,
             'group': this.setGroupMap,
@@ -315,11 +316,21 @@ export default class Charts extends PureComponent {
 
     render() {
         return (
-            <div ref={this.chartRef}
+            <div className={style.main}
                 style={{
                     width: this.props.width,
                     height: this.props.height
                 }}>
+                <div ref={this.chartRef}></div>
+                <button className={style.loader}
+                    onClick={e => {
+                        const loader = this.loaderRef.current,
+                            [chart] = $('canvas', this.chartRef.current)
+                        loader.href = chart.toDataURL('image/png')
+                        loader.download = 'chart.png'
+                        loader.click()
+                    }}>Download</button>
+                <a ref={this.loaderRef}></a>
             </div>
         )
     }

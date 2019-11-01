@@ -118,7 +118,7 @@ const ModelForm = ({ form, datasets, handleSubmit, pid }) => {
                             message.warning({ content: `创建 ${values.model_name} 时发生了错误!`, key: 'loadModel' })
                             handleSubmit('update')
                         })
-                        message.loading({ content: '创建中...', key: 'loadModel', duration: 999 })
+                        message.loading({ content: '创建中...', key: 'loadModel', duration: 5 }) // todo
                         handleSubmit('exit')
                     }
                 })
@@ -303,7 +303,7 @@ export default class ProjectDetail extends Component {
                                 render={(text, record) => (
                                     <span>{new Date(text).toLocaleString()}</span>
                                 )} />
-                            <Column title="Action" key="action"
+                            <Column title="操作" key="action"
                                 render={(text, record) => (
                                     <span>
                                         <a download={`${record.datasetId}_${record.datasetName}`}
@@ -342,7 +342,7 @@ export default class ProjectDetail extends Component {
                                 render={text => Mapping.sortFlag[text]} />
                             <Column title="更新时间" dataIndex="modifyTime" key="time"
                                 render={(text, record) => new Date(text).toLocaleString()} />
-                            <Column title="Action" key="action"
+                            <Column title="操作" key="action"
                                 render={(text, record) => (
                                     <span>
                                         <Link to={`/model/${record.modelId}`}>查看</Link>
