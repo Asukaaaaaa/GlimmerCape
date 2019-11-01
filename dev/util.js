@@ -2,10 +2,12 @@
 const debounce = (f, time) => {
     let handle = -1
     return (...args) => {
-        if (handle > -1) {
+        if (handle > -1)
+        {
             handle && clearTimeout(handle)
             handle = setTimeout(() => f(...args), time)
-        } else if (handle === -1) {
+        } else if (handle === -1)
+        {
             f(...args)
             handle = 0
         }
@@ -15,16 +17,28 @@ const throttle = (f, time) => {
     let last
     return (...args) => {
         let now = new Date().getTime()
-        if (now - last > time || !last) {
+        if (now - last > time || !last)
+        {
             last = now
             f(...args)
         }
     }
 }
 
+const download = function () {
+    const a = document.createElement('a')
+    document.body.appendChild(a)
+    return (url, name) => {
+        a.href = url
+        a.download = name
+        a.click()
+    }
+}
+
 const _ = {
     debounce,
-    throttle
+    throttle,
+    download
 }
 
 const ClassNames = (...args) => args.reduce((acc, val, i) => acc + (val || '') + ' ', '')
@@ -52,10 +66,10 @@ import mail from '../static/img/mail.svg'
 import questionCircle from '../static/img/question-circle.svg'
 import telephone from '../static/img/telephone.svg'
 import userCenter from '../static/img/user-center.svg'
-import download from '../static/img/download-fill.svg'
+import downloadSvg from '../static/img/download-fill.svg'
 
 const imgs = {
-    logo, cross, test, detail, edit, mail, questionCircle, telephone, userCenter, download
+    logo, cross, test, detail, edit, mail, questionCircle, telephone, userCenter, downloadSvg
 }
 
 export {

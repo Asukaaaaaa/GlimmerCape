@@ -1,9 +1,12 @@
 import React, { Component, PureComponent } from 'react'
 
-import { ClassNames } from '../../util'
+import { _, ClassNames, host } from '../../util'
 import style from './table.css'
 
 export default class Table extends PureComponent {
+    constructor(props) {
+        super(props)
+    }
     componentWillMount() {
         this.init(this.props)
     }
@@ -16,9 +19,11 @@ export default class Table extends PureComponent {
         })
 
         const getRowIndex = target => {
-            if (target.tagName === 'TR') {
+            if (target.tagName === 'TR')
+            {
                 return $(target).index()
-            } else if (target.tagName === 'TD') {
+            } else if (target.tagName === 'TD')
+            {
                 return $(target).parent('tr').index()
             }
         }
@@ -53,9 +58,11 @@ export default class Table extends PureComponent {
     handleWheel = e => {
         const { offsetHeight, scrollTop, scrollHeight } = e.currentTarget
         const height = offsetHeight + scrollTop
-        if (height >= scrollHeight - 1) {
+        if (height >= scrollHeight - 1)
+        {
             this.setState({ i: this.state.i + 1 })
-        } else if (scrollTop === 0 && this.state.i > 1) {
+        } else if (scrollTop === 0 && this.state.i > 1)
+        {
             this.setState({ i: this.state.i - 1 })
         }
     }
@@ -87,7 +94,7 @@ export default class Table extends PureComponent {
                                 {data.map((v, i) => (
                                     <tr>
                                         {fixedCols.map((props, i) => (
-                                            <td key={i}>
+                                            <td title={v[props.dataIndex]} key={i}>
                                                 {v[props.dataIndex]}
                                             </td>
                                         ))}

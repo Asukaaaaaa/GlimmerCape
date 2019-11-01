@@ -85,7 +85,8 @@ export default class Charts extends PureComponent {
                 left: 'center',
             },*/
             legend: [{
-                show: true,
+                left: 'left',
+                orient: 'vertical',
                 selected: {
                     '全部': true
                 },
@@ -160,7 +161,7 @@ export default class Charts extends PureComponent {
                 },
             }]
         }
-        this.chart.setOption(option)
+        this.chart.setOption(option, true)
         this.chart.on('click', param => {
 
         })
@@ -252,7 +253,7 @@ export default class Charts extends PureComponent {
                 },
             }]
         }
-        this.chart.setOption(option)
+        this.chart.setOption(option, true)
         this.chart.on('click', params => {
             if (params.seriesName === 'group map')
             {
@@ -301,7 +302,7 @@ export default class Charts extends PureComponent {
                     name: v.label
                 }))
             }]
-        })
+        }, true)
     }
 
     init(type = this.props.type) {
@@ -312,6 +313,10 @@ export default class Charts extends PureComponent {
     componentDidMount() {
         this.chart = echarts.init(this.chartRef.current)
         this.init()
+    }
+    componentWillReceiveProps(props) {
+        if (!props.cinfo && this.props.cinfo)
+            this.init()
     }
 
     render() {

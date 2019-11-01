@@ -1,7 +1,7 @@
 import React, { Component, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { Tabs, Table, Divider, Tag, Button, Icon, Modal, Form, Input, Upload, Select, Spin, message } from 'antd'
+import { Tabs, Table, Divider, Tag, Button, Tooltip, Icon, Modal, Form, Input, Upload, Select, Spin, message } from 'antd'
 const { TabPane } = Tabs, { Column, ColumnGroup } = Table, { Option } = Select
 
 import { host } from '../../util'
@@ -124,14 +124,28 @@ const ModelForm = ({ form, datasets, handleSubmit, pid }) => {
                 })
             }}
         >
-            <Form.Item label='模型名称'>
+            <Form.Item label={
+                <span>
+                    模型名称&nbsp;
+                    <Tooltip title="代表模型的唯一标志。">
+                        <Icon type="question-circle-o" />
+                    </Tooltip>
+                </span>
+            }>
                 {getFieldDecorator('model_name', {
                     rules: [{ required: true, message: 'Please input model name' }],
                 })(
                     <Input placeholder="Model Name" />,
                 )}
             </Form.Item>
-            <Form.Item label='选择数据集'>
+            <Form.Item label={
+                <span>
+                    选择数据集&nbsp;
+                    <Tooltip title="可选择数据中心中已上传数据，一个模型只能对应于一个数据集，而一个数据集可以属于多个模型。">
+                        <Icon type="question-circle-o" />
+                    </Tooltip>
+                </span>
+            }>
                 {getFieldDecorator('dataset_id', {
                     // initialValue: datasets.length ? '0' : '',
                     rules: [{ required: true, message: 'Should select an dataset' }],
@@ -149,7 +163,14 @@ const ModelForm = ({ form, datasets, handleSubmit, pid }) => {
                     </Select>
                 )}
             </Form.Item>
-            <Form.Item label="社区分区算法" >
+            <Form.Item label={
+                <span>
+                    社区分区算法&nbsp;
+                    <Tooltip title=''>
+                        <Icon type="question-circle-o" />
+                    </Tooltip>
+                </span>
+            } >
                 {getFieldDecorator('detector_flag', {
                     initialValue: '0'
                 })(
@@ -161,7 +182,11 @@ const ModelForm = ({ form, datasets, handleSubmit, pid }) => {
                 )}
             </Form.Item>
             {isCmNum ?
-                <Form.Item label='社区数量'>
+                <Form.Item label={
+                    <span>
+                        社区数量
+                    </span>
+                }>
                     {getFieldDecorator('community_num', {
                         rules: [{ required: true }],
                         initialValue: '1'
@@ -169,7 +194,14 @@ const ModelForm = ({ form, datasets, handleSubmit, pid }) => {
                         <Input />,
                     )}
                 </Form.Item> : null}
-            <Form.Item label="社区排序方法" >
+            <Form.Item label={
+                <span>
+                    社区排序方法&nbsp;
+                    <Tooltip title='对学科主题进行排序。有两种排序方法：一是根据学科主题的词汇规模或者文档规模，即节点数量；二是将社区看做节点，计算社区在网络中的度值，根据社区的度值进行排序。'>
+                        <Icon type="question-circle-o" />
+                    </Tooltip>
+                </span>
+            }>
                 {getFieldDecorator('sort_flag', {
                     initialValue: '0'
                 })(
@@ -179,7 +211,14 @@ const ModelForm = ({ form, datasets, handleSubmit, pid }) => {
                     </Select>
                 )}
             </Form.Item>
-            <Form.Item label="社区相似度系数" >
+            <Form.Item label={
+                <span>
+                    社区相似度系数&nbsp;
+                    <Tooltip title='在进行社区演化分析过程中，需要寻找社区前驱和后继，而其本质上是一个度量社区相似度的问题，因此提供5种相似度测量指标，即为节点比重后向寻找、节点比重前向寻找、余弦相似度、扩展Jaccard系数、核心节点相似度计算。'>
+                        <Icon type="question-circle-o" />
+                    </Tooltip>
+                </span>
+            }>
                 {getFieldDecorator('similarity_flag', {
                     initialValue: '0'
                 })(
@@ -192,7 +231,14 @@ const ModelForm = ({ form, datasets, handleSubmit, pid }) => {
                     </Select>
                 )}
             </Form.Item>
-            <Form.Item label='阈值'>
+            <Form.Item label={
+                <span>
+                    阈值&nbsp;
+                    <Tooltip title='计算社区相似度的阈值设定。'>
+                        <Icon type="question-circle-o" />
+                    </Tooltip>
+                </span>
+            }>
                 {getFieldDecorator('similarity_threshold', {
                     rules: [{ required: true, message: 'Please input model name!' }],
                     initialValue: '0.3'
@@ -306,8 +352,8 @@ export default class ProjectDetail extends Component {
                             <Column title="操作" key="action"
                                 render={(text, record) => (
                                     <span>
-                                        <a download={`${record.datasetId}_${record.datasetName}`}
-                                            href={`${host}/dataset/downloadDataset?dataset_id=${record.datasetId}`}
+                                        <a href={`${host}/dataset/downloadDataset?dataset_id=${record.datasetId}`}
+                                            download={`${record.datasetId}_${record.datasetName}`}
                                         >下载</a>
                                         <Divider type="vertical" />
                                         <a onClick={
