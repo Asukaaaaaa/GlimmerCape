@@ -8,8 +8,7 @@ import Projects from '../../components/projects/projects'
 import User from '../../components/user/user'
 import ProjectDetail from '../../components/project-detail/project-detail'
 import ModelDetail from '../../components/model-detail/model-detail'
-
-import SvgGraph from '../../components/Svg-graph/graph'
+import Toolbar from '../../components/toolbar/toolbar'
 
 import style from './main.css'
 
@@ -38,7 +37,7 @@ export default class Main extends Component {
                     <Route path='/project/:id' component={ProjectDetail} />
                     <Route path='/model/:id' component={ModelDetail} />
                 </Switch>
-
+                <Toolbar />
             </div>
         )
     }
