@@ -22,7 +22,8 @@ export default class Sankey extends Component {
     Head() {
         const { minYear, maxYear, piece } = this.props
         const res = []
-        for (let i = minYear; i <= maxYear; ++i) {
+        for (let i = minYear; i <= maxYear; ++i)
+        {
             res.push(
                 <g key={i}>
                     <rect x={piece * (i - minYear) + 10} y='0' width={piece - 20} height='200' value={'' + i}></rect>
@@ -59,7 +60,8 @@ export default class Sankey extends Component {
     Belts() {
         const { nodes, minYear, blocks } = this.props
         const res = [], nodesBuff = {}
-        for (let attr in nodes) {
+        for (let attr in nodes)
+        {
             const node = nodes[attr]
             nodesBuff[attr] = node.links.map(l => ({ from: 0, to: 0 }))
         }
@@ -100,13 +102,16 @@ export default class Sankey extends Component {
     isActive(src, tar) {
         const state = this.props.that.state
         const comp = (a, b) => a.name === b.name && a.year === b.year
-        if (state.active) {
-            if (state.tar) {
+        if (state.active)
+        {
+            if (state.tar)
+            {
                 if (tar)
                     return comp(src, state.src) && comp(tar, state.tar)
                 else
                     return comp(src, state.src) || comp(src, state.tar)
-            } else {
+            } else
+            {
                 if (tar)
                     return src.name === state.src.name || tar.name === state.src.name
                 else
@@ -121,7 +126,9 @@ export default class Sankey extends Component {
     }
     handleDbClickBlock(e) {
         const { that, nodes } = this.props, info = JSON.parse(e.target.parentNode.getAttribute('name')).src
-        that.props.setCtx(info, 'GetCluster')
+        that.props.setCtx({
+            on: 'group',
+        }, 'common')
     }
     handleHoverBlock(e) {
         this.setState({
@@ -156,11 +163,11 @@ export default class Sankey extends Component {
                 <g className={style.blocks}
                     onClick={
                         (() => {
-                            let last = 0
+                            window.lastClick || (window.lastClick = 0)
                             return e => {
-                                if (e.timeStamp - last < 300)
+                                if (e.timeStamp - window.lastClick < 300)
                                     this.handleDbClickBlock(e)
-                                last = e.timeStamp
+                                window.lastClick = e.timeStamp
                             }
                         })()
                     }

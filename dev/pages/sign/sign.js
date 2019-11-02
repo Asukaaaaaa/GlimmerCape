@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Link, Route } from 'react-router-dom'
 
-import { Form, Icon, Input, Button, Checkbox, Upload } from 'antd'
+import { Form, Icon, Input, Button, Checkbox, Upload, message } from 'antd'
 
 import { host } from '../../util'
 import style from './sign.css'
@@ -28,19 +28,26 @@ class NormalLoginForm extends React.Component {
         const { handleSign } = this.props
         e.preventDefault()
         this.props.form.validateFields((err, values) => {
-            if (!err) {
+            if (!err)
+            {
                 // TODO
                 if (this.state.sign === 'in')
                     $.post(host + '/user/login', {
                         account: values.username,
                         password: values.password
                     }, res => {
-                        if (res.resultDesc === 'Success') {
+                        if (res.resultDesc === 'Success')
+                        {
                             window.user_id = res.data
+                            values.account = values.username
                             handleSign(values)
+                        } else
+                        {
+                            message.warning(res.resultDesc)
                         }
                     })
-                else if (this.state.sign === 'up') {
+                else if (this.state.sign === 'up')
+                {
                     const formData = new FormData()
                     formData.append('user.account', values.username)
                     formData.append('user.password', values.password)
@@ -52,8 +59,13 @@ class NormalLoginForm extends React.Component {
                         contentType: false,
                         data: formData,
                         success: res => {
-                            if (res.resultDesc === 'Success') {
+                            if (res.resultDesc === 'Success')
+                            {
+                                values.account = values.username
                                 handleSign(values)
+                            } else
+                            {
+                                message.warning(res.resultDesc)
                             }
                         }
                     })

@@ -90,8 +90,8 @@ const DataForm = ({ form, handleSubmit, pid }) => {
                 bottom: '0',
                 right: '0'
             }}>
-                <a href={host + '/数据集模板.xls'}
-                    download='数据集模板.xls'>数据集模板</a>
+                <a href={host + '/数据集模板.xlsx'}
+                    download='数据集模板.xlsx'>数据集模板</a>
             </div>
         </Form>
     )

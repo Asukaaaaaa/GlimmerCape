@@ -28,8 +28,12 @@ class App extends Component {
                     />
                     <Switch>
                         <Route path='/sign'
-                            render={() => <SignForm handleSign={user => this.setState({ user })} />}
-                        />
+                            render={() => (
+                                <SignForm
+                                    handleSign={user =>
+                                        this.setState({ user })
+                                    } />
+                            )} />
                         <Route path='/' component={Main} />
                     </Switch>
                 </Router >
