@@ -126,8 +126,9 @@ export default class Sankey extends Component {
     }
     handleDbClickBlock(e) {
         const { that, nodes } = this.props, info = JSON.parse(e.target.parentNode.getAttribute('name')).src
+        that.props.setCtx(info, 'SetGroup')
         that.props.setCtx({
-            on: 'group',
+            cinfo: info
         }, 'common')
     }
     handleHoverBlock(e) {

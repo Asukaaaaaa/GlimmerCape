@@ -61,8 +61,7 @@ class NormalLoginForm extends React.Component {
                         success: res => {
                             if (res.resultDesc === 'Success')
                             {
-                                values.account = values.username
-                                handleSign(values)
+                                this.setState({ sign: 'in' })
                             } else
                             {
                                 message.warning(res.resultDesc)

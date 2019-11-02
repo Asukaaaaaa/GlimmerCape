@@ -108,6 +108,9 @@ const GroupView = ({ mid, group, cinfo, setCtx }) => {
             })
         }
     }
+    useEffect(() => {
+        cinfo && setSelect_(cinfo)
+    }, [])
     return (
         <div className={style.container}>
             <div className={style.graph}>
@@ -145,13 +148,13 @@ export default class ModelDetail extends Component {
                 {
                     this.setState({
                         on: 'loading',
-                        ...obj
+                        group: obj.group || obj.year
                     })
                     return Promise.all([
                         new Promise((resolve, reject) => {
                             $.post(host + '/result/getGraphInfo', {
                                 model_id: this.state.mid,
-                                label: obj.group
+                                label: obj.group || obj.year
                             }, res => {
                                 if (res.resultDesc === 'Success')
                                 {
