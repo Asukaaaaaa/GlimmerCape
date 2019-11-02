@@ -85,6 +85,14 @@ const DataForm = ({ form, handleSubmit, pid }) => {
                     Create
                 </Button>
             </Form.Item>
+            <div style={{
+                position: 'absolute',
+                bottom: '0',
+                right: '0'
+            }}>
+                <a href={host + '/数据集模板.xls'}
+                    download='数据集模板.xls'>数据集模板</a>
+            </div>
         </Form>
     )
 }
