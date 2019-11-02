@@ -6,6 +6,8 @@ import style from './table.css'
 export default class Table extends PureComponent {
     constructor(props) {
         super(props)
+
+        this.contextmenu = React.createRef()
     }
     componentWillMount() {
         this.init(this.props)
@@ -73,7 +75,34 @@ export default class Table extends PureComponent {
         cols = cols.slice(1)
 
         return (
-            <div className={style.main}>
+            <div className={style.main}
+                onContextMenu={e => {
+                    e.preventDefault()
+                    const menu = this.contextmenu.current
+                    menu.style.visibility = 'visible'
+                    menu.style.left = e.clientX + 'px'
+                    menu.style.top = e.clientY + 'px'
+                }}
+                onClick={e => {
+                    if (e.button === 1)
+                    {
+                        menu.style.visibility = 'hidden'
+                    }
+                }}>
+                <div style={{
+                    visibility: 'hidden',
+                    position: 'fixed',
+                    width: '100px',
+                    textAlign: 'center',
+                    backgroundColor: 'white',
+                    boxShadow: '0 0 5px 2px rgba(0, 0, 0, 0.1)'
+                }} ref={this.contextmenu}>
+                    <div>
+                        <a onClick={e => {
+                            this.props.export()
+                        }}>导出</a>
+                    </div>
+                </div>
                 <div className={style.fixed}>
                     <div className={style['head-wrapper']}>
                         <table className={style.head}>

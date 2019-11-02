@@ -25,7 +25,7 @@ const throttle = (f, time) => {
     }
 }
 
-const download = function () {
+const download = (function () {
     const a = document.createElement('a')
     document.body.appendChild(a)
     return (url, name) => {
@@ -33,7 +33,7 @@ const download = function () {
         a.download = name
         a.click()
     }
-}
+})()
 
 const _ = {
     debounce,

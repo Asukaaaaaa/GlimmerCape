@@ -12,8 +12,18 @@
 </head>
 
 <body>
-    <div class="main" id="root"></div>
-    <script src="./test.bundle.js"></script>
+    <!-- A <div> element with a context menu -->
+    <div contextmenu="popup-menu">
+        Right-click to see the adjusted context menu
+    </div>
+
+    <menu type="context" id="popup-menu">
+        <menuitem>Action</menuitem>
+        <menuitem>Another action</menuitem>
+        <hr />
+        <menuitem>Separated action</menuitem>
+    </menu>
+
 </body>
 
 </html>

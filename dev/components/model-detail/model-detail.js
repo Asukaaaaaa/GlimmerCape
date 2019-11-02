@@ -7,11 +7,11 @@ import Table, { Column } from '../table/table'
 import Charts from '../charts/charts'
 import SvgGraph from '../Svg-graph/graph'
 
-import { host } from '../../util'
+import { _, host } from '../../util'
 import style from './model-detail.css'
 import ClusterData from '../../../static/cluster.json'
 
-const MainView = ({ setCtx, group }) => {
+const MainView = ({ mid, setCtx, group }) => {
     const names = Object.keys(viewData.main[2][0])
     names.splice(names.findIndex(v => v === 'words'), 1)
     return (
@@ -22,7 +22,15 @@ const MainView = ({ setCtx, group }) => {
             <div className={style.right}>
                 <Charts type='radar' width='400px' height='300px' data={viewData.main[0]} />
                 <div style={{ height: 'calc(100% - 300px)' }}>
-                    <Table data={viewData.main[2]}>
+                    <Table data={viewData.main[2]}
+                        export={() => {
+                            fetch(host + '/result/ExportCoword?model_id=' + mid)
+                                .then(res => res.json())
+                                .then(res => {
+                                    res = res.data.split('Web_NEview')[1]
+                                    _.download(host + res, '词列表.xls')
+                                })
+                        }}>
                         <Column width='30%' title="词汇" dataIndex="word" key="-1" />
                         {names.map((v, i) => (
                             <Column title={v} dataIndex={v} key={i}
@@ -34,7 +42,7 @@ const MainView = ({ setCtx, group }) => {
         </div>
     )
 }
-const ClusterSider = ({ data }) => {
+const ClusterSider = ({ data, mid, group }) => {
     return (
         <div style={{ display: 'contents' }}>
             <div className={style.cinfo}>
@@ -59,7 +67,18 @@ const ClusterSider = ({ data }) => {
                 </div>
             </div>
             <div style={{ minHeight: 'calc(100% - 300px)' }}>
-                <Table data={data.cluster_nodes}>
+                <Table data={data.cluster_nodes}
+                    export={() => {
+                        fetch(host + '/result/ExportClusterInfo' +
+                            '?model_id=' + mid +
+                            '&label=' + group +
+                            '&cluster_id=' + data.cluster_ID)
+                            .then(res => res.json())
+                            .then(res => {
+                                res = res.data.split('Web_NEview')[1]
+                                _.download(host + res, '社区数据.xls')
+                            })
+                    }}>
                     <Column width='30%' title="词汇" dataIndex="key" key="key" />
                     <Column title="Z-value" dataIndex="z_value" key="z_value"
                         sorter={(a, b) => b.z_value - a.z_value} />
@@ -72,7 +91,7 @@ const ClusterSider = ({ data }) => {
         </div>
     )
 }
-const GroupView = ({ group, cinfo, setCtx }) => {
+const GroupView = ({ mid, group, cinfo, setCtx }) => {
     const [sider, setSider] = useState('scatter')
     const [select, setSelect] = useState()
     const [data, setData] = useState()
@@ -98,7 +117,7 @@ const GroupView = ({ group, cinfo, setCtx }) => {
                 {{
                     loading: <Spin className={style.loading} indicator={<Icon type="loading" style={{ fontSize: 24 }} spin />} />,
                     scatter: <SvgGraph graph='scatter' data={[viewData.group[1].find(v => v.label == group)]} />,
-                    cluster: <ClusterSider data={data} />
+                    cluster: <ClusterSider data={data} mid={mid} group={group} />
                 }[sider]}
             </div>
         </div>
@@ -108,7 +127,7 @@ const ClusterView = ({ }) => {
 
 }
 const Loading = () => (
-    <Spin className={style.loading} indicator={<Icon type="loading" style={{ fontSize: 24 }} spin />} />
+    <Spin className={style.loading} indicator={<Icon type="loading" style={{ fontSize: 36 }} spin />} />
 )
 
 const viewData = {}
@@ -227,6 +246,10 @@ export default class ModelDetail extends Component {
         viewData[state.on] || (state.on = 'loading')
         return state
     }
+    componentWillUnmount() {
+        delete viewData.main
+        delete viewData.group
+    }
 
     render() {
         let step
@@ -243,7 +266,7 @@ export default class ModelDetail extends Component {
                     current={step}
                     onChange={s => {
                         s == 0 && this.setState({ on: 'main' })
-                        s == 1 && this.setState({ on: 'group', cinfo: null })
+                        s == 1 && viewData.group && this.setState({ on: 'group', cinfo: null })
                     }}>
                     <Step title="Main" description="" />
                     <Step title="Slice" description="" />

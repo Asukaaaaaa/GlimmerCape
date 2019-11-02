@@ -46,7 +46,8 @@ const SankeyGraph = {
                 value: l.value
             })
         })
-        for (let attr in nodes) {
+        for (let attr in nodes)
+        {
             const n = nodes[attr]
             n.links.forEach(l => l.value = getMax(
                 l.from.reduce((acc, v, i) => acc + v.value, 0),
@@ -62,7 +63,8 @@ const SankeyGraph = {
         values = new Array(len).fill(0)
         blocks = values.map(_ => [])
         let index = 0
-        for (let attr in nodes) {
+        for (let attr in nodes)
+        {
             const n = nodes[attr]
             n.links.forEach(l => {
                 const i = Number.parseInt(l.year) - minYear
@@ -97,11 +99,13 @@ const CircularGraph = {
         let nodes = {}, links = data.links, nodeNum = 0, linkSum = 0, linkMax = 0
         data.nodes.forEach(n => {
             const node = nodes[n.name]
-            if (node) {
+            if (node)
+            {
                 node.links.push({ year: n.group, from: 0, to: 0 })
                 nodeNum++
             }
-            else {
+            else
+            {
                 nodes[n.name] = { name: n.name, id: n.ID, size: n.num, links: [{ year: n.group, from: 0, to: 0 }] }
                 nodeNum++
             }
@@ -123,7 +127,8 @@ const CircularGraph = {
         gap = PI / 6 / nodeNum // (2 PI / 12)
         peri = PI / 6 * 11
         let p = 0, index = 0
-        for (let attr in nodes) {
+        for (let attr in nodes)
+        {
             const node = nodes[attr]
             node.color = Color[index++ % Color.length]
             node.links.length > 1 && node.links.sort((a, b) => Number.parseInt(a.year) - Number.parseInt(b.year))
@@ -153,12 +158,14 @@ const ScatterGraph = {
         const datas = data.map((d, i) => {
             const year = d.label, nodes = d.zp
             const range = nodes.reduce((acc, v, i) => {
-                if (i) {
+                if (i)
+                {
                     acc.x[0] = acc.x[0] < v.weight ? acc.x[0] : v.weight
                     acc.x[1] = acc.x[1] > v.weight ? acc.x[1] : v.weight
                     acc.y[0] = acc.y[0] < v.height ? acc.y[0] : v.height
                     acc.y[1] = acc.y[1] > v.height ? acc.y[1] : v.height
-                } else {
+                } else
+                {
                     acc.x[0] = acc.x[1] = v.weight
                     acc.y[0] = acc.y[1] = v.height
                 }
@@ -192,12 +199,15 @@ const CircleFlowGraph = {
         let sum = 0, fromSum = 0, toSum = 0
         nodes.forEach(v => {
             // TODO
-            if (v.origin !== 'null') {
+            if (v.origin !== 'null')
+            {
                 froms.push(v)
                 fromSum += v.weight
-                if (origins[v.origin]) {
+                if (origins[v.origin])
+                {
                     origins[v.origin].counts++
-                } else {
+                } else
+                {
                     const node = that.sankey.nodes.find(n => n.ID === v.origin)
                     origins[v.origin] = {
                         name: node.name,
@@ -205,15 +215,19 @@ const CircleFlowGraph = {
                         counts: 1
                     }
                 }
-            } else {
+            } else
+            {
                 _froms.push(v)
             }
-            if (v.aim !== 'null') {
+            if (v.aim !== 'null')
+            {
                 tos.push(v)
                 toSum += v.weight
-                if (aims[v.aim]) {
+                if (aims[v.aim])
+                {
                     aims[v.aim].counts++
-                } else {
+                } else
+                {
                     const node = that.sankey.nodes.find(n => n.ID === v.aim)
                     aims[v.aim] = {
                         name: node.name,
@@ -221,7 +235,8 @@ const CircleFlowGraph = {
                         counts: 1
                     }
                 }
-            } else {
+            } else
+            {
                 _tos.push(v)
             }
             sum += v.weight
@@ -255,7 +270,8 @@ export default class Graph extends Component {
             'scatter': ScatterGraph,
             'circular': CircleFlowGraph
         }[props.graph]
-        if (props.graph === 'circular') {
+        if (props.graph === 'circular')
+        {
             this.sankey = props._data
             SankeyGraph.init(this, props._data)
         }
@@ -298,11 +314,10 @@ export default class Graph extends Component {
                 onMouseMove={e => state.active && this.setState({ x: e.clientX, y: e.clientY })}
             >
                 <canvas ref={this.imgLoader} />
-                {/*<div className={style.download}>
+                <div className={style.download}>
                     <a>
-                        <img src={imgs.download}
+                        <img src={imgs.downloadSvg}
                             onClick={e => { // TODO export image
-                                /*
                                 const img = new Image(),
                                     canvas = this.imgLoader.current, context = canvas.getContext('2d'),
                                     a = $('+ div > a', canvas)[0]
@@ -313,11 +328,11 @@ export default class Graph extends Component {
                                     a.click()
                                     e.target.onclick = null
                                 }
-                                img.src = 'data:image/svg+xml;base64,' + btoa($('~ svg', canvas)[0].outerHTML)
-                                //
+                                img.onerror = console.log
+                                img.src = 'data:image/svg+xml;base64,' + btoa(new XMLSerializer().serializeToString($('~ svg', canvas)[0]))
                             }} />
                     </a>
-                        </div>*/}
+                </div>
                 {Content()}
                 {state.active &&
                     <div style={{ left: state.x, top: state.y }} className={style.follow}>
@@ -375,11 +390,14 @@ export class Svg extends Component {
     }
     viewMove(e) {
         e.preventDefault()
-        if (e.type === 'mousedown') {
+        if (e.type === 'mousedown')
+        {
             this.dragging = true
-        } else if (e.type === 'mouseup') {
+        } else if (e.type === 'mouseup')
+        {
             this.dragging = false
-        } else if (e.type === 'mousemove' && this.dragging) {
+        } else if (e.type === 'mousemove' && this.dragging)
+        {
             const { focus, bias, scale } = this.state
             this.setState({
                 bias: [

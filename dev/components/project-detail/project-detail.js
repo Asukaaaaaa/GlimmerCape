@@ -166,7 +166,7 @@ const ModelForm = ({ form, datasets, handleSubmit, pid }) => {
             <Form.Item label={
                 <span>
                     社区分区算法&nbsp;
-                    <Tooltip title=''>
+                    <Tooltip title='选用社区划分算法对各时段的共词网络进行社区发现， 得到共词网络的社区结构。主要有3种算法，非重叠社区：Blondel分区算法和Newman MM算法（基于模块度的贪心算法）；重叠社区：Ball Overlapping算法。'>
                         <Icon type="question-circle-o" />
                     </Tooltip>
                 </span>

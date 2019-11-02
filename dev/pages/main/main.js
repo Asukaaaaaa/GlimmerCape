@@ -28,7 +28,7 @@ export default class Main extends Component {
             <div className={ClassNames(style.main)} onClick={e => this.state.tabOn && this.setState({ tabOn: false })}>
                 <Header handleClickTab={() => this.setState({ tabOn: true })} handleClickUser={userOn => this.setState({ userOn })} />
                 <User active={state.userOn} />
-                <Sider active={state.tabOn} />
+                {/* <Sider active={state.tabOn} /> */}
                 <Switch>
                     <Route path='/' exact>
                         <Route path='/' render={() => <NewBuilt handleUpdate={() => this.setState({ indexUpdate: state.indexUpdate++ })} />} />
