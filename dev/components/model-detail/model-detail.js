@@ -111,10 +111,13 @@ const GroupView = ({ mid, group, cinfo, setCtx }) => {
     useEffect(() => {
         cinfo && setSelect_(cinfo)
     }, [])
+    useEffect(() => {
+        cinfo || setData()
+    })
     return (
         <div className={style.container}>
             <div className={style.graph}>
-                <Charts type='group' width='1000' height='600' data={viewData.group[0]} setSelect={setSelect_} clusters={viewData.main[1].nodes} cinfo={cinfo} />
+                <Charts type='group' width='1000' height='600' data={viewData.group[0]} setSelect={setSelect_} clusters={viewData.main[1].nodes} cdata={data} />
             </div>
             <div className={style.right}>
                 {{

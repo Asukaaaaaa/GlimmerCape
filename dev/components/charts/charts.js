@@ -313,12 +313,12 @@ export default class Charts extends PureComponent {
     componentDidMount() {
         this.chart = echarts.init(this.chartRef.current)
         this.init()
-        if (this.props.cinfo)
-            this.setClusterMap(this.props.data)
     }
     componentWillReceiveProps(props) {
-        if (!props.cinfo && this.props.cinfo)
+        if (!props.cdata && this.props.cdata)
             this.init()
+        else if (props.cdata && !this.props.cdata)
+            this.setClusterMap(props.cdata)
     }
 
     render() {
