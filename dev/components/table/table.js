@@ -89,20 +89,6 @@ export default class Table extends PureComponent {
                         menu.style.visibility = 'hidden'
                     }
                 }}>
-                <div style={{
-                    visibility: 'hidden',
-                    position: 'fixed',
-                    width: '100px',
-                    textAlign: 'center',
-                    backgroundColor: 'white',
-                    boxShadow: '0 0 5px 2px rgba(0, 0, 0, 0.1)'
-                }} ref={this.contextmenu}>
-                    <div>
-                        <a onClick={e => {
-                            this.props.export()
-                        }}>导出</a>
-                    </div>
-                </div>
                 <div className={style.fixed}>
                     <div className={style['head-wrapper']}>
                         <table className={style.head}>
@@ -163,6 +149,20 @@ export default class Table extends PureComponent {
                         </table>
                     </div>
                 </div >
+                <div style={{
+                    visibility: 'hidden',
+                    position: 'fixed',
+                    width: '100px',
+                    textAlign: 'center',
+                    backgroundColor: 'white',
+                    boxShadow: '0 0 5px 2px rgba(0, 0, 0, 0.1)'
+                }} ref={this.contextmenu}>
+                    <div>
+                        <a onClick={e => {
+                            this.props.export()
+                        }}>导出</a>
+                    </div>
+                </div>
             </div >
         )
     }
