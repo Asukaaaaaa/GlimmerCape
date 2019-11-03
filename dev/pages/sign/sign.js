@@ -39,8 +39,16 @@ class NormalLoginForm extends React.Component {
                         if (res.resultDesc === 'Success')
                         {
                             window.user_id = res.data
-                            values.account = values.username
-                            handleSign(values)
+                            fetch(host + '/user/getUserInfo?' +
+                                'user_id=' + res.data)
+                                .then(res => res.json())
+                                .then(res => {
+                                    if (res.resultDesc === 'Success')
+                                    {
+                                        res.data.photo = host + res.data.photo.split('Web_NEview')[1]
+                                        handleSign(res.data)
+                                    }
+                                })
                         } else
                         {
                             message.warning(res.resultDesc)
