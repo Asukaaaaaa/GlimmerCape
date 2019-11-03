@@ -112,7 +112,11 @@ const GroupView = ({ mid, group, cinfo, setCtx }) => {
         cinfo && setSelect_(cinfo)
     }, [])
     useEffect(() => {
-        cinfo || setData()
+        if (!cinfo)
+        {
+            setSider('scatter')
+            setData()
+        }
     })
     return (
         <div className={style.container}>

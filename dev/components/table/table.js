@@ -84,7 +84,8 @@ export default class Table extends PureComponent {
                     menu.style.top = e.clientY + 'px'
                 }}
                 onClick={e => {
-                    if (e.button === 1)
+                    const menu = this.contextmenu.current
+                    if (e.button !== 2)
                     {
                         menu.style.visibility = 'hidden'
                     }
