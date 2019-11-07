@@ -356,7 +356,7 @@ export default class ProjectDetail extends Component {
                             <Column title="操作" key="action"
                                 render={(text, record) => (
                                     <span>
-                                        <a href={`${host}/dataset/downloadDataset?dataset_id=${record.datasetId}`}
+                                        <a href={`${host}${record.datasetUrl.split('Web_NEview')[1]}`}
                                             download={`${record.datasetId}_${record.datasetName}`}
                                         >下载</a>
                                         <Divider type="vertical" />

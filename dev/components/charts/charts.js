@@ -9,25 +9,73 @@ export default class Charts extends PureComponent {
         super(props)
         this.chartRef = React.createRef()
         this.maps = {
-            'cluster': this.setClusterMap,
-            'group': this.setGroupMap,
+            'sankey': this.setSankey,
+            'cluster': this.setCluster,
+            'group': this.setGroup,
             'radar': this.setRadar
         }
     }
 
-    setClusterMap = (data) => {
+    setSankey = ({data}) => {
+        const clusters = [], groups = [], links = []
+        data.nodes.forEach(n => {
+            const cl = {
+                name: n.name,
+                id: n.name + n.group,
+                _origin_: n
+            }
+            clusters.push(cl)
+            groups[n.group] &&
+                groups[n.group].push(cl) ||
+                (groups[n.group] = [])
+        })
+        data.links.forEach(l => {
+            links.push({
+                source: l.source + l.sourcegroup,
+                target: l.target + l.targetgroup,
+                value: l.value,
+                _origin_: l
+            })
+        })
+        const option = {
+            series: [{
+                type: 'sankey',
+                data: clusters,
+                links: links,
+                focusNodeAdjacency: 'allEdges',
+                label: {
+                    formatter: '{b}'
+                },
+                tooltip: {
+                    formatter: '{b} {c}'
+                },
+                itemStyle: {
+                    normal: {
+                        borderWidth: 1,
+                        borderColor: '#aaa'
+                    }
+                },
+                lineStyle: {
+                    normal: {
+                        color: 'source',
+                        curveness: 0.5
+                    }
+                }
+            }]
+        }
+        this.chart.setOption(option, true)
+    }
+    setCluster = (data) => {
         this.clst = this.clusters.find(v => v.name === data.cluster_name)
         const froms = [[], []], tos = [[], []]
         data.cluster_nodes.forEach(v => {
-            if (v.origin !== 'null')
-            {
+            if (v.origin !== 'null') {
                 froms[0].push({
                     name: v.key,
                     id: v.id,
                     info: v
                 })
-                if (!froms[v.origin])
-                {
+                if (!froms[v.origin]) {
                     const c = this.props.clusters.find(c => c.ID === v.origin)
                     froms[0].push({
                         name: c.name,
@@ -39,8 +87,7 @@ export default class Charts extends PureComponent {
                         target: '' + v.id
                     })
                     froms[v.origin] = c
-                } else
-                {
+                } else {
                     const c = froms[v.origin]
                     froms[1].push({
                         source: '' + c.ID,
@@ -48,15 +95,13 @@ export default class Charts extends PureComponent {
                     })
                 }
             }
-            if (v.aim !== 'null')
-            {
+            if (v.aim !== 'null') {
                 tos[0].push({
                     name: v.key,
                     id: v.id,
                     info: v
                 })
-                if (!tos[v.aim])
-                {
+                if (!tos[v.aim]) {
                     const c = this.props.clusters.find(c => c.ID === v.aim)
                     tos[0].push({
                         name: c.name,
@@ -68,8 +113,7 @@ export default class Charts extends PureComponent {
                         target: '' + c.ID
                     })
                     tos[v.aim] = c
-                } else
-                {
+                } else {
                     const c = tos[v.aim]
                     tos[1].push({
                         source: '' + v.id,
@@ -163,10 +207,10 @@ export default class Charts extends PureComponent {
         }
         this.chart.setOption(option, true)
         this.chart.on('click', param => {
-
+            // todo
         })
     }
-    setGroupMap = () => {
+    setGroup = () => {
         const clusters = []
         this.props.data.forEach(v => {
             let pclst = clusters.findIndex(clst => clst.name === v.clusterName)
@@ -178,8 +222,7 @@ export default class Charts extends PureComponent {
                     links: []
                 }) - 1)
             const clst = clusters[pclst]
-            if (!isNumber(clst.nodes['n' + v.source_nodeName]))
-            {
+            if (!isNumber(clst.nodes['n' + v.source_nodeName])) {
                 clst.nodes['n' + v.source_nodeName] = clst.nodes.length
                 clst.nodes.push({
                     catagory: pclst,
@@ -189,8 +232,7 @@ export default class Charts extends PureComponent {
                 })
             }
             v.target.forEach(t => {
-                if (!isNumber(clst.nodes['n' + t.target_nodeName]))
-                {
+                if (!isNumber(clst.nodes['n' + t.target_nodeName])) {
                     clst.nodes['n' + t.target_nodeName] = clst.nodes.length
                     clst.nodes.push({
                         catagory: pclst,
@@ -200,8 +242,7 @@ export default class Charts extends PureComponent {
                     })
                 }
                 if (!(clst.links[`${'n' + v.source_nodeName}_${'n' + t.target_nodeName}`] &&
-                    clst.links[`${'n' + v.target_nodeName}_${'n' + t.source_nodeName}`]))
-                {
+                    clst.links[`${'n' + v.target_nodeName}_${'n' + t.source_nodeName}`])) {
                     clst.links[`${'n' + v.source_nodeName}_${'n' + t.target_nodeName}`] = true
                     const ps = clst.nodes['n' + v.source_nodeName], pt = clst.nodes['n' + t.target_nodeName]
                     clst.links.push({
@@ -255,13 +296,12 @@ export default class Charts extends PureComponent {
         }
         this.chart.setOption(option, true)
         this.chart.on('click', params => {
-            if (params.seriesName === 'group map')
-            {
+            if (params.seriesName === 'group map') {
                 this.props.setSelect({
                     id: params.data.cid,
                     name: params.data.name
                 }).then(res => {
-                    this.setClusterMap(res)
+                    this.setCluster(res)
                     this.chart.hideLoading()
                 })
                 this.chart.showLoading()
@@ -307,7 +347,7 @@ export default class Charts extends PureComponent {
 
     init(type = this.props.type) {
         this.chart.showLoading()
-        this.maps[type]()
+        this.maps[type](this.props)
         this.chart.hideLoading()
     }
     componentDidMount() {
@@ -318,7 +358,7 @@ export default class Charts extends PureComponent {
         if (!props.cdata && this.props.cdata)
             this.init()
         else if (props.cdata && !this.props.cdata)
-            this.setClusterMap(props.cdata)
+            this.setCluster(props.cdata)
     }
 
     render() {
