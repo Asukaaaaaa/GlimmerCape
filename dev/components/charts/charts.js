@@ -1,6 +1,7 @@
 import React, { Component, PureComponent } from 'react'
 import echarts from 'echarts'
 import style from './charts.css'
+import { ModelContext } from '../model-detail/model-detail'
 import { isNumber } from 'util'
 import { _ } from '../../util'
 
@@ -9,9 +10,9 @@ export default class Charts extends PureComponent {
         super(props)
         this.chartRef = React.createRef()
         this.maps = {
-            'sankey': this.setSankey,
-            'cluster': this.setCluster,
+            'main': this.setSankey,
             'group': this.setGroup,
+            'cluster': this.setCluster,
             'radar': this.setRadar
         }
     }
@@ -386,13 +387,20 @@ export default class Charts extends PureComponent {
 
     render() {
         return (
-            <div className={style.main}
-                style={{
-                    width: this.props.width,
-                    height: this.props.height
-                }}>
-                <div ref={this.chartRef}></div>
-            </div>
+            <ModelContext.Consumer>
+                {({ on, group }) => (
+                    <div className={style.main}>
+                        <div
+                            ref={this.chartRef}
+                            style={{
+                                width: this.props.width,
+                                height: this.props.height
+                            }}
+                        >
+                        </div>
+                    </div>
+                )}
+            </ModelContext.Consumer>
         )
     }
 }

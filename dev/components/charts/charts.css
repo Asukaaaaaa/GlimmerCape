@@ -1,5 +1,6 @@
 .main {
   position: relative;
+  display: contents;
 }
 .main > div:first-child {
   width: 100%;
