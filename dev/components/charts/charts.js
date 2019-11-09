@@ -16,7 +16,7 @@ export default class Charts extends PureComponent {
         }
     }
 
-    setSankey = ({data}) => {
+    setSankey = ({ data }) => {
         const clusters = [], groups = [], links = []
         data.nodes.forEach(n => {
             const cl = {
@@ -25,9 +25,18 @@ export default class Charts extends PureComponent {
                 _origin_: n
             }
             clusters.push(cl)
-            groups[n.group] &&
-                groups[n.group].push(cl) ||
-                (groups[n.group] = [])
+            if (groups[n.group])
+                groups[n.group].push(cl)
+            else {
+                groups[n.group] = []
+                groups[n.group].collector = {
+                    name: n.group,
+                    id: n.group,
+                    itemStyle: {
+                        opacity: 0
+                    }
+                }
+            }
         })
         data.links.forEach(l => {
             links.push({
@@ -37,10 +46,24 @@ export default class Charts extends PureComponent {
                 _origin_: l
             })
         })
+        groups.forEach((g, i) => {
+            if (++i !== groups.length) {
+                links.push({
+                    source: g.collector.id,
+                    target: groups[i].collector.id
+                })
+                g.forEach(c => links.push(
+                    {
+                        source: c.id,
+                        target: groups[i].collector.id
+                    }))
+            }
+        })
         const option = {
+            tooltip: {},
             series: [{
                 type: 'sankey',
-                data: clusters,
+                data: clusters.concat(groups.map(g => g.collector).flat()),
                 links: links,
                 focusNodeAdjacency: 'allEdges',
                 label: {
