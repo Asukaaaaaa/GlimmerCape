@@ -17,7 +17,8 @@ const MainView = ({ mid, setCtx, group }) => {
     return (
         <div className={style.container}>
             <div className={style.graph}>
-                <SvgGraph graph='sankey' data={viewData.main[1]} setCtx={setCtx} />
+                {/* <SvgGraph graph='sankey' data={viewData.main[1]} setCtx={setCtx} /> */}
+                <Charts type='sankey' width='1000px' height='600px' data={viewData.main[1]} />
             </div>
             <div className={style.right}>
                 <Charts type='radar' width='400px' height='300px' data={viewData.main[0]} />
@@ -119,7 +120,7 @@ const GroupView = ({ mid, group, cinfo, setCtx }) => {
     return (
         <div className={style.container}>
             <div className={style.graph}>
-                <Charts type='group' width='1000' height='600' data={viewData.group[0]} setSelect={setSelect_} clusters={viewData.main[1].nodes} cdata={data} />
+                <Charts type='group' width='1000px' height='600px' data={viewData.group[0]} setSelect={setSelect_} clusters={viewData.main[1].nodes} cdata={data} />
             </div>
             <div className={style.right}>
                 {{

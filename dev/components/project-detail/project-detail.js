@@ -16,8 +16,7 @@ const DataForm = ({ form, handleSubmit, pid }) => {
             onSubmit={e => {
                 e.preventDefault()
                 form.validateFields((err, values) => {
-                    if (!err)
-                    {
+                    if (!err) {
                         const formData = new FormData()
                         formData.append('project_id', pid)
                         formData.append('dataset_name', values.name)
@@ -30,8 +29,7 @@ const DataForm = ({ form, handleSubmit, pid }) => {
                             contentType: false,
                             data: formData,
                             success: res => {
-                                if (res.resultDesc === 'Success')
-                                {
+                                if (res.resultDesc === 'Success') {
                                     message.success({ content: `创建 ${values.name} 成功.`, key: 'loadDataset' })
                                     handleSubmit('update')
                                 }
@@ -97,7 +95,7 @@ const DataForm = ({ form, handleSubmit, pid }) => {
     )
 }
 const WrappedDataForm = Form.create()(DataForm)
-const ModelForm = ({ form, datasets, handleSubmit, pid }) => {
+const ModelForm = ({ form, datasets, handleSubmit, pid, models }) => {
     const { getFieldDecorator } = form
     const [isCmNum, setIsCmNum] = useState(false)
     return (
@@ -105,22 +103,20 @@ const ModelForm = ({ form, datasets, handleSubmit, pid }) => {
             onSubmit={e => {
                 e.preventDefault()
                 form.validateFields((err, values) => {
-                    if (!err)
-                    {
+                    if (!err) {
                         let data = {
                             project_id: pid,
                             ...values
                         }
-                        for (let attr in data)
-                        {
+                        for (let attr in data) {
                             data['model.' + attr] = data[attr]
                             delete data[attr]
                         }
                         $.post(host + '/model/createModel', data, res => {
-                            if (res.resultDesc === 'Success')
-                            {
+                            if (res.resultDesc === 'Success') {
                                 message.success({ content: `创建 ${values.model_name} 成功.`, key: 'loadModel' })
                                 handleSubmit('update')
+                                models[values.model_name] = 'done'
                             }
                         }).fail(e => {
                             message.warning({ content: `创建 ${values.model_name} 时发生了错误!`, key: 'loadModel' })
@@ -128,6 +124,7 @@ const ModelForm = ({ form, datasets, handleSubmit, pid }) => {
                         })
                         message.loading({ content: '创建中...', key: 'loadModel', duration: 5 }) // todo
                         handleSubmit('exit')
+                        models[values.model_name] = 'loading'
                     }
                 })
             }}
@@ -279,6 +276,7 @@ export default class ProjectDetail extends Component {
             datasets: [],
             models: [],
         }
+        this.models = {}
         project_id = this.props.match.id
         this.update()
     }
@@ -295,8 +293,7 @@ export default class ProjectDetail extends Component {
             page_num: 1,
             page_size: 100
         }, res => {
-            if (res.resultDesc === 'Success')
-            {
+            if (res.resultDesc === 'Success') {
                 this.setState({ datasets: res.data.list })
             }
         })
@@ -305,8 +302,7 @@ export default class ProjectDetail extends Component {
             page_num: 1,
             page_size: 100
         }, res => {
-            if (res.resultDesc === 'Success')
-            {
+            if (res.resultDesc === 'Success') {
                 this.setState({ models: res.data.list })
             }
         })
@@ -341,7 +337,7 @@ export default class ProjectDetail extends Component {
                     <Spin spinning={false}>
                         {state.tabOn === 'data' ?
                             <WrappedDataForm handleSubmit={this.handleSubmit.bind(this)} pid={props.match.params.id} /> :
-                            <WrappedModelForm datasets={state.datasets} handleSubmit={this.handleSubmit.bind(this)} pid={props.match.params.id} />}
+                            <WrappedModelForm datasets={state.datasets} handleSubmit={this.handleSubmit.bind(this)} pid={props.match.params.id} models={this.models} />}
                     </Spin>
                 </Modal>
                 <Tabs className={style.tabs} defaultActiveKey={state.tabOn} tabPosition='left' onChange={
@@ -360,7 +356,7 @@ export default class ProjectDetail extends Component {
                             <Column title="操作" key="action"
                                 render={(text, record) => (
                                     <span>
-                                        <a href={`${host}/dataset/downloadDataset?dataset_id=${record.datasetId}`}
+                                        <a href={`${host}${record.datasetUrl.split('Web_NEview')[1]}`}
                                             download={`${record.datasetId}_${record.datasetName}`}
                                         >下载</a>
                                         <Divider type="vertical" />
@@ -369,8 +365,7 @@ export default class ProjectDetail extends Component {
                                                 dataset_id: record.datasetId
                                             }, res => {
                                                 // todo
-                                                if (res.resultCode === '1000')
-                                                {
+                                                if (res.resultCode === '1000') {
                                                     this.update()
                                                 }
                                             })
@@ -399,15 +394,15 @@ export default class ProjectDetail extends Component {
                             <Column title="操作" key="action"
                                 render={(text, record) => (
                                     <span>
-                                        <Link to={`/model/${record.modelId}`}>查看</Link>
+                                        <Link style={{ color: this.models[record.modelName] === 'loading' && '#d3d3d3' }}
+                                            to={this.models[record.modelName] === 'loading' ? '###' : `/model/${record.modelId}`}>查看</Link>
                                         <Divider type="vertical" />
                                         <a onClick={
                                             e => $.post(host + '/model/deleteModel', {
                                                 model_id: record.modelId
                                             }, res => {
                                                 // todo
-                                                if (res.resultCode === '1000')
-                                                {
+                                                if (res.resultCode === '1000') {
                                                     this.update()
                                                 }
                                             })
