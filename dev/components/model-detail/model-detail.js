@@ -42,7 +42,7 @@ const MainSider = ({ radarInfo, coword }) => {
 }
 const GroupSider = ({ group, zpFile }) => {
     return (
-        <SvgGraph graph='scatter' data={zpFile.find(v => v === group)} />
+        <SvgGraph graph='scatter' data={[zpFile.find(v => v.label === group)]} />
     )
 }
 const ClusterSider = ({ mid, group, clusterInfo }) => {
@@ -94,39 +94,7 @@ const ClusterSider = ({ mid, group, clusterInfo }) => {
         </React.Fragment>
     )
 }
-const GroupView = ({ mid, group, cinfo, setCtx }) => {
-    const [sider, setSider] = useState('scatter')
-    const [select, setSelect] = useState()
-    const [data, setData] = useState()
-    const setSelect_ = (obj) => {
-        setSelect(obj)
-        setCtx({ cinfo: obj }, 'common')
-        if (obj.id) {
-            setSider('loading')
-            return setCtx(obj, 'GetCluster').then(res => {
-                setData(res)
-                setSider('cluster')
-                return res
-            })
-        }
-    }
-    useEffect(() => {
-        cinfo && setSelect_(cinfo)
-    }, [])
-    useEffect(() => {
-        if (!cinfo) {
-            setSider('scatter')
-            setData()
-        }
-    })
-    return (
-        <div className={style.container}>
-            <div className={style.graph}>
-                <Charts type='group' width='1000px' height='600px' data={viewData.group[0]} setSelect={setSelect_} clusters={viewData.main[1].nodes} cdata={data} />
-            </div>
-        </div>
-    )
-}
+
 
 export default class ModelDetail extends Component {
     state = {
@@ -147,22 +115,14 @@ export default class ModelDetail extends Component {
             clusterInfo: null,
 
             // getter
-            getMainData: this.getMainData,
-            getGroupData: this.getGroupData,
-            getClusterData: this.getClusterData,
+            getMainData: _.debounce(this.getMainData),
+            getGroupData: _.debounce(this.getGroupData),
+            getClusterData: _.debounce(this.getClusterData),
             // setter
             setState: this.setState.bind(this)
         }
     }
     getMainData = () => {
-        $.post(host + '/result/getRadarPath', {
-            model_id: this.state.mid
-        }, res => {
-            if (res.resultDesc === 'Success')
-                fetch(host + res.data.split('Web_NEview')[1])
-                    .then(r => r.json())
-                    .then(res => this.setState({ radarInfo: res }))
-        })
         $.post(host + '/result/getEvoFile', {
             model_id: this.state.mid
         }, res => {
@@ -170,6 +130,23 @@ export default class ModelDetail extends Component {
                 fetch(host + res.data.split('Web_NEview')[1])
                     .then(r => r.json())
                     .then(res => this.setState({ evoFile: res }))
+        })
+        $.post(host + '/result/getZpFile', {
+            model_id: this.state.mid
+        }, res => {
+            if (res.resultDesc === 'Success')
+                fetch(host + res.data.split('Web_NEview')[1])
+                    .then(r => r.json())
+                    .catch(console.log)
+                    .then(res => this.setState({ zpFile: res }))
+        })
+        $.post(host + '/result/getRadarPath', {
+            model_id: this.state.mid
+        }, res => {
+            if (res.resultDesc === 'Success')
+                fetch(host + res.data.split('Web_NEview')[1])
+                    .then(r => r.json())
+                    .then(res => this.setState({ radarInfo: res }))
         })
         $.post(host + '/result/getCoword', {
             model_id: this.state.mid
@@ -191,26 +168,15 @@ export default class ModelDetail extends Component {
                     .catch(console.log)
                     .then(res => this.setState({ graphInfo: res }))
         })
-        $.post(host + '/result/getZpFile', {
-            model_id: this.state.mid
+    }
+    getClusterData = ({ cid }) => {
+        $.post(host + '/result/getPickedClusterInfo', {
+            model_id: this.state.mid,
+            cluster_id: cid,
+            label: this.state.group
         }, res => {
             if (res.resultDesc === 'Success')
-                fetch(host + res.data.split('Web_NEview')[1])
-                    .then(r => r.json())
-                    .catch(console.log)
-                    .then(res => this.setState({ zpFile: res }))
-        })
-    }
-    getClusterData = () => {
-        new Promise((resolve, reject) => {
-            $.post(host + '/result/getPickedClusterInfo', {
-                model_id: this.state.mid,
-                cluster_id: obj.id,
-                label: obj.year || this.state.group
-            }, res => {
-                if (res.resultDesc === 'Success')
-                    resolve(JSON.parse(res.data))
-            })
+                this.setState({ clusterInfo: JSON.parse(res.data) })
         })
     }
     componentDidMount() {

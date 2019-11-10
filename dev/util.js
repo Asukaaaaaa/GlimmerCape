@@ -1,24 +1,17 @@
 
-const debounce = (f, time) => {
-    let handle = -1
+const debounce = (f, time = 200) => {
+    let handle
     return (...args) => {
-        if (handle > -1)
-        {
-            handle && clearTimeout(handle)
-            handle = setTimeout(() => f(...args), time)
-        } else if (handle === -1)
-        {
-            f(...args)
-            handle = 0
-        }
+        handle &&
+            clearTimeout(handle) ||
+            (handle = setTimeout(() => f(...args), time))
     }
 }
 const throttle = (f, time) => {
     let last
     return (...args) => {
         let now = new Date().getTime()
-        if (now - last > time || !last)
-        {
+        if (now - last > time || !last) {
             last = now
             f(...args)
         }

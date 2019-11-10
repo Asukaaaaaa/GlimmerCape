@@ -16,55 +16,63 @@ export default class Charts extends PureComponent {
         }
     }
 
-    setSankey = ({ evoFile, getGroupData, setState }) => {
-        const clusters = [], groups = [], links = []
-        evoFile.nodes.forEach(n => {
-            const cl = {
-                name: n.name,
-                id: n.name + n.group,
-                _origin_: n
-            }
-            clusters.push(cl)
-            if (groups[n.group])
-                groups[n.group].push(cl)
-            else {
-                groups[n.group] = []
-                groups[n.group].collector = {
-                    name: n.group,
-                    id: n.group,
-                    itemStyle: {
-                        opacity: 0
+    setSankey = ({ evoFile, getGroupData, setState, clusters, groups, links }) => {
+        if (!clusters || !groups || !links) {
+            clusters = []
+            groups = []
+            links = []
+            evoFile.nodes.forEach(n => {
+                const cl = {
+                    name: n.name,
+                    id: n.name + n.group,
+                    _origin_: n
+                }
+                clusters.push(cl)
+                if (groups[n.group])
+                    groups[n.group].push(cl)
+                else {
+                    groups[n.group] = []
+                    groups[n.group].collector = {
+                        name: n.group,
+                        id: n.group,
+                        itemStyle: {
+                            opacity: 0
+                        }
                     }
                 }
-            }
-        })
-        evoFile.links.forEach(l => {
-            links.push({
-                source: l.source + l.sourcegroup,
-                target: l.target + l.targetgroup,
-                value: l.value,
-                _origin_: l
             })
-        })
-        groups.forEach((g, i) => {
-            if (++i !== groups.length) {
+            evoFile.links.forEach(l => {
                 links.push({
-                    source: g.collector.id,
-                    target: groups[i].collector.id
+                    source: l.source + l.sourcegroup,
+                    target: l.target + l.targetgroup,
+                    value: l.value,
+                    _origin_: l
                 })
-                g.forEach(c => links.push(
-                    {
-                        source: c.id,
+            })
+            groups.forEach((g, i) => {
+                if (++i !== groups.length) {
+                    links.push({
+                        source: g.collector.id,
                         target: groups[i].collector.id
-                    }))
-            }
-        })
+                    })
+                    g.forEach(c => links.push(
+                        {
+                            source: c.id,
+                            target: groups[i].collector.id
+                        }))
+                }
+            })
+            setState({ clusters, groups, links })
+            return
+        }
         const option = {
             tooltip: {},
+            backgroundColor: 'white',
             series: [{
                 type: 'sankey',
                 data: clusters.concat(groups.map(g => g.collector).flat()),
                 links: links,
+                draggable: true,
                 focusNodeAdjacency: 'allEdges',
                 label: {
                     formatter: '{b}'
@@ -88,19 +96,117 @@ export default class Charts extends PureComponent {
         }
         this.chart.on('click', ({ seriesIndex, dataType, data }) => {
             if (dataType === 'node') {
-                setState({ on: 'group' })
+                setState({
+                    on: 'group',
+                    group: data._origin_.group
+                })
                 getGroupData(data._origin_.group)
             }
         })
         this.chart.setOption(option, true)
-        Object.assign(this, {
-            clusters, groups
-        })
     }
-    setCluster = (data) => {
-        this.clst = this.clusters.find(v => v.name === data.cluster_name)
+    setGroup = ({ group, graphInfo, getClusterData, setState, groups }) => {
+        let clusters = groups[group].infos
+        if (!clusters) {
+            clusters = []
+            graphInfo.forEach(v => {
+                let pclst = clusters.findIndex(clst => clst.name === v.clusterName)
+                pclst === -1 &&
+                    (pclst = clusters.push({
+                        name: v.clusterName,
+                        cid: v.clusterId,
+                        nodes: [],
+                        links: []
+                    }) - 1)
+                const clst = clusters[pclst]
+                if (!isNumber(clst.nodes['n' + v.source_nodeName])) {
+                    clst.nodes['n' + v.source_nodeName] = clst.nodes.length
+                    clst.nodes.push({
+                        catagory: pclst,
+                        name: v.source_nodeName,
+                        id: v.source_nodeID,
+                        symbolSize: 6,
+                    })
+                }
+                v.target.forEach(t => {
+                    if (!isNumber(clst.nodes['n' + t.target_nodeName])) {
+                        clst.nodes['n' + t.target_nodeName] = clst.nodes.length
+                        clst.nodes.push({
+                            catagory: pclst,
+                            name: t.target_nodeName,
+                            id: t.target_nodeID,
+                            symbolSize: 6,
+                        })
+                    }
+                    if (!(clst.links[`${'n' + v.source_nodeName}_${'n' + t.target_nodeName}`] &&
+                        clst.links[`${'n' + v.target_nodeName}_${'n' + t.source_nodeName}`])) {
+                        clst.links[`${'n' + v.source_nodeName}_${'n' + t.target_nodeName}`] = true
+                        const ps = clst.nodes['n' + v.source_nodeName], pt = clst.nodes['n' + t.target_nodeName]
+                        clst.links.push({
+                            source: '' + clst.nodes[ps].id,
+                            target: '' + clst.nodes[pt].id
+                        })
+                        if (clst.nodes[ps].symbolSize < 30)
+                            clst.nodes[ps].symbolSize += 3
+                        else
+                            clst.nodes[ps].symbolSize += 1
+                    }
+                })
+                clst.category = pclst
+                clst.symbolSize = clst.nodes.length + 15
+            })
+            groups[group].infos = clusters
+            setState({ groups })
+            return
+        }
+        const categories = groups[group].infos.map(v => ({ name: v.name }))
+        const option = {
+            legend: [{
+                type: 'scroll',
+                left: 'left',
+                orient: 'vertical',
+                data: categories.map(ctgr => ctgr.name),
+            }],
+            backgroundColor: 'white',
+            series: [{
+                name: "group map",
+                type: 'graph',
+                layout: 'force',
+                force: {
+                    repulsion: 100
+                },
+                zlevel: 0,
+                data: clusters,
+                links: [],
+                categories,
+                roam: true,
+                focusNodeAdjacency: true,
+                label: {
+                    show: true
+                },
+                itemStyle: {
+                    normal: {
+                        borderColor: '#fff',
+                        borderWidth: 1,
+                        shadowBlur: 10,
+                        shadowColor: 'rgba(0, 0, 0, 0.3)'
+                    }
+                },
+            }]
+        }
+        this.chart.on('click', ({ seriesName, dataType, data }) => {
+            if (seriesName === 'group map' &&
+                dataType === 'node') {
+                setState({ on: 'cluster' })
+                getClusterData(data)
+            }
+        })
+        this.chart.setOption(option, true)
+    }
+    setCluster = ({ group, clusterInfo, setState, clusters, groups }) => {
+        const clst = groups[group].infos.find(v => v.name === clusterInfo.cluster_name)
         const froms = [[], []], tos = [[], []]
-        data.cluster_nodes.forEach(v => {
+        clusterInfo.cluster_nodes.forEach(v => {
             if (v.origin !== 'null') {
                 froms[0].push({
                     name: v.key,
@@ -108,21 +214,21 @@ export default class Charts extends PureComponent {
                     info: v
                 })
                 if (!froms[v.origin]) {
-                    const c = this.props.clusters.find(c => c.ID === v.origin)
+                    const c = clusters.find(c => c._origin_.ID === v.origin)
                     froms[0].push({
                         name: c.name,
-                        id: c.ID,
+                        id: c._origin_.ID,
                         info: c
                     })
                     froms[1].push({
-                        source: '' + c.ID,
+                        source: '' + c._origin_.ID,
                         target: '' + v.id
                     })
                     froms[v.origin] = c
                 } else {
                     const c = froms[v.origin]
                     froms[1].push({
-                        source: '' + c.ID,
+                        source: '' + c._origin_.ID,
                         target: '' + v.id
                     })
                 }
@@ -134,22 +240,22 @@ export default class Charts extends PureComponent {
                     info: v
                 })
                 if (!tos[v.aim]) {
-                    const c = this.props.clusters.find(c => c.ID === v.aim)
+                    const c = clusters.find(c => c._origin_.ID === v.aim)
                     tos[0].push({
                         name: c.name,
-                        id: c.ID,
+                        id: c._origin_.ID,
                         info: c
                     })
                     tos[1].push({
                         source: '' + v.id,
-                        target: '' + c.ID
+                        target: '' + c._origin_.ID
                     })
                     tos[v.aim] = c
                 } else {
                     const c = tos[v.aim]
                     tos[1].push({
                         source: '' + v.id,
-                        target: '' + c.ID,
+                        target: '' + c._origin_.ID,
                     })
                 }
             }
@@ -169,6 +275,7 @@ export default class Charts extends PureComponent {
                 selectedMode: 'single',
                 data: ['全部', '前驱', '后继']
             }],
+            backgroundColor: 'white',
             series: [{
                 name: '全部',
                 type: 'graph',
@@ -178,8 +285,8 @@ export default class Charts extends PureComponent {
                     edgeLength: [10, 500],
                     // layoutAnimation: false
                 },
-                data: this.clst.nodes,
-                links: this.clst.links,
+                data: clst.nodes,
+                links: clst.links,
                 roam: true,
                 focusNodeAdjacency: true,
                 label: {
@@ -242,104 +349,6 @@ export default class Charts extends PureComponent {
             // todo
         })
     }
-    setGroup = ({ graphInfo }) => {
-        const { clusters } = this
-        graphInfo.forEach(v => {
-            let pclst = clusters.findIndex(clst => clst.name === v.clusterName)
-            pclst === -1 &&
-                (pclst = clusters.push({
-                    name: v.clusterName,
-                    cid: v.clusterId,
-                    nodes: [],
-                    links: []
-                }) - 1)
-            const clst = clusters[pclst]
-            if (!isNumber(clst.nodes['n' + v.source_nodeName])) {
-                clst.nodes['n' + v.source_nodeName] = clst.nodes.length
-                clst.nodes.push({
-                    catagory: pclst,
-                    name: v.source_nodeName,
-                    id: v.source_nodeID,
-                    symbolSize: 6,
-                })
-            }
-            v.target.forEach(t => {
-                if (!isNumber(clst.nodes['n' + t.target_nodeName])) {
-                    clst.nodes['n' + t.target_nodeName] = clst.nodes.length
-                    clst.nodes.push({
-                        catagory: pclst,
-                        name: t.target_nodeName,
-                        id: t.target_nodeID,
-                        symbolSize: 6,
-                    })
-                }
-                if (!(clst.links[`${'n' + v.source_nodeName}_${'n' + t.target_nodeName}`] &&
-                    clst.links[`${'n' + v.target_nodeName}_${'n' + t.source_nodeName}`])) {
-                    clst.links[`${'n' + v.source_nodeName}_${'n' + t.target_nodeName}`] = true
-                    const ps = clst.nodes['n' + v.source_nodeName], pt = clst.nodes['n' + t.target_nodeName]
-                    clst.links.push({
-                        source: '' + clst.nodes[ps].id,
-                        target: '' + clst.nodes[pt].id
-                    })
-                    if (clst.nodes[ps].symbolSize < 30)
-                        clst.nodes[ps].symbolSize += 3
-                    else
-                        clst.nodes[ps].symbolSize += 1
-                }
-            })
-            clst.category = pclst
-            clst.symbolSize = clst.nodes.length + 15
-        })
-        this.clusters = clusters
-        const categories = clusters.map(v => ({ name: v.name }))
-        const option = {
-            legend: [{
-                type: 'scroll',
-                left: 'left',
-                orient: 'vertical',
-                data: categories.map(ctgr => ctgr.name),
-            }],
-            series: [{
-                name: "group map",
-                type: 'graph',
-                layout: 'force',
-                force: {
-                    // 使用默认值
-                    repulsion: 100
-                },
-                zlevel: 0,
-                data: clusters,
-                links: [],
-                categories,
-                roam: true,
-                focusNodeAdjacency: true,
-                label: {
-                    show: true
-                },
-                itemStyle: {
-                    normal: {
-                        borderColor: '#fff',
-                        borderWidth: 1,
-                        shadowBlur: 10,
-                        shadowColor: 'rgba(0, 0, 0, 0.3)'
-                    }
-                },
-            }]
-        }
-        this.chart.setOption(option, true)
-        this.chart.on('click', params => {
-            if (params.seriesName === 'group map') {
-                this.props.setSelect({
-                    id: params.data.cid,
-                    name: params.data.name
-                }).then(res => {
-                    this.setCluster(res)
-                    this.chart.hideLoading()
-                })
-                this.chart.showLoading()
-            }
-        })
-    }
     setRadar = () => {
         this.chart.setOption({
             tooltip: {
@@ -367,6 +376,7 @@ export default class Charts extends PureComponent {
                     { name: '平均度', max: this.props.data.reduce((acc, v) => acc > v.average_degree ? acc : v.average_degree, 0) }
                 ]
             },
+            backgroundColor: 'white',
             series: [{
                 type: 'radar',
                 data: this.props.data.map(v => ({
