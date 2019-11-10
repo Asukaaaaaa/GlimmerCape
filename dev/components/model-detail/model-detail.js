@@ -128,8 +128,6 @@ const GroupView = ({ mid, group, cinfo, setCtx }) => {
     )
 }
 
-export const ModelContext = React.createContext()
-
 export default class ModelDetail extends Component {
     state = {
 
@@ -151,10 +149,12 @@ export default class ModelDetail extends Component {
             // getter
             getMainData: this.getMainData,
             getGroupData: this.getGroupData,
-            getClusterData: this.getClusterData
+            getClusterData: this.getClusterData,
+            // setter
+            setState: this.setState.bind(this)
         }
     }
-    getMainData() {
+    getMainData = () => {
         $.post(host + '/result/getRadarPath', {
             model_id: this.state.mid
         }, res => {
@@ -180,36 +180,28 @@ export default class ModelDetail extends Component {
                     .then(res => this.setState({ coword: res }))
         })
     }
-    getGroupData() {
-        new Promise((resolve, reject) => {
-            $.post(host + '/result/getGraphInfo', {
-                model_id: this.state.mid,
-                label: obj.group || obj.year
-            }, res => {
-                if (res.resultDesc === 'Success')
-                    fetch(host + res.data.split('Web_NEview')[1])
-                        .then(r => r.json())
-                        .catch(console.log)
-                        .then(res => {
-                            resolve(res)
-                        })
-            })
+    getGroupData = (group) => {
+        $.post(host + '/result/getGraphInfo', {
+            model_id: this.state.mid,
+            label: group
+        }, res => {
+            if (res.resultDesc === 'Success')
+                fetch(host + res.data.split('Web_NEview')[1])
+                    .then(r => r.json())
+                    .catch(console.log)
+                    .then(res => this.setState({ graphInfo: res }))
         })
-        new Promise((resolve, reject) => {
-            $.post(host + '/result/getZpFile', {
-                model_id: this.state.mid
-            }, res => {
-                if (res.resultDesc === 'Success')
-                    fetch(host + res.data.split('Web_NEview')[1])
-                        .then(r => r.json())
-                        .catch(console.log)
-                        .then(res => {
-                            resolve(res)
-                        })
-            })
+        $.post(host + '/result/getZpFile', {
+            model_id: this.state.mid
+        }, res => {
+            if (res.resultDesc === 'Success')
+                fetch(host + res.data.split('Web_NEview')[1])
+                    .then(r => r.json())
+                    .catch(console.log)
+                    .then(res => this.setState({ zpFile: res }))
         })
     }
-    getClusterData() {
+    getClusterData = () => {
         new Promise((resolve, reject) => {
             $.post(host + '/result/getPickedClusterInfo', {
                 model_id: this.state.mid,
@@ -235,9 +227,10 @@ export default class ModelDetail extends Component {
         const loading = (chartData && this.state[chartData]) ? false : true
         return (
             <div className={style.graph}>
-                {loading &&
+                {
+                    loading &&
                     <Spin className={style.loading} indicator={<Icon type="loading" style={{ fontSize: 36 }} spin />} /> ||
-                    <Charts type={this.state.on} data={this.state[chartData]} />
+                    <Charts {...this.state} type={this.state.on} />
                 }
             </div>
         )
@@ -258,14 +251,12 @@ export default class ModelDetail extends Component {
     }
     render() {
         return (
-            <ModelContext.Provider value={this.state}>
-                <div className={style.main} >
-                    <this.getChart />
-                    <div className={style.right}>
-                        <this.getSider />
-                    </div>
-                </div >
-            </ModelContext.Provider>
+            <div className={style.main} >
+                <this.getChart />
+                <div className={style.right}>
+                    <this.getSider />
+                </div>
+            </div >
         )
     }
 }

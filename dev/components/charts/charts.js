@@ -1,7 +1,6 @@
 import React, { Component, PureComponent } from 'react'
 import echarts from 'echarts'
 import style from './charts.css'
-import { ModelContext } from '../model-detail/model-detail'
 import { isNumber } from 'util'
 import { _ } from '../../util'
 
@@ -17,9 +16,9 @@ export default class Charts extends PureComponent {
         }
     }
 
-    setSankey = ({ data }) => {
+    setSankey = ({ evoFile, getGroupData, setState }) => {
         const clusters = [], groups = [], links = []
-        data.nodes.forEach(n => {
+        evoFile.nodes.forEach(n => {
             const cl = {
                 name: n.name,
                 id: n.name + n.group,
@@ -39,7 +38,7 @@ export default class Charts extends PureComponent {
                 }
             }
         })
-        data.links.forEach(l => {
+        evoFile.links.forEach(l => {
             links.push({
                 source: l.source + l.sourcegroup,
                 target: l.target + l.targetgroup,
@@ -87,7 +86,16 @@ export default class Charts extends PureComponent {
                 }
             }]
         }
+        this.chart.on('click', ({ seriesIndex, dataType, data }) => {
+            if (dataType === 'node') {
+                setState({ on: 'group' })
+                getGroupData(data._origin_.group)
+            }
+        })
         this.chart.setOption(option, true)
+        Object.assign(this, {
+            clusters, groups
+        })
     }
     setCluster = (data) => {
         this.clst = this.clusters.find(v => v.name === data.cluster_name)
@@ -234,9 +242,9 @@ export default class Charts extends PureComponent {
             // todo
         })
     }
-    setGroup = () => {
-        const clusters = []
-        this.props.data.forEach(v => {
+    setGroup = ({ graphInfo }) => {
+        const { clusters } = this
+        graphInfo.forEach(v => {
             let pclst = clusters.findIndex(clst => clst.name === v.clusterName)
             pclst === -1 &&
                 (pclst = clusters.push({
@@ -369,9 +377,9 @@ export default class Charts extends PureComponent {
         }, true)
     }
 
-    init(type = this.props.type) {
+    init(props = this.props) {
         this.chart.showLoading()
-        this.maps[type](this.props)
+        this.maps[props.type](props)
         this.chart.hideLoading()
     }
     componentDidMount() {
@@ -379,28 +387,21 @@ export default class Charts extends PureComponent {
         this.init()
     }
     componentWillReceiveProps(props) {
-        if (!props.cdata && this.props.cdata)
-            this.init()
-        else if (props.cdata && !this.props.cdata)
-            this.setCluster(props.cdata)
+        this.init(props)
     }
 
     render() {
         return (
-            <ModelContext.Consumer>
-                {({ on, group }) => (
-                    <div className={style.main}>
-                        <div
-                            ref={this.chartRef}
-                            style={{
-                                width: this.props.width,
-                                height: this.props.height
-                            }}
-                        >
-                        </div>
-                    </div>
-                )}
-            </ModelContext.Consumer>
+            <div className={style.main}>
+                <div
+                    ref={this.chartRef}
+                    style={{
+                        width: this.props.width,
+                        height: this.props.height
+                    }}
+                >
+                </div>
+            </div>
         )
     }
 }
