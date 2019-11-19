@@ -119,7 +119,7 @@ export default class ModelDetail extends Component {
             getGroupData: _.debounce(this.getGroupData),
             getClusterData: _.debounce(this.getClusterData),
             // setter
-            setState: this.setState.bind(this)
+            setState: _.debounce(this.setState.bind(this))
         }
     }
     getMainData = () => {
@@ -169,16 +169,17 @@ export default class ModelDetail extends Component {
                     .then(res => this.setState({ graphInfo: res }))
         })
     }
-    getClusterData = ({ cid }) => {
+    getClusterData = ({ cid, group }) => {
         $.post(host + '/result/getPickedClusterInfo', {
             model_id: this.state.mid,
             cluster_id: cid,
-            label: this.state.group
+            label: group || this.state.group
         }, res => {
             if (res.resultDesc === 'Success')
                 this.setState({ clusterInfo: JSON.parse(res.data) })
         })
     }
+
     componentDidMount() {
         this.setState({ on: 'main' })
         this.getMainData()
@@ -193,11 +194,8 @@ export default class ModelDetail extends Component {
         const loading = (chartData && this.state[chartData]) ? false : true
         return (
             <div className={style.graph}>
-                {
-                    loading &&
-                    <Spin className={style.loading} indicator={<Icon type="loading" style={{ fontSize: 36 }} spin />} /> ||
-                    <Charts {...this.state} type={this.state.on} />
-                }
+                {loading && <Spin className={style.loading} indicator={<Icon type="loading" style={{ fontSize: 36 }} spin />} />}
+                {loading || <Charts {...this.state} type={this.state.on} />}
             </div>
         )
     }

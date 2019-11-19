@@ -1,10 +1,11 @@
-import React, { Component, PureComponent } from 'react'
+import React, { Component, PureComponent, useState } from 'react'
 import echarts from 'echarts'
 import style from './charts.css'
 import { isNumber } from 'util'
 import { _ } from '../../util'
 
 export default class Charts extends PureComponent {
+    state = {}
     constructor(props) {
         super(props)
         this.chartRef = React.createRef()
@@ -16,7 +17,11 @@ export default class Charts extends PureComponent {
         }
     }
 
-    setSankey = ({ evoFile, getGroupData, setState, clusters, groups, links }) => {
+    setSankey = ({
+        group, evoFile,
+        getGroupData, getClusterData,
+        setState, clusters, groups, links
+    }) => {
         if (!clusters || !groups || !links) {
             clusters = []
             groups = []
@@ -58,7 +63,10 @@ export default class Charts extends PureComponent {
                     g.forEach(c => links.push(
                         {
                             source: c.id,
-                            target: groups[i].collector.id
+                            target: groups[i].collector.id,
+                            lineStyle: {
+                                opacity: 0
+                            }
                         }))
                 }
             })
@@ -70,9 +78,11 @@ export default class Charts extends PureComponent {
             backgroundColor: 'white',
             series: [{
                 type: 'sankey',
+                top: '7%',
                 data: clusters.concat(groups.map(g => g.collector).flat()),
                 links: links,
                 draggable: true,
+                layoutIterations: 64,
                 focusNodeAdjacency: 'allEdges',
                 label: {
                     formatter: '{b}'
@@ -81,26 +91,33 @@ export default class Charts extends PureComponent {
                     formatter: '{b} {c}'
                 },
                 itemStyle: {
-                    normal: {
-                        borderWidth: 1,
-                        borderColor: '#aaa'
-                    }
+                    borderWidth: 1,
+                    borderColor: '#aaa'
                 },
                 lineStyle: {
-                    normal: {
-                        color: 'source',
-                        curveness: 0.5
-                    }
+                    color: 'source',
+                    opacity: 0.4,
+                    curveness: 0.5
                 }
             }]
         }
         this.chart.on('click', ({ seriesIndex, dataType, data }) => {
             if (dataType === 'node') {
                 setState({
-                    on: 'group',
+                    on: 'cluster'
+                })
+                getClusterData({
+                    cid: data._origin_.ID,
                     group: data._origin_.group
                 })
-                getGroupData(data._origin_.group)
+            }
+        })
+        this.chart.on('mouseover', ({ seriesIndex, dataType, data }) => {
+            if (dataType === 'node') {
+                if (group !== data._origin_.group)
+                    this.setState({
+                        group: data._origin_.group
+                    })
             }
         })
         this.chart.setOption(option, true)
@@ -208,6 +225,9 @@ export default class Charts extends PureComponent {
         const froms = [[], []], tos = [[], []]
         clusterInfo.cluster_nodes.forEach(v => {
             if (v.origin !== 'null') {
+                v.itemStyle = {
+                    color: '#60ACFC'
+                }
                 froms[0].push({
                     name: v.key,
                     id: v.id,
@@ -234,6 +254,9 @@ export default class Charts extends PureComponent {
                 }
             }
             if (v.aim !== 'null') {
+                v.itemStyle = {
+                    color: '#5BC49F'
+                }
                 tos[0].push({
                     name: v.key,
                     id: v.id,
@@ -400,6 +423,43 @@ export default class Charts extends PureComponent {
         this.init(props)
     }
 
+    SankeyGroups = () => {
+        const groups = this.props.groups || []
+        const ptr = $('#skg-' + this.state.group)[0]
+        return (
+            <div className={style.skg}>
+                <div
+                    className={style['skg-block']}
+                    onClick={e => {
+                        const { setState, getGroupData } = this.props
+                        const group = e.target.textContent
+                        setState({
+                            on: 'group',
+                            group
+                        })
+                        getGroupData(group)
+                    }}
+                >
+                    {groups.map((v, i) => (
+                        <div
+                            id={'skg-' + i}
+                            key={i}
+                            onMouseEnter={e => this.setState({ group: i })}
+                        >
+                            {i}
+                        </div>
+                    ))}
+                </div>
+                <div
+                    className={style['skg-ptr']}
+                    style={{
+                        transform: `translateX(${ptr ? ptr.offsetLeft : 0}px)`
+                    }}
+                />
+            </div>
+        )
+    }
+
     render() {
         return (
             <div className={style.main}>
@@ -411,6 +471,7 @@ export default class Charts extends PureComponent {
                     }}
                 >
                 </div>
+                {this.props.type === 'main' && <this.SankeyGroups />}
             </div>
         )
     }
