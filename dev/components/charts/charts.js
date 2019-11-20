@@ -26,6 +26,7 @@ export default class Charts extends PureComponent {
             clusters = []
             groups = []
             links = []
+            groups.size = 0
             evoFile.nodes.forEach(n => {
                 const cl = {
                     name: n.name,
@@ -36,6 +37,7 @@ export default class Charts extends PureComponent {
                 if (groups[n.group])
                     groups[n.group].push(cl)
                 else {
+                    groups.size++
                     groups[n.group] = []
                     groups[n.group].collector = {
                         name: n.group,
@@ -122,61 +124,16 @@ export default class Charts extends PureComponent {
         })
         this.chart.setOption(option, true)
     }
-    setGroup = ({ group, graphInfo, getClusterData, setState, groups }) => {
-        let clusters = groups[group].infos
-        if (!clusters) {
-            clusters = []
+    setGroup = ({
+        group, graphInfo, getClusterData, setState, groups
+    }) => {
+        const clusters = groups[group]
+        clusters.forEach((clst, i) => (clst.category = i))
+        if (false) {
             graphInfo.forEach(v => {
-                let pclst = clusters.findIndex(clst => clst.name === v.clusterName)
-                pclst === -1 &&
-                    (pclst = clusters.push({
-                        name: v.clusterName,
-                        cid: v.clusterId,
-                        nodes: [],
-                        links: []
-                    }) - 1)
-                const clst = clusters[pclst]
-                if (!isNumber(clst.nodes['n' + v.source_nodeName])) {
-                    clst.nodes['n' + v.source_nodeName] = clst.nodes.length
-                    clst.nodes.push({
-                        catagory: pclst,
-                        name: v.source_nodeName,
-                        id: v.source_nodeID,
-                        symbolSize: 6,
-                    })
-                }
-                v.target.forEach(t => {
-                    if (!isNumber(clst.nodes['n' + t.target_nodeName])) {
-                        clst.nodes['n' + t.target_nodeName] = clst.nodes.length
-                        clst.nodes.push({
-                            catagory: pclst,
-                            name: t.target_nodeName,
-                            id: t.target_nodeID,
-                            symbolSize: 6,
-                        })
-                    }
-                    if (!(clst.links[`${'n' + v.source_nodeName}_${'n' + t.target_nodeName}`] &&
-                        clst.links[`${'n' + v.target_nodeName}_${'n' + t.source_nodeName}`])) {
-                        clst.links[`${'n' + v.source_nodeName}_${'n' + t.target_nodeName}`] = true
-                        const ps = clst.nodes['n' + v.source_nodeName], pt = clst.nodes['n' + t.target_nodeName]
-                        clst.links.push({
-                            source: '' + clst.nodes[ps].id,
-                            target: '' + clst.nodes[pt].id
-                        })
-                        if (clst.nodes[ps].symbolSize < 30)
-                            clst.nodes[ps].symbolSize += 3
-                        else
-                            clst.nodes[ps].symbolSize += 1
-                    }
-                })
-                clst.category = pclst
-                clst.symbolSize = clst.nodes.length + 15
             })
-            groups[group].infos = clusters
-            setState({ groups })
-            return
         }
-        const categories = groups[group].infos.map(v => ({ name: v.name }))
+        const categories = clusters.map(v => ({ name: v.name }))
         const option = {
             legend: [{
                 type: 'scroll',
@@ -194,7 +151,7 @@ export default class Charts extends PureComponent {
                 },
                 zlevel: 0,
                 data: clusters,
-                links: [],
+                // links: [],
                 categories,
                 roam: true,
                 focusNodeAdjacency: true,
@@ -220,7 +177,9 @@ export default class Charts extends PureComponent {
         })
         this.chart.setOption(option, true)
     }
-    setCluster = ({ group, clusterInfo, setState, clusters, groups }) => {
+    setCluster = ({
+        group, clusterInfo, setState, clusters, groups
+    }) => {
         const clst = groups[group].infos.find(v => v.name === clusterInfo.cluster_name)
         const froms = [[], []], tos = [[], []]
         clusterInfo.cluster_nodes.forEach(v => {
@@ -427,7 +386,12 @@ export default class Charts extends PureComponent {
         const groups = this.props.groups || []
         const ptr = $('#skg-' + this.state.group)[0]
         return (
-            <div className={style.skg}>
+            <div
+                className={style.skg}
+                style={{
+                    width: `${90 - 90 / groups.size + 2.5}%`
+                }}
+            >
                 <div
                     className={style['skg-block']}
                     onClick={e => {

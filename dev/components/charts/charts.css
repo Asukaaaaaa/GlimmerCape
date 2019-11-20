@@ -8,19 +8,19 @@
 }
 
 .skg {
-  width: 90%;
   position: absolute;
   top: 8px;
-  left: 4.7%;
+  left: 4.75%;
+}
+.skg-block {
+  display: flex;
+  justify-content: space-between;
 }
 .skg-block > div {
   display: inline-block;
   padding: 0 10px;
   border-radius: 8px;
   background-color: #f1f3f4;
-}
-.skg-block > div:not(:last-child) {
-  margin-right: 15.65%;
 }
 .skg-ptr {
   position: absolute;
