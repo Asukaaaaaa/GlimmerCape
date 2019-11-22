@@ -128,9 +128,30 @@ export default class Charts extends PureComponent {
         group, graphInfo, getClusterData, setState, groups
     }) => {
         const clusters = groups[group]
-        clusters.forEach((clst, i) => (clst.category = i))
-        if (false) {
+        if (true) {
+            const clstMap = new Map()
+            clusters.forEach((clst, i) => {
+                clst.category = i
+                clst._origin_.nodes = new Map()
+                clst._origin_.links = []
+                clstMap.set(clst.name, clst)
+            })
             graphInfo.forEach(v => {
+                const clst = clstMap.get(v.clusterName)
+                const { nodes, links } = clst._origin_
+                nodes.set(v.source_nodeName,
+                    {
+                        name: v.source_nodeName,
+                        id: '' + v.source_nodeID
+                    })
+                v.target.forEach(t => nodes.set(t.target_nodeName,
+                    {
+                        name: t.target_nodeName,
+                        id: t.target_nodeID
+                    }))
+            })
+            clusters.forEach(clst => {
+                clst._origin_.nodes = Array.from(clst._origin_.nodes).map(pair => pair[0])
             })
         }
         const categories = clusters.map(v => ({ name: v.name }))
