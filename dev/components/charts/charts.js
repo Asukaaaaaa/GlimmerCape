@@ -20,10 +20,9 @@ export default class Charts extends PureComponent {
     setSankey = ({
         group, evoFile,
         getGroupData, getClusterData,
-        setState, clusters, groups, links
+        setState, groups, links
     }) => {
-        if (!clusters || !groups || !links) {
-            clusters = []
+        if (!groups) {
             groups = []
             links = []
             groups.size = 0
@@ -33,12 +32,11 @@ export default class Charts extends PureComponent {
                     id: n.name + n.group,
                     _origin_: n
                 }
-                clusters.push(cl)
                 if (groups[n.group])
                     groups[n.group].push(cl)
                 else {
                     groups.size++
-                    groups[n.group] = []
+                    groups[n.group] = [cl]
                     groups[n.group].collector = {
                         name: n.group,
                         id: n.group,
@@ -72,7 +70,7 @@ export default class Charts extends PureComponent {
                         }))
                 }
             })
-            setState({ clusters, groups, links })
+            setState({ groups, links })
             return
         }
         const option = {
@@ -81,9 +79,9 @@ export default class Charts extends PureComponent {
             series: [{
                 type: 'sankey',
                 top: '7%',
-                data: clusters.concat(groups.map(g => g.collector).flat()),
+                data: groups.map(g => g.concat(g.collector)).flat(),
                 links: links,
-                draggable: true,
+                draggable: false,
                 layoutIterations: 64,
                 focusNodeAdjacency: 'allEdges',
                 label: {
@@ -128,31 +126,37 @@ export default class Charts extends PureComponent {
         group, graphInfo, getClusterData, setState, groups
     }) => {
         const clusters = groups[group]
-        if (true) {
+        if (!clusters.info) {
             const clstMap = new Map()
-            clusters.forEach((clst, i) => {
-                clst.category = i
-                clst._origin_.nodes = new Map()
-                clst._origin_.links = []
-                clstMap.set(clst.name, clst)
+            clusters.forEach((cluster, i) => {
+                cluster.category = i
+                cluster.nodes = new Map()
+                cluster.links = []
+                clstMap.set(cluster.name, cluster)
             })
             graphInfo.forEach(v => {
-                const clst = clstMap.get(v.clusterName)
-                const { nodes, links } = clst._origin_
-                nodes.set(v.source_nodeName,
-                    {
+                const cl = clstMap.get(v.clusterName)
+                cl.nodes.has(v.source_nodeName) ||
+                    cl.nodes.set(v.source_nodeName, {
                         name: v.source_nodeName,
                         id: '' + v.source_nodeID
                     })
-                v.target.forEach(t => nodes.set(t.target_nodeName,
-                    {
-                        name: t.target_nodeName,
-                        id: t.target_nodeID
-                    }))
+                v.target.forEach(t => {
+                    cl.nodes.has(t.target_nodeName) ||
+                        cl.nodes.set(t.target_nodeName, {
+                            name: t.target_nodeName,
+                            id: '' + t.target_nodeID
+                        })
+                    cl.links.push({
+                        source: '' + v.source_nodeID,
+                        target: '' + t.target_nodeID
+                    })
+                })
             })
-            clusters.forEach(clst => {
-                clst._origin_.nodes = Array.from(clst._origin_.nodes).map(pair => pair[0])
+            clusters.forEach(cluster => {
+                cluster.nodes = Array.from(cluster.nodes).map(arr => arr[1])
             })
+            groups[group].info = true
         }
         const categories = clusters.map(v => ({ name: v.name }))
         const option = {
@@ -199,9 +203,9 @@ export default class Charts extends PureComponent {
         this.chart.setOption(option, true)
     }
     setCluster = ({
-        group, clusterInfo, setState, clusters, groups
+        group, clusterInfo, setState, groups
     }) => {
-        const clst = groups[group].infos.find(v => v.name === clusterInfo.cluster_name)
+        const cluster = groups[group].find(clst => clst.name === clusterInfo.cluster_name)
         const froms = [[], []], tos = [[], []]
         clusterInfo.cluster_nodes.forEach(v => {
             if (v.origin !== 'null') {
@@ -288,8 +292,8 @@ export default class Charts extends PureComponent {
                     edgeLength: [10, 500],
                     // layoutAnimation: false
                 },
-                data: clst.nodes,
-                links: clst.links,
+                data: cluster.nodes,
+                links: cluster.links,
                 roam: true,
                 focusNodeAdjacency: true,
                 label: {
