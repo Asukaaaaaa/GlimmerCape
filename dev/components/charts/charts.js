@@ -1,7 +1,7 @@
 import React, { Component, PureComponent, useState } from 'react'
 import echarts from 'echarts'
 import style from './charts.css'
-import { _, imgs } from '../../util'
+import { _, imgs, ClassNames } from '../../util'
 
 export default class Charts extends PureComponent {
     state = {}
@@ -385,7 +385,7 @@ export default class Charts extends PureComponent {
             }]
         }, true)
     }
-    
+
     init(props = this.props) {
         this.chart.showLoading()
         this.maps[props.type](props)
@@ -402,6 +402,11 @@ export default class Charts extends PureComponent {
     SankeyGroups = () => {
         const groups = this.props.groups || []
         const ptr = $('#skg-' + this.state.group)[0]
+        const [activeBlock, setActBlock] = useState(0)
+        const sorter = (key) => {
+            groups[activeBlock].sort((a, b) => (a._origin_[key] - b._origin_[key]))
+            this.props.setState(groups)
+        }
         return (
             <div
                 className={style.skg}
@@ -409,25 +414,41 @@ export default class Charts extends PureComponent {
                     width: `${90 - 90 / groups.size + 5}%`
                 }}
             >
-                <div
-                    className={style['skg-block']}
-                    onClick={e => {
-                        const { setState, getGroupData } = this.props
-                        const group = e.target.textContent
-                        setState({
-                            on: 'group',
-                            group
-                        })
-                        getGroupData(group)
-                    }}
-                >
+                <div className={style['skg-block']}>
                     {groups.map((v, i) => (
                         <div
+                            style={{
+                                position: 'relative'
+                            }}
                             id={'skg-' + i}
                             key={i}
                             onMouseEnter={e => this.setState({ group: i })}
+                            onClick={e => {
+                                if (activeBlock !== i)
+                                    setActBlock(i)
+                                else
+                                    setActBlock(0)
+                            }}
                         >
                             {i}
+                            <div className={ClassNames(style['skg-menu'], activeBlock === i && style.active)}>
+                                <div>查看年份</div>
+                                <div
+                                    onClick={e => sorter('density')}
+                                >
+                                    密度排序
+                                </div>
+                                <div
+                                    onClick={e => sorter('centrality')}
+                                >
+                                    中心度排序
+                                </div>
+                                <div
+                                    onClick={e => sorter('num')}
+                                >
+                                    节点数排序
+                                </div>
+                            </div>
                         </div>
                     ))}
                 </div>
