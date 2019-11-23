@@ -60,9 +60,10 @@ import questionCircle from '../static/img/question-circle.svg'
 import telephone from '../static/img/telephone.svg'
 import userCenter from '../static/img/user-center.svg'
 import downloadSvg from '../static/img/download-fill.svg'
+import exchangeSvg from '../static/img/exchange.svg'
 
 const imgs = {
-    logo, cross, test, detail, edit, mail, questionCircle, telephone, userCenter, downloadSvg
+    logo, cross, test, detail, edit, mail, questionCircle, telephone, userCenter, downloadSvg, exchangeSvg
 }
 
 export {

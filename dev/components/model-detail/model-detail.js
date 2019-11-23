@@ -17,7 +17,14 @@ const MainSider = ({ radarInfo, coword }) => {
     names.splice(names.findIndex(v => v === 'words'), 1)
     return (
         <React.Fragment>
-            <Charts type='radar' width='400px' height='300px' data={radarInfo} />
+            <div style={{
+                height: '300px'
+            }}>
+                <Charts
+                    type='radar'
+                    data={radarInfo}
+                />
+            </div>
             <div style={{ height: 'calc(100% - 300px)' }}>
                 <Table
                     data={coword}
