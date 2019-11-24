@@ -95,6 +95,7 @@ export default class Charts extends PureComponent {
         })
         clusters.forEach(cluster => {
             cluster._origin_.nodes = Array.from(cluster._origin_.nodes).map(arr => arr[1])
+            cluster.symbolSize = 15 + cluster._origin_.nodes.length
         })
         clusters.info = true
         setState({ groups })
