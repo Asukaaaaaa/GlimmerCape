@@ -557,7 +557,10 @@ export default class Charts extends PureComponent {
 
     render() {
         return (
-            <div className={style.main}>
+            <div
+                className={style.main}
+                title={this.props.title}
+            >
                 <div
                     ref={this.chartRef}
                 />
