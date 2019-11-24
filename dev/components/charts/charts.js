@@ -242,7 +242,10 @@ export default class Charts extends PureComponent {
         this.chart.on('click', ({ seriesName, dataType, data }) => {
             if (seriesName === 'group map' &&
                 dataType === 'node') {
-                setState({ on: 'cluster' })
+                setState({
+                    on: 'cluster',
+                    cid: data._origin_.ID
+                })
                 getClusterData({
                     cid: data._origin_.ID
                 })
@@ -354,7 +357,6 @@ export default class Charts extends PureComponent {
             left: 'right',
             top: 'middle',
             feature: {
-                dataView: { show: true, readOnly: false },
                 myBar: {
                     show: true,
                     title: '切换视图',

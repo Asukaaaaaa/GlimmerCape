@@ -238,6 +238,24 @@ export default class ModelDetail extends Component {
     render() {
         return (
             <div className={style.main} >
+                <Steps
+                    className={style.steps}
+                    current={
+                        this.state.on == 'main' ? 0 :
+                            this.state.on == 'group' ? 1 :
+                                this.state.on == 'cluster' ? 2 : -1
+                    }
+                >
+                    <Step
+                        onClick={e => this.setState({ on: 'main' })}
+                    />
+                    <Step
+                        onClick={e => this.state.group && this.setState({ on: 'group' })}
+                    />
+                    <Step
+                        onClick={e => this.state.cid && this.setState({ on: 'cluster' })}
+                    />
+                </Steps>
                 <this.getChart />
                 <div className={style.right}>
                     <this.getSider />
