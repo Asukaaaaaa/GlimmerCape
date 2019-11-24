@@ -9,6 +9,8 @@
   bottom: -5px;
   width: calc(100% - 19px);
   height: 32px;
+  display: flex;
+  align-items: center;
   border-top: 1px solid #ddd;
   border-left: 1px solid #ddd;
   border-right: 1px solid #ddd;
@@ -16,7 +18,6 @@
 }
 .title > div {
   display: inline-block;
-  top: 2px;
 }
 .title > div:first-child {
   position: absolute;
