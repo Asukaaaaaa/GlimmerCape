@@ -12,7 +12,7 @@ import style from './model-detail.css'
 import ClusterData from '../../../static/cluster.json'
 
 
-const MainSider = ({ radarInfo, coword }) => {
+const MainSider = ({ mid, radarInfo, coword }) => {
     const names = Object.keys(coword[0])
     names.splice(names.findIndex(v => v === 'words'), 1)
     return (
@@ -23,6 +23,7 @@ const MainSider = ({ radarInfo, coword }) => {
                 <Charts
                     type='radar'
                     data={radarInfo}
+                    mid={mid}
                 />
             </div>
             <div style={{ height: 'calc(100% - 300px)' }}>
