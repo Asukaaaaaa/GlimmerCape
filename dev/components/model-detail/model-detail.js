@@ -12,7 +12,7 @@ import style from './model-detail.css'
 import ClusterData from '../../../static/cluster.json'
 
 
-const MainSider = ({ radarInfo, coword }) => {
+const MainSider = ({ mid, radarInfo, coword }) => {
     const names = Object.keys(coword[0])
     names.splice(names.findIndex(v => v === 'words'), 1)
     return (
@@ -23,6 +23,7 @@ const MainSider = ({ radarInfo, coword }) => {
                 <Charts
                     type='radar'
                     data={radarInfo}
+                    mid={mid}
                 />
             </div>
             <div style={{ height: 'calc(100% - 300px)' }}>
@@ -55,7 +56,10 @@ const GroupSider = ({ group, zpFile }) => {
 const ClusterSider = ({ mid, group, clusterInfo }) => {
     return (
         <React.Fragment>
-            <div className={style.cinfo}>
+            <div
+                className={style.cinfo}
+                title=''
+            >
                 <div>
                     <Icon type='bar-chart' />
                     <span>社区信息</span>
@@ -76,7 +80,10 @@ const ClusterSider = ({ mid, group, clusterInfo }) => {
                     <div>密度<span>{clusterInfo.cluster_density}</span></div>
                 </div>
             </div>
-            <div style={{ minHeight: 'calc(100% - 300px)' }}>
+            <div
+                style={{ minHeight: 'calc(100% - 300px)' }}
+                title='社区词列表'
+            >
                 <Table data={clusterInfo.cluster_nodes}
                     export={() => {
                         fetch(host + '/result/ExportClusterInfo' +
@@ -199,10 +206,15 @@ export default class ModelDetail extends Component {
             cluster: 'clusterInfo'
         }[this.state.on]
         const loading = (chartData && this.state[chartData]) ? false : true
+        const ctTitles = {
+            main: '桑基图：显示周期中社区具体的演化情况。可按照中心度、社区节点数量、密度这三个指标对社区进行排序。矩形颜色块表示社区，两个时间段的矩形之间的曲线形色块表示演化的过程，颜色块的高度表示社区的节点规模。演化曲线的值表示该父社区对子社区的影响程度。',
+            group: '社区图：指定周期中社区具体情况，大小代表社区节点规模。',
+            cluster: '社区词关联：表示该社区内部词与词之间的关系网络。'
+        }
         return (
             <div className={style.graph}>
                 {loading && <Spin className={style.loading} indicator={<Icon type="loading" style={{ fontSize: 36 }} spin />} />}
-                {loading || <Charts {...this.state} type={this.state.on} />}
+                {loading || <Charts {...this.state} type={this.state.on} title={ctTitles[this.state.on]} />}
             </div>
         )
     }
