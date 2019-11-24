@@ -381,6 +381,7 @@ export default class Charts extends PureComponent {
                                 data: [t]
                             })),
                             legend: {
+                                type: 'scroll',
                                 left: 'center',
                                 selectedMode: 'single',
                                 selected: {
@@ -490,7 +491,7 @@ export default class Charts extends PureComponent {
             <div
                 className={style.skg}
                 style={{
-                    width: `${90 - 90 / groups.size + 5}%`
+                    width: '77.35%' //`${85 - 85 / groups.size}%`''
                 }}
             >
                 <div className={style['skg-block']}>
