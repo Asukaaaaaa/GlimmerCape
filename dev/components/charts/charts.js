@@ -305,7 +305,7 @@ export default class Charts extends PureComponent {
                             toolbox,
                             grid: tags.map((t, i) => ({
                                 height: 50 / tags.length + '%',
-                                x: '10%',
+                                x: '15%',
                                 y: 10 + i * 84 / tags.length + '%'
                             })),
                             xAxis: tags.map((t, i) => ({
