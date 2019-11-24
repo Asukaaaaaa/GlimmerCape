@@ -28,6 +28,7 @@ const MainSider = ({ mid, radarInfo, coword }) => {
             </div>
             <div style={{ height: 'calc(100% - 300px)' }}>
                 <Table
+                    name='词列表'
                     data={coword}
                     export={() => {
                         fetch(host + '/result/ExportCoword?model_id=' + mid)
@@ -84,7 +85,9 @@ const ClusterSider = ({ mid, group, clusterInfo }) => {
                 style={{ minHeight: 'calc(100% - 300px)' }}
                 title='社区词列表'
             >
-                <Table data={clusterInfo.cluster_nodes}
+                <Table
+                    name='社区词列表'
+                    data={clusterInfo.cluster_nodes}
                     export={() => {
                         fetch(host + '/result/ExportClusterInfo' +
                             '?model_id=' + mid +
