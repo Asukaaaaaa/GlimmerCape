@@ -75,7 +75,7 @@ export default class Charts extends PureComponent {
                 },
                 lineStyle: {
                     color: 'source',
-                    opacity: 0.4,
+                    opacity: 0.7,
                     curveness: 0.5
                 }
             }]
@@ -366,7 +366,7 @@ export default class Charts extends PureComponent {
             <div
                 className={style.skg}
                 style={{
-                    width: '77.35%' //`${85 - 85 / groups.size}%`''
+                    width: '77.35%'
                 }}
             >
                 <div className={style['skg-block']}>

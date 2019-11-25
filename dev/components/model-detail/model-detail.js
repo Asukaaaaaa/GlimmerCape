@@ -233,7 +233,7 @@ export default class ModelDetail extends Component {
                     .then(r => r.json())
                     .catch(console.log)
                     .then(res => {
-                        const { group, groups } = this.state
+                        const { groups } = this.state
                         const clusters = groups[group]
                         const clstMap = new Map()
                         clusters.forEach((cluster, i) => {
@@ -298,6 +298,7 @@ export default class ModelDetail extends Component {
                         console.log(e)
                     }
                 })
+                cluster.info = true
                 this.setState({ groups })
             }
         })
@@ -325,11 +326,11 @@ export default class ModelDetail extends Component {
                 }
                 break
             case 'cluster':
-                if (groups &&
-                    groups[group] &&
+                if (group &&
+                    groups &&
                     groups[group].info &&
                     cluster &&
-                    groups[group].find(c => c.name == cluster.name)) {
+                    cluster.info) {
                     loading = false
                 }
                 break
