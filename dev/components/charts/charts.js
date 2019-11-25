@@ -16,106 +16,11 @@ export default class Charts extends PureComponent {
         }
     }
 
-    initSankey(evoFile, setState) {
-        const groups = [], links = []
-        groups.size = 0
-        evoFile.nodes.forEach(n => {
-            const cl = {
-                name: n.name,
-                id: n.name + n.group,
-                _origin_: n
-            }
-            if (groups[n.group])
-                groups[n.group].push(cl)
-            else {
-                groups.size++
-                groups[n.group] = [cl]
-                groups[n.group].collector = {
-                    name: n.group,
-                    id: n.group,
-                    itemStyle: {
-                        opacity: 0
-                    }
-                }
-            }
-        })
-        evoFile.links.forEach(l => {
-            links.push({
-                source: l.source + l.sourcegroup,
-                target: l.target + l.targetgroup,
-                value: l.value,
-                _origin_: l
-            })
-        })
-        groups.forEach((g, i) => {
-            if (++i !== groups.length) {
-                links.push({
-                    source: g.collector.id,
-                    target: groups[i].collector.id
-                })
-                g.forEach(c => links.push(
-                    {
-                        source: c.id,
-                        target: groups[i].collector.id,
-                        lineStyle: {
-                            opacity: 0
-                        }
-                    }))
-            }
-        })
-        setState({ groups, links })
-        return
-    }
-    initGroup(groups, clusters, graphInfo, setState) {
-        const clstMap = new Map()
-        clusters.forEach((cluster, i) => {
-            cluster.category = i
-            cluster._origin_.nodes = new Map()
-            cluster._origin_.links = []
-            clstMap.set(cluster.name, cluster)
-        })
-        graphInfo.forEach(v => {
-            const cl = clstMap.get(v.clusterName)
-            cl._origin_.nodes.has(v.source_nodeName) ||
-                cl._origin_.nodes.set(v.source_nodeName, {
-                    name: v.source_nodeName,
-                    id: '' + v.source_nodeID
-                })
-            v.target.forEach(t => {
-                cl._origin_.nodes.has(t.target_nodeName) ||
-                    cl._origin_.nodes.set(t.target_nodeName, {
-                        name: t.target_nodeName,
-                        id: '' + t.target_nodeID
-                    })
-                cl._origin_.links.push({
-                    source: '' + v.source_nodeID,
-                    target: '' + t.target_nodeID
-                })
-            })
-        })
-        clusters.forEach(cluster => {
-            cluster._origin_.nodes = Array.from(cluster._origin_.nodes).map(arr => arr[1])
-            cluster.symbolSize = 15 + cluster._origin_.nodes.length
-        })
-        clusters.info = true
-        setState({ groups })
-        return
-    }
-    initCluster() {
-
-    }
-    checkData() {
-        // todo
-    }
     setSankey = ({
-        group, evoFile,
+        group,
         getGroupData, getClusterData,
         setState, groups, links
     }) => {
-        if (!groups) {
-            this.initSankey(evoFile, setState)
-            return
-        }
         const categories = groups.map((g, i) => i).flat()
         const sorter = (key) => {
             groups.forEach(g => g.sort((a, b) => (a._origin_[key] - b._origin_[key])))
@@ -178,12 +83,11 @@ export default class Charts extends PureComponent {
         this.chart.on('click', ({ seriesIndex, dataType, data }) => {
             if (dataType === 'node') {
                 setState({
-                    on: 'cluster'
+                    on: 'cluster',
+                    group: data._origin_.group,
+                    cluster: data._origin_
                 })
-                getClusterData({
-                    cid: data._origin_.ID,
-                    group: data._origin_.group
-                })
+                getClusterData(data._origin_)
             }
         })
         this.chart.on('mouseover', ({ seriesIndex, dataType, data }) => {
@@ -197,13 +101,10 @@ export default class Charts extends PureComponent {
         this.chart.setOption(option, true)
     }
     setGroup = ({
-        group, graphInfo, getClusterData, setState, groups
+        group, graphInfo, getClusterData,
+        setState, groups
     }) => {
         const clusters = groups[group]
-        if (!clusters.info) {
-            this.initGroup(groups, clusters, graphInfo, setState)
-            return
-        }
         const categories = clusters.map(v => ({ name: v.name }))
         const option = {
             legend: [{
@@ -244,43 +145,17 @@ export default class Charts extends PureComponent {
                 dataType === 'node') {
                 setState({
                     on: 'cluster',
-                    cid: data._origin_.ID
+                    group: data._origin_.group,
+                    cluster: data._origin_
                 })
-                getClusterData({
-                    cid: data._origin_.ID
-                })
+                getClusterData(data._origin_)
             }
         })
         this.chart.setOption(option, true)
     }
     setCluster = ({
-        group, clusterInfo, setState, groups
+        cluster
     }) => {
-        if (!groups[group].info) {
-            // todo
-            this.initGroup()
-            return
-        }
-        const cluster = groups[group].find(clst => clst.name === clusterInfo.cluster_name)._origin_
-        const nodesMap = new Map()
-        cluster.nodes.forEach(n => nodesMap.set(n.name, n))
-        clusterInfo.cluster_nodes.forEach(v => {
-            const n = nodesMap.get(v.key)
-            try {
-                if (v.origin !== 'null') {
-                    n.itemStyle = {
-                        color: '#60ACFC'
-                    }
-                }
-                if (v.aim !== 'null') {
-                    n.itemStyle = {
-                        color: '#FF7C7C'
-                    }
-                }
-            } catch (e) {
-
-            }
-        })
         const option = {
             color: ['#60ACFC', '#FF7C7C'],
             legend: [{

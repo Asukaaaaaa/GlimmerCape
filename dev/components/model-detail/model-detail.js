@@ -54,7 +54,7 @@ const GroupSider = ({ group, zpFile }) => {
         <SvgGraph graph='scatter' data={[zpFile.find(v => v.label === group)]} />
     )
 }
-const ClusterSider = ({ mid, group, clusterInfo }) => {
+const ClusterSider = ({ mid, group, res }) => {
     return (
         <React.Fragment>
             <div
@@ -66,19 +66,19 @@ const ClusterSider = ({ mid, group, clusterInfo }) => {
                     <span>社区信息</span>
                 </div>
                 <div className={style.ctitle2}>
-                    <span>{clusterInfo.cluster_name}</span>
-                    <span>{clusterInfo.label}</span>
+                    <span>{res.cluster_name}</span>
+                    <span>{res.label}</span>
                 </div>
                 <div className={style.c2}>
-                    <div>节点数<span>{clusterInfo.cluster_nodesnum}</span></div>
-                    <div>边数<span>{clusterInfo.cluster_edgesnum}</span></div>
+                    <div>节点数<span>{res.cluster_nodesnum}</span></div>
+                    <div>边数<span>{res.cluster_edgesnum}</span></div>
                 </div>
                 <div className={style.c2}>
-                    <div>平均度<span>{clusterInfo.cluster_avdegree}</span></div>
-                    <div>最大度<span>{clusterInfo.cluster_maxdegree}</span></div>
+                    <div>平均度<span>{res.cluster_avdegree}</span></div>
+                    <div>最大度<span>{res.cluster_maxdegree}</span></div>
                 </div>
                 <div className={style.c2}>
-                    <div>密度<span>{clusterInfo.cluster_density}</span></div>
+                    <div>密度<span>{res.cluster_density}</span></div>
                 </div>
             </div>
             <div
@@ -87,12 +87,12 @@ const ClusterSider = ({ mid, group, clusterInfo }) => {
             >
                 <Table
                     name='社区词列表'
-                    data={clusterInfo.cluster_nodes}
+                    data={res.cluster_nodes}
                     export={() => {
                         fetch(host + '/result/ExportClusterInfo' +
                             '?model_id=' + mid +
                             '&label=' + group +
-                            '&cluster_id=' + clusterInfo.cluster_ID)
+                            '&cluster_id=' + res.cluster_ID)
                             .then(res => res.json())
                             .then(res => {
                                 res = res.data.split('Web_NEview')[1]
@@ -122,14 +122,14 @@ export default class ModelDetail extends Component {
         this.state = {
             mid: props.match.params.id,
             // main
-            evoFile: null,
+            res: null,
             radarInfo: null,
             coword: null,
             // group
-            graphInfo: null,
+            res: null,
             zpFile: null,
             // cluster
-            clusterInfo: null,
+            res: null,
 
             // getter
             getMainData: _.debounce(this.getMainData),
@@ -146,7 +146,56 @@ export default class ModelDetail extends Component {
             if (res.resultDesc === 'Success')
                 fetch(host + res.data.split('Web_NEview')[1])
                     .then(r => r.json())
-                    .then(res => this.setState({ evoFile: res }))
+                    .then(res => {
+                        const groups = [], links = []
+                        groups.size = 0
+                        res.nodes.forEach(n => {
+                            const cl = {
+                                name: n.name,
+                                id: n.name + n.group,
+                                _origin_: n
+                            }
+                            if (groups[n.group])
+                                groups[n.group].push(cl)
+                            else {
+                                groups.size++
+                                groups[n.group] = [cl]
+                                groups[n.group].collector = {
+                                    name: n.group,
+                                    id: n.group,
+                                    itemStyle: {
+                                        opacity: 0
+                                    }
+                                }
+                            }
+                        })
+                        res.links.forEach(l => {
+                            links.push({
+                                source: l.source + l.sourcegroup,
+                                target: l.target + l.targetgroup,
+                                value: l.value,
+                                _origin_: l
+                            })
+                        })
+                        groups.forEach((g, i) => {
+                            if (++i !== groups.length) {
+                                links.push({
+                                    source: g.collector.id,
+                                    target: groups[i].collector.id
+                                })
+                                g.forEach(c => links.push(
+                                    {
+                                        source: c.id,
+                                        target: groups[i].collector.id,
+                                        lineStyle: {
+                                            opacity: 0
+                                        }
+                                    }))
+                            }
+                        })
+                        groups.forEach((g, i) => this.getGroupData(i))
+                        this.setState({ groups, links })
+                    })
         })
         $.post(host + '/result/getZpFile', {
             model_id: this.state.mid
@@ -183,17 +232,74 @@ export default class ModelDetail extends Component {
                 fetch(host + res.data.split('Web_NEview')[1])
                     .then(r => r.json())
                     .catch(console.log)
-                    .then(res => this.setState({ graphInfo: res }))
+                    .then(res => {
+                        const { group, groups } = this.state
+                        const clusters = groups[group]
+                        const clstMap = new Map()
+                        clusters.forEach((cluster, i) => {
+                            cluster.category = i
+                            cluster._origin_.nodes = new Map()
+                            cluster._origin_.links = []
+                            clstMap.set(cluster.name, cluster)
+                        })
+                        res.forEach(v => {
+                            const cl = clstMap.get(v.clusterName)
+                            cl._origin_.nodes.has(v.source_nodeName) ||
+                                cl._origin_.nodes.set(v.source_nodeName, {
+                                    name: v.source_nodeName,
+                                    id: '' + v.source_nodeID
+                                })
+                            v.target.forEach(t => {
+                                cl._origin_.nodes.has(t.target_nodeName) ||
+                                    cl._origin_.nodes.set(t.target_nodeName, {
+                                        name: t.target_nodeName,
+                                        id: '' + t.target_nodeID
+                                    })
+                                cl._origin_.links.push({
+                                    source: '' + v.source_nodeID,
+                                    target: '' + t.target_nodeID
+                                })
+                            })
+                        })
+                        clusters.forEach(cluster => {
+                            cluster._origin_.nodes = Array.from(cluster._origin_.nodes).map(arr => arr[1])
+                            cluster.symbolSize = 15 + cluster._origin_.nodes.length
+                        })
+                        clusters.info = true
+                        this.setState({ groups })
+                    })
         })
     }
-    getClusterData = ({ cid, group }) => {
+    getClusterData = ({ ID, group }) => {
         $.post(host + '/result/getPickedClusterInfo', {
             model_id: this.state.mid,
-            cluster_id: cid,
-            label: group || this.state.group
+            cluster_id: ID,
+            label: group
         }, res => {
-            if (res.resultDesc === 'Success')
-                this.setState({ clusterInfo: JSON.parse(res.data) })
+            if (res.resultDesc === 'Success') {
+                res = JSON.parse(res.data)
+                const { cluster, group, groups } = this.state
+                const nodesMap = new Map()
+                cluster.nodes.forEach(n => nodesMap.set(n.name, n))
+                res.cluster_nodes.forEach(v => {
+                    const n = nodesMap.get(v.key)
+                    try {
+                        if (v.origin !== 'null') {
+                            n.itemStyle = {
+                                color: '#60ACFC'
+                            }
+                        }
+                        if (v.aim !== 'null') {
+                            n.itemStyle = {
+                                color: '#FF7C7C'
+                            }
+                        }
+                    } catch (e) {
+                        console.log(e)
+                    }
+                })
+                this.setState({ groups })
+            }
         })
     }
 
@@ -203,12 +309,31 @@ export default class ModelDetail extends Component {
     }
 
     getChart = () => {
-        const chartData = {
-            main: 'evoFile',
-            group: 'graphInfo',
-            cluster: 'clusterInfo'
-        }[this.state.on]
-        const loading = (chartData && this.state[chartData]) ? false : true
+        let loading = true
+        const { cluster, group, groups } = this.state
+        switch (this.state.on) {
+            case 'main':
+                if (groups) {
+                    loading = false
+                }
+                break
+            case 'group':
+                if (groups &&
+                    groups[group] &&
+                    groups[group].info) {
+                    loading = false
+                }
+                break
+            case 'cluster':
+                if (groups &&
+                    groups[group] &&
+                    groups[group].info &&
+                    cluster &&
+                    groups[group].find(c => c.name == cluster.name)) {
+                    loading = false
+                }
+                break
+        }
         const ctTitles = {
             main: '桑基图：显示周期中社区具体的演化情况。可按照中心度、社区节点数量、密度这三个指标对社区进行排序。矩形颜色块表示社区，两个时间段的矩形之间的曲线形色块表示演化的过程，颜色块的高度表示社区的节点规模。演化曲线的值表示该父社区对子社区的影响程度。',
             group: '社区图：指定周期中社区具体情况，大小代表社区节点规模。',
@@ -230,7 +355,7 @@ export default class ModelDetail extends Component {
             if (this.state.zpFile)
                 return <GroupSider {...this.state} />
         } else if (this.state.on === 'cluster') {
-            if (this.state.clusterInfo)
+            if (this.state.res)
                 return <ClusterSider {...this.state} />
         }
         return null
@@ -253,7 +378,7 @@ export default class ModelDetail extends Component {
                         onClick={e => this.state.group && this.setState({ on: 'group' })}
                     />
                     <Step
-                        onClick={e => this.state.cid && this.setState({ on: 'cluster' })}
+                        onClick={e => this.state.cluster && this.setState({ on: 'cluster' })}
                     />
                 </Steps>
                 <this.getChart />
