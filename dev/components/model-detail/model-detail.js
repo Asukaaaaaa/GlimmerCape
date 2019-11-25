@@ -54,7 +54,7 @@ const GroupSider = ({ group, zpFile }) => {
         <SvgGraph graph='scatter' data={[zpFile.find(v => v.label === group)]} />
     )
 }
-const ClusterSider = ({ mid, group, res }) => {
+const ClusterSider = ({ mid, group, clusterInfo }) => {
     return (
         <React.Fragment>
             <div
@@ -66,19 +66,19 @@ const ClusterSider = ({ mid, group, res }) => {
                     <span>社区信息</span>
                 </div>
                 <div className={style.ctitle2}>
-                    <span>{res.cluster_name}</span>
-                    <span>{res.label}</span>
+                    <span>{clusterInfo.cluster_name}</span>
+                    <span>{clusterInfo.label}</span>
                 </div>
                 <div className={style.c2}>
-                    <div>节点数<span>{res.cluster_nodesnum}</span></div>
-                    <div>边数<span>{res.cluster_edgesnum}</span></div>
+                    <div>节点数<span>{clusterInfo.cluster_nodesnum}</span></div>
+                    <div>边数<span>{clusterInfo.cluster_edgesnum}</span></div>
                 </div>
                 <div className={style.c2}>
-                    <div>平均度<span>{res.cluster_avdegree}</span></div>
-                    <div>最大度<span>{res.cluster_maxdegree}</span></div>
+                    <div>平均度<span>{clusterInfo.cluster_avdegree}</span></div>
+                    <div>最大度<span>{clusterInfo.cluster_maxdegree}</span></div>
                 </div>
                 <div className={style.c2}>
-                    <div>密度<span>{res.cluster_density}</span></div>
+                    <div>密度<span>{clusterInfo.cluster_density}</span></div>
                 </div>
             </div>
             <div
@@ -87,12 +87,12 @@ const ClusterSider = ({ mid, group, res }) => {
             >
                 <Table
                     name='社区词列表'
-                    data={res.cluster_nodes}
+                    data={clusterInfo.cluster_nodes}
                     export={() => {
                         fetch(host + '/result/ExportClusterInfo' +
                             '?model_id=' + mid +
                             '&label=' + group +
-                            '&cluster_id=' + res.cluster_ID)
+                            '&cluster_id=' + clusterInfo.cluster_ID)
                             .then(res => res.json())
                             .then(res => {
                                 res = res.data.split('Web_NEview')[1]
@@ -122,14 +122,9 @@ export default class ModelDetail extends Component {
         this.state = {
             mid: props.match.params.id,
             // main
-            res: null,
             radarInfo: null,
             coword: null,
-            // group
-            res: null,
             zpFile: null,
-            // cluster
-            res: null,
 
             // getter
             getMainData: _.debounce(this.getMainData),
@@ -177,20 +172,23 @@ export default class ModelDetail extends Component {
                                 _origin_: l
                             })
                         })
+                        groups.nodesMap = new Map()
                         groups.forEach((g, i) => {
                             if (++i !== groups.length) {
                                 links.push({
                                     source: g.collector.id,
                                     target: groups[i].collector.id
                                 })
-                                g.forEach(c => links.push(
-                                    {
+                                g.forEach(c => {
+                                    links.push({
                                         source: c.id,
                                         target: groups[i].collector.id,
                                         lineStyle: {
                                             opacity: 0
                                         }
-                                    }))
+                                    })
+                                    groups.nodesMap.set(c.id, c)
+                                })
                             }
                         })
                         groups.forEach((g, i) => this.getGroupData(i))
@@ -299,7 +297,10 @@ export default class ModelDetail extends Component {
                     }
                 })
                 cluster.info = true
-                this.setState({ groups })
+                this.setState({
+                    groups,
+                    clusterInfo: res
+                })
             }
         })
     }
@@ -348,16 +349,22 @@ export default class ModelDetail extends Component {
         )
     }
     getSider = () => {
-        if (this.state.on === 'main') {
-            if (this.state.radarInfo &&
-                this.state.coword)
-                return <MainSider {...this.state} />
-        } else if (this.state.on === 'group') {
-            if (this.state.zpFile)
-                return <GroupSider {...this.state} />
-        } else if (this.state.on === 'cluster') {
-            if (this.state.res)
-                return <ClusterSider {...this.state} />
+        const { on, radarInfo, coword, zpFile, clusterInfo } = this.state
+        switch (on) {
+            case 'main':
+                if (radarInfo &&
+                    coword)
+                    return <MainSider {...this.state} />
+                break
+            case 'group':
+                if (zpFile)
+                    return <GroupSider {...this.state} />
+                break
+
+            case 'cluster':
+                if (clusterInfo)
+                    return <ClusterSider {...this.state} />
+                break
         }
         return null
     }

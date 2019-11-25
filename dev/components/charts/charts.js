@@ -2,12 +2,14 @@ import React, { Component, PureComponent, useState } from 'react'
 import echarts from 'echarts'
 import style from './charts.css'
 import { _, imgs, ClassNames, host } from '../../util'
+import { node } from 'prop-types'
 
 export default class Charts extends PureComponent {
     state = {}
     constructor(props) {
         super(props)
         this.chartRef = React.createRef()
+        this.modalRef = React.createRef()
         this.maps = {
             'main': this.setSankey,
             'group': this.setGroup,
@@ -61,7 +63,6 @@ export default class Charts extends PureComponent {
                 data: groups.map(g => g.concat(g.collector)).flat(),
                 links: links,
                 draggable: false,
-                layoutIterations: 64,
                 focusNodeAdjacency: 'allEdges',
                 label: {
                     formatter: '{b}'
@@ -82,12 +83,67 @@ export default class Charts extends PureComponent {
         }
         this.chart.on('click', ({ seriesIndex, dataType, data }) => {
             if (dataType === 'node') {
-                setState({
-                    on: 'cluster',
-                    group: data._origin_.group,
-                    cluster: data._origin_
+                const _nodes = [], _links = []
+                _nodes.push = function (v) {
+                    if (!this[v.id]) {
+                        this[v.id] = true
+                        Array.prototype.push.call(this, v)
+                    }
+                }
+                const nodesMap = groups.nodesMap
+                groups.forEach(g => g.forEach(cl => cl.name == data._origin_.name && _nodes.push(cl)))
+                links.forEach(l => {
+                    if (l.source.includes(data._origin_.name) &&
+                        nodesMap.has(l.target)) {
+                        _links.push(l)
+                        _nodes.push(nodesMap.get(l.target))
+                    } else if (
+                        l.target.includes(data._origin_.name) &&
+                        nodesMap.has(l.source)) {
+                        _links.push(l)
+                        _nodes.push(nodesMap.get(l.source))
+                    }
                 })
-                getClusterData(data._origin_)
+                this.modal.on('click', ({ seriesIndex, dataType, data }) => {
+                    if (dataType === 'node') {
+                        setState({
+                            on: 'cluster',
+                            group: data._origin_.group,
+                            cluster: data._origin_
+                        })
+                        getClusterData(data._origin_)
+                    }
+                })
+                this.setState({
+                    modalOn: true
+                })
+                this.modal.showLoading()
+                this.modal.setOption({
+                    tooltip: {},
+                    backgroundColor: 'white',
+                    series: [{
+                        type: 'sankey',
+                        data: _nodes,
+                        links: _links,
+                        focusNodeAdjacency: 'allEdges',
+                        label: {
+                            formatter: '{a}'
+                        },
+                        tooltip: {
+                            formatter: '{b} {c}'
+                        },
+                        itemStyle: {
+                            borderWidth: 1,
+                            borderColor: '#aaa'
+                        },
+                        lineStyle: {
+                            color: 'source',
+                            opacity: 0.7,
+                            curveness: 0.5
+                        }
+                    }]
+                }, true)
+                this.modal.hideLoading()
             }
         })
         this.chart.on('mouseover', ({ seriesIndex, dataType, data }) => {
@@ -348,6 +404,7 @@ export default class Charts extends PureComponent {
     }
     componentDidMount() {
         this.chart = echarts.init(this.chartRef.current)
+        this.modal = echarts.init(this.modalRef.current)
         this.init()
     }
     componentWillReceiveProps(props) {
@@ -440,9 +497,16 @@ export default class Charts extends PureComponent {
                 className={style.main}
                 title={this.props.title}
             >
-                <div
-                    ref={this.chartRef}
-                />
+                <div ref={this.chartRef} />
+                <div className={ClassNames(style.modal, this.state.modalOn && style.active)}>
+                    <div
+                        className={style['modal-mask']}
+                        onClick={e => this.setState({ modalOn: false })}
+                    />
+                    <div className={style['modal-content']}>
+                        <div ref={this.modalRef} />
+                    </div>
+                </div>
                 {this.props.type === 'main' && <this.SankeyGroups />}
             </div>
         )
