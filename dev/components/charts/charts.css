@@ -46,6 +46,13 @@
   top: 8px;
   left: 4.75%;
   z-index: 1;
+  width: 77.35%;
+  transition: 0.25s ease-in;
+}
+.skg.modal-on {
+  top: 21%;
+  left: 36.5%;
+  width: 32.5%;
 }
 .skg-block {
   display: flex;
@@ -66,7 +73,6 @@
   border-radius: 15px;
   background-color: #40a9ff;
   mix-blend-mode: multiply;
-  transition: transform 0.25s ease-in-out;
   pointer-events: none;
 }
 .skg-menu {

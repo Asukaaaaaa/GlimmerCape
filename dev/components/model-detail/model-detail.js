@@ -311,40 +311,50 @@ export default class ModelDetail extends Component {
     }
 
     getChart = () => {
-        let loading = true
-        const { cluster, group, groups } = this.state
-        switch (this.state.on) {
-            case 'main':
-                if (groups) {
-                    loading = false
-                }
-                break
-            case 'group':
-                if (groups &&
-                    groups[group] &&
-                    groups[group].info) {
-                    loading = false
-                }
-                break
-            case 'cluster':
-                if (group &&
-                    groups &&
-                    groups[group].info &&
-                    cluster &&
-                    cluster.info) {
-                    loading = false
-                }
-                break
-        }
-        const ctTitles = {
-            main: '桑基图：显示周期中社区具体的演化情况。可按照中心度、社区节点数量、密度这三个指标对社区进行排序。矩形颜色块表示社区，两个时间段的矩形之间的曲线形色块表示演化的过程，颜色块的高度表示社区的节点规模。演化曲线的值表示该父社区对子社区的影响程度。',
-            group: '社区图：指定周期中社区具体情况，大小代表社区节点规模。',
-            cluster: '社区词关联：表示该社区内部词与词之间的关系网络。'
-        }
+        const { on, cluster, group, groups } = this.state
+        const [charts, setCharts] = useState({})
+        const [loading, setLoading] = useState(true)
+        useEffect(() => {
+            this.titles = {
+                main: '桑基图：显示周期中社区具体的演化情况。可按照中心度、社区节点数量、密度这三个指标对社区进行排序。矩形颜色块表示社区，两个时间段的矩形之间的曲线形色块表示演化的过程，颜色块的高度表示社区的节点规模。演化曲线的值表示该父社区对子社区的影响程度。',
+                group: '社区图：指定周期中社区具体情况，大小代表社区节点规模。',
+                cluster: '社区词关联：表示该社区内部词与词之间的关系网络。'
+            }
+        }, [])
+        useEffect(() => {
+            switch (on) {
+                case 'main':
+                    if (groups) {
+                        setLoading(false)
+                    }
+                    break
+                case 'group':
+                    if (groups &&
+                        groups[group] &&
+                        groups[group].info) {
+                        setLoading(false)
+                    }
+                    break
+                case 'cluster':
+                    if (group &&
+                        groups &&
+                        groups[group].info &&
+                        cluster &&
+                        cluster.info) {
+                        setLoading(false)
+                    }
+                    break
+            }
+        })
         return (
             <div className={style.graph}>
-                {loading && <Spin className={style.loading} indicator={<Icon type="loading" style={{ fontSize: 36 }} spin />} />}
-                {loading || <Charts {...this.state} type={this.state.on} title={ctTitles[this.state.on]} />}
+                {loading &&
+                    <Spin className={style.loading} indicator={<Icon type="loading" style={{ fontSize: 36 }} spin />} /> ||
+                    <Charts
+                        {...this.state}
+                        type={on}
+                        title={this.titles[on]}
+                    />}
             </div>
         )
     }

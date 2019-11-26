@@ -1,4 +1,4 @@
-import React, { Component, PureComponent, useState } from 'react'
+import React, { Component, PureComponent, useState, useEffect } from 'react'
 import echarts from 'echarts'
 import style from './charts.css'
 import { _, imgs, ClassNames, host } from '../../util'
@@ -58,6 +58,7 @@ export default class Charts extends PureComponent {
             },
             backgroundColor: 'white',
             series: [{
+                name: 'main map',
                 type: 'sankey',
                 top: '7%',
                 data: groups.map(g => g.concat(g.collector)).flat(),
@@ -81,31 +82,63 @@ export default class Charts extends PureComponent {
                 }
             }]
         }
-        this.chart.on('click', ({ seriesIndex, dataType, data }) => {
-            if (dataType === 'node') {
+        this.chart.on('click', _.debounce(({ seriesName, dataType, data }) => {
+            if (seriesName == 'main map' &&
+                dataType === 'node') {
                 const _nodes = [], _links = []
-                _nodes.push = function (v) {
-                    if (!this[v.id]) {
+                const collectors = groups.map(g => g.collector).flat()
+                const years = collectors.map(c => c.id)
+                for (let i = 0; i < years.length - 1; ++i)
+                    _links.push({
+                        source: years[i],
+                        target: years[i + 1],
+                        lineStyle: {
+                            opacity: 0
+                        }
+                    })
+                _nodes.mypush = function (v) {
+                    if (v &&
+                        !this[v.id]) {
                         this[v.id] = true
+                        const vgroup = v._origin_.group
+                        if (vgroup > years[0])
+                            _links.push({
+                                source: Number.parseInt(vgroup) - 1 + '',
+                                target: v.id,
+                                lineStyle: {
+                                    opacity: 0
+                                }
+                            })
+                        if (vgroup < years[years.length - 1])
+                            _links.push({
+                                source: v.id,
+                                target: Number.parseInt(vgroup) + 1 + '',
+                                lineStyle: {
+                                    opacity: 0
+                                }
+                            })
                         Array.prototype.push.call(this, v)
                     }
                 }
                 const nodesMap = groups.nodesMap
-                groups.forEach(g => g.forEach(cl => cl.name == data._origin_.name && _nodes.push(cl)))
+                groups.forEach(g => _nodes.mypush(g.find(cl => cl.name == data._origin_.name)))
                 links.forEach(l => {
                     if (l.source.includes(data._origin_.name) &&
                         nodesMap.has(l.target)) {
                         _links.push(l)
-                        _nodes.push(nodesMap.get(l.target))
+                        _nodes.mypush(nodesMap.get(l.target))
                     } else if (
                         l.target.includes(data._origin_.name) &&
                         nodesMap.has(l.source)) {
                         _links.push(l)
-                        _nodes.push(nodesMap.get(l.source))
+                        _nodes.mypush(nodesMap.get(l.source))
                     }
                 })
-                this.modal.on('click', ({ seriesIndex, dataType, data }) => {
+                this.modal.on('click', ({ seriesName, dataType, data }) => {
                     if (dataType === 'node') {
+                        this.setState({
+                            modalOn: false
+                        })
                         setState({
                             on: 'cluster',
                             group: data._origin_.group,
@@ -123,11 +156,12 @@ export default class Charts extends PureComponent {
                     backgroundColor: 'white',
                     series: [{
                         type: 'sankey',
-                        data: _nodes,
+                        data: _nodes.concat(collectors),
                         links: _links,
                         focusNodeAdjacency: 'allEdges',
+                        draggable: false,
                         label: {
-                            formatter: '{a}'
+                            formatter: '{b}'
                         },
                         tooltip: {
                             formatter: '{b} {c}'
@@ -145,8 +179,8 @@ export default class Charts extends PureComponent {
                 }, true)
                 this.modal.hideLoading()
             }
-        })
-        this.chart.on('mouseover', ({ seriesIndex, dataType, data }) => {
+        }))
+        this.chart.on('mouseover', ({ seriesName, dataType, data }) => {
             if (dataType === 'node') {
                 if (group !== data._origin_.group)
                     this.setState({
@@ -413,17 +447,21 @@ export default class Charts extends PureComponent {
 
     SankeyGroups = () => {
         const groups = this.props.groups || []
-        const ptr = $('#skg-' + this.state.group)[0]
+        const [ptr, setPtr] = useState()
         const [activeBlock, setActBlock] = useState(0)
+        useEffect(() => {
+            setPtr($('#skg-' + this.state.group)[0])
+        })
         const sorter = (key) => {
             groups[activeBlock].sort((a, b) => (a._origin_[key] - b._origin_[key]))
             this.props.setState(groups)
         }
         return (
             <div
-                className={style.skg}
-                style={{
-                    width: '77.35%'
+                className={ClassNames(style.skg, this.state.modalOn && style['modal-on'])}
+                onTransitionEnd={e => {
+                    e.target.className.includes('skg-ptr') ||
+                        setPtr()
                 }}
             >
                 <div className={style['skg-block']}>
@@ -450,7 +488,6 @@ export default class Charts extends PureComponent {
                                             on: 'group',
                                             group: '' + i
                                         })
-                                        this.props.getGroupData(i)
                                     }}
                                 >
                                     查看年份
@@ -477,6 +514,7 @@ export default class Charts extends PureComponent {
                 <div
                     className={style['skg-ptr']}
                     style={{
+                        transition: this.state.modalOn || 'transform 0.25s ease-in-out',
                         transform: `translateX(${ptr ? ptr.offsetLeft : 0}px)`
                     }}
                 />
