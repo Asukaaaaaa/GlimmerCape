@@ -147,6 +147,14 @@ export default class Charts extends PureComponent {
                         getClusterData(data._origin_)
                     }
                 })
+                this.modal.on('mouseover', ({ seriesName, dataType, data }) => {
+                    if (dataType === 'node') {
+                        if (group !== data._origin_.group)
+                            this.setState({
+                                group: data._origin_.group
+                            })
+                    }
+                })
                 this.setState({
                     modalOn: true
                 })
@@ -338,7 +346,7 @@ export default class Charts extends PureComponent {
                                 gridIndex: i,
                                 type: 'value',
                                 min: 0,
-                                max: limits[i],
+                                max: limits[i].toFixed(4),
                             })),
                             yAxis: tags.map((t, i) => ({
                                 gridIndex: i,
