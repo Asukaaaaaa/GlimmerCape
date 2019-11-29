@@ -24,38 +24,8 @@ export default class Charts extends PureComponent {
         setState, groups, links
     }) => {
         const categories = groups.map((g, i) => i).flat()
-        const sorter = (key) => {
-            groups.forEach(g => g.sort((a, b) => (a._origin_[key] - b._origin_[key])))
-            this.props.setState(groups)
-        }
         const option = {
             tooltip: {},
-            toolbox: {
-                show: true,
-                orient: 'horizontal',
-                right: '20px',
-                bottom: '15px',
-                feature: {
-                    mySort0: {
-                        show: true,
-                        title: '密度排序',
-                        icon: 'path://M432.45,595.444c0,2.177-4.661,6.82-11.305,6.82c-6.475,0-11.306-4.567-11.306-6.82s4.852-6.812,11.306-6.812C427.841,588.632,432.452,593.191,432.45,595.444L432.45,595.444z M421.155,589.876c-3.009,0-5.448,2.495-5.448,5.572s2.439,5.572,5.448,5.572c3.01,0,5.449-2.495,5.449-5.572C426.604,592.371,424.165,589.876,421.155,589.876L421.155,589.876z M421.146,591.891c-1.916,0-3.47,1.589-3.47,3.549c0,1.959,1.554,3.548,3.47,3.548s3.469-1.589,3.469-3.548C424.614,593.479,423.062,591.891,421.146,591.891L421.146,591.891zM421.146,591.891',
-                        onclick: e => sorter('density')
-                    },
-                    mySort1: {
-                        show: true,
-                        title: '中心度排序',
-                        icon: 'path://M432.45,595.444c0,2.177-4.661,6.82-11.305,6.82c-6.475,0-11.306-4.567-11.306-6.82s4.852-6.812,11.306-6.812C427.841,588.632,432.452,593.191,432.45,595.444L432.45,595.444z M421.155,589.876c-3.009,0-5.448,2.495-5.448,5.572s2.439,5.572,5.448,5.572c3.01,0,5.449-2.495,5.449-5.572C426.604,592.371,424.165,589.876,421.155,589.876L421.155,589.876z M421.146,591.891c-1.916,0-3.47,1.589-3.47,3.549c0,1.959,1.554,3.548,3.47,3.548s3.469-1.589,3.469-3.548C424.614,593.479,423.062,591.891,421.146,591.891L421.146,591.891zM421.146,591.891',
-                        onclick: e => sorter('centrality')
-                    },
-                    mySort2: {
-                        show: true,
-                        title: '节点数排序',
-                        icon: 'path://M432.45,595.444c0,2.177-4.661,6.82-11.305,6.82c-6.475,0-11.306-4.567-11.306-6.82s4.852-6.812,11.306-6.812C427.841,588.632,432.452,593.191,432.45,595.444L432.45,595.444z M421.155,589.876c-3.009,0-5.448,2.495-5.448,5.572s2.439,5.572,5.448,5.572c3.01,0,5.449-2.495,5.449-5.572C426.604,592.371,424.165,589.876,421.155,589.876L421.155,589.876z M421.146,591.891c-1.916,0-3.47,1.589-3.47,3.549c0,1.959,1.554,3.548,3.47,3.548s3.469-1.589,3.469-3.548C424.614,593.479,423.062,591.891,421.146,591.891L421.146,591.891zM421.146,591.891',
-                        onclick: e => sorter('num')
-                    },
-                }
-            },
             backgroundColor: 'white',
             series: [{
                 name: 'main map',
@@ -197,6 +167,7 @@ export default class Charts extends PureComponent {
             }
         })
         this.chart.setOption(option, true)
+        this.enableControls = true
     }
     setGroup = ({
         group, graphInfo, getClusterData,
@@ -453,6 +424,47 @@ export default class Charts extends PureComponent {
         this.init(props)
     }
 
+    Controls = () => {
+        const [listRef] = useState(React.createRef())
+        const [active, setActive] = useState(true)
+        return (
+            <div className={style['ct-box']}>
+                <div
+                    className={style.controls}
+                    style={{
+                        transition: 'transform .3s ease-in-out',
+                        transform: active || `translateY(-${listRef.current.clientHeight}px)`
+                    }}
+                >
+                    <ul ref={listRef}>
+                        <li>
+                            <div className={style.item}>
+                                <span>排序</span>
+                                <select
+                                    onChange={e => {
+                                        if (e.target.value.length) {
+                                            const key = e.target.value
+                                            const { groups } = this.props
+                                            groups.forEach(g => g.sort((a, b) => (a._origin_[key] - b._origin_[key])))
+                                            this.props.setState(groups)
+                                        }
+                                    }}
+                                >
+                                    <option value=''>---</option>
+                                    <option value='centrality'>中心度</option>
+                                    <option value='density'>密度</option>
+                                    <option value='num'>节点数</option>
+                                </select>
+                            </div>
+                        </li>
+                    </ul>
+                    <div onClick={e => setActive(!active)}>
+                        设置
+                    </div>
+                </div>
+            </div>
+        )
+    }
     SankeyGroups = () => {
         const groups = this.props.groups || []
         const [ptr, setPtr] = useState()
@@ -500,7 +512,7 @@ export default class Charts extends PureComponent {
                                 >
                                     查看年份
                                 </div>
-                                <div
+                                {/*<div
                                     onClick={e => sorter('density')}
                                 >
                                     密度排序
@@ -514,7 +526,7 @@ export default class Charts extends PureComponent {
                                     onClick={e => sorter('num')}
                                 >
                                     节点数排序
-                                </div>
+                                </div>*/}
                             </div>
                         </div>
                     ))}
@@ -554,6 +566,7 @@ export default class Charts extends PureComponent {
                     </div>
                 </div>
                 {this.props.type === 'main' && <this.SankeyGroups />}
+                {this.enableControls && <this.Controls />}
             </div>
         )
     }

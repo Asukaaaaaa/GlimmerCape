@@ -113,3 +113,44 @@
   border-top: 1px solid #8a8a8a;
   transform: scaleY(0.5);
 }
+
+.ct-box {
+  position: absolute;
+  top: 0;
+  right: 5px;
+  width: 180px;
+  font-size: 10px;
+  color: #eee;
+  overflow: hidden;
+}
+.controls ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+.controls li {
+  border-left: 3px solid #2fa1d6;
+  border-bottom: 1px solid #2c2c2c;
+}
+.controls > div:last-child {
+  height: 20px;
+  line-height: 20px;
+  text-align: center;
+  background-color: #000;
+}
+.controls .item {
+  height: 24px;
+  line-height: 24px;
+  background-color: #1a1a1a;
+}
+.item span {
+  display: inline-block;
+  width: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.item select {
+  position: relative;
+  top: -7px;
+  color: #000;
+}

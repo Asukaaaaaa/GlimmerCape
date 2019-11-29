@@ -1,0 +1,47 @@
+.main {
+  width: 100%;
+  height: 100%;
+}
+
+.head {
+  
+}
+.body {
+  max-height: 400px;
+}
+.content {
+  position: relative;
+  left: 10%;
+}
+
+.head,
+.body {
+  padding: 20px;
+  overflow: hidden;
+}
+
+.head .row:first-of-type {
+  width: 40%;
+}
+.head .row:not(:first-of-type),
+.body .row {
+  width: 80%;
+}
+.content .row:not(:last-of-type) {
+  margin-bottom: 16px;
+}
+
+.row {
+  height: 16px;
+  background: linear-gradient(90deg, #fff, #edeff1, #fff);
+  background-size: 480px 480px;
+  animation: loading .8s linear infinite;
+}
+@keyframes loading {
+  from {
+    background-position: left;
+  }
+  to {
+    background-position: right;
+  }
+}
