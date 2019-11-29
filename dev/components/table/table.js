@@ -115,7 +115,7 @@ export default class Table extends PureComponent {
                             <table className={style.body}>
                                 <tbody>
                                     {data.map((v, i) => (
-                                        <tr>
+                                        <tr key={i}>
                                             {fixedCols.map((props, i) => (
                                                 <td title={v[props.dataIndex]} key={i}>
                                                     {v[props.dataIndex]}

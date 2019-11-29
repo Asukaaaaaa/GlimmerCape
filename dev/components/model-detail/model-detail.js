@@ -6,6 +6,7 @@ const { TabPane } = Tabs, { Step } = Steps
 import Table, { Column } from '../table/table'
 import Charts from '../charts/charts'
 import SvgGraph from '../Svg-graph/graph'
+import Skeleton from '../skeleton/skeleton'
 
 import { _, host } from '../../util'
 import style from './model-detail.css'
@@ -376,7 +377,7 @@ export default class ModelDetail extends Component {
                     return <ClusterSider {...this.state} />
                 break
         }
-        return null
+        return <Skeleton />
     }
     render() {
         return (
