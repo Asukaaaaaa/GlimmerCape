@@ -1,8 +1,9 @@
 import React, { Component, PureComponent, useState, useEffect } from 'react'
 import echarts from 'echarts'
+import Table, { Column } from '../table/table'
 import style from './charts.css'
 import { _, imgs, ClassNames, host } from '../../util'
-import { node } from 'prop-types'
+
 
 export default class Charts extends PureComponent {
     state = {}
@@ -541,10 +542,19 @@ export default class Charts extends PureComponent {
             </div>
         )
     }
-    RadarChanger = () => {
+    RadarChart = () => {
+        const { radarInfo } = this.props
+        const [active, setActive] = useState(false)
         return (
-            <div className={style['rd-excg']}>
-                <img src={imgs.exchangeSvg} />
+            <div className={style['rd-ct']}>
+                <img
+                    src={imgs.exchangeSvg}
+                    onClick={e => setActive(!active)}
+                />
+                <Table
+                    name=''
+                >
+                </Table>
             </div>
         )
     }
@@ -565,7 +575,8 @@ export default class Charts extends PureComponent {
                         <div ref={this.modalRef} />
                     </div>
                 </div>
-                {this.props.type === 'main' && <this.SankeyGroups />}
+                {this.props.type == 'main' && <this.SankeyGroups />}
+                {this.props.type == 'radar' && <this.RadarChart />}
                 {this.enableControls && <this.Controls />}
             </div>
         )

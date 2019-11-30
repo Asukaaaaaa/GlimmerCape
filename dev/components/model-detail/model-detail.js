@@ -235,8 +235,7 @@ export default class ModelDetail extends Component {
                         const { groups } = this.state
                         const clusters = groups[group]
                         const clstMap = new Map()
-                        clusters.forEach((cluster, i) => {
-                            cluster.category = i
+                        clusters.forEach(cluster => {
                             cluster._origin_.nodes = new Map()
                             cluster._origin_.links = []
                             clstMap.set(cluster.name, cluster)
@@ -260,7 +259,8 @@ export default class ModelDetail extends Component {
                                 })
                             })
                         })
-                        clusters.forEach(cluster => {
+                        clusters.forEach((cluster, i) => {
+                            cluster.category = i
                             cluster._origin_.nodes = Array.from(cluster._origin_.nodes).map(arr => arr[1])
                             cluster.symbolSize = 15 + cluster._origin_.nodes.length
                         })

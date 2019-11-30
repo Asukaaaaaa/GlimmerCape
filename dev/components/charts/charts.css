@@ -154,3 +154,7 @@
   top: -7px;
   color: #000;
 }
+
+.rd-ct {
+  display: absolute;
+}
