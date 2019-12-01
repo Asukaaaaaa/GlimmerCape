@@ -49,12 +49,16 @@ export default class Table extends PureComponent {
                     .removeClass(style.hover)
             })
 
-        const headHeight = $('div:nth-child(2) > div:first', this.ref.current)[0].clientHeight
-        this.setState({
-            headHeight
-        })
-        $(style['body-wrapper'], this.ref.current)
-            .css('height', `calc(100% - ${headHeight}px)`)
+        const headHeight = $('div:nth-child(2) > div:first', current)[0].clientHeight
+        $(`.${style['head-wrapper']} > table`, current)
+            .css('height', `${headHeight}px`)
+        $(`.${style['body-wrapper']}`, current)
+            .css('max-height', `calc(100% - ${headHeight}px)`)
+
+        if ($(`.${style['body-wrapper']}`, current)[0].clientHeight >
+            $(`.${style['body-wrapper']} > table`, current)[0].clientHeight) {
+            $(`.${style['body-wrapper']}`, current)[1].style.width = 'calc(100% - 9px)'
+        }
     }
     componentWillReceiveProps(props) {
         this.init(props)
@@ -102,6 +106,9 @@ export default class Table extends PureComponent {
                 <div
                     ref={this.ref}
                     className={style.main}
+                    style={{
+                        height: this.props.name && 'calc(100% - 32px)'
+                    }}
                     /*onContextMenu={e => {
                         e.preventDefault()
                         const menu = this.contextmenu.current
