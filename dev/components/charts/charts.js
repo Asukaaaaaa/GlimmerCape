@@ -15,7 +15,8 @@ export default class Charts extends PureComponent {
             'main': this.setSankey,
             'group': this.setGroup,
             'cluster': this.setCluster,
-            'radar': this.setRadar
+            'radar': this.setRadar,
+            'scatter': this.setScatter
         }
     }
 
@@ -410,6 +411,53 @@ export default class Charts extends PureComponent {
             }]
         }, true)
     }
+    setScatter = () => {
+        const { data } = this.props
+        this.chart.setOption({
+            tooltip: {
+                formatter: params => `weight: ${params.value[0].toFixed(4)}<br>height: ${params.value[1].toFixed(4)}`,
+                axisPointer: {
+                    show: true,
+                    type: 'cross',
+                    lineStyle: {
+                        type: 'dashed',
+                        width: 1
+                    }
+                }
+            },
+            xAxis: {},
+            yAxis: {},
+            series: [{
+                symbolSize: 10,
+                itemStyle: {
+                    color: 'black'
+                },
+                data: data.black,
+                type: 'scatter'
+            }, {
+                symbolSize: 10,
+                itemStyle: {
+                    color: 'green'
+                },
+                data: data.greeen,
+                type: 'scatter'
+            }, {
+                symbolSize: 10,
+                itemStyle: {
+                    color: 'red'
+                },
+                data: data.red,
+                type: 'scatter'
+            }, {
+                symbolSize: 10,
+                itemStyle: {
+                    color: 'blue'
+                },
+                data: data.blue,
+                type: 'scatter'
+            }]
+        })
+    }
 
     init(props = this.props) {
         this.chart.showLoading()
@@ -513,21 +561,6 @@ export default class Charts extends PureComponent {
                                 >
                                     查看年份
                                 </div>
-                                {/*<div
-                                    onClick={e => sorter('density')}
-                                >
-                                    密度排序
-                                </div>
-                                <div
-                                    onClick={e => sorter('centrality')}
-                                >
-                                    中心度排序
-                                </div>
-                                <div
-                                    onClick={e => sorter('num')}
-                                >
-                                    节点数排序
-                                </div>*/}
                             </div>
                         </div>
                     ))}
@@ -543,19 +576,42 @@ export default class Charts extends PureComponent {
         )
     }
     RadarChart = () => {
-        const { radarInfo } = this.props
         const [active, setActive] = useState(false)
         return (
-            <div className={style['rd-ct']}>
-                <img
-                    src={imgs.exchangeSvg}
+            <React.Fragment>
+                <div
+                    className={style['rd-change']}
                     onClick={e => setActive(!active)}
-                />
-                <Table
-                    name=''
                 >
-                </Table>
-            </div>
+                    <svg t="1575201808656" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2242" width="200" height="200">
+                        <path d="M818.752 704H128a32 32 0 1 1 0-64h768a32 32 0 0 1 22.656 54.656l-192 192a32 32 0 0 1-45.312-45.312L818.752 704zM128 448a31.872 31.872 0 0 1-22.656-54.656l192-192a32 32 0 1 1 45.312 45.312L205.248 384H896a32 32 0 1 1 0 64H128z" p-id="2243"
+                            fill={active ? '#1296db' : '#8a8a8a'}>
+                        </path>
+                    </svg>
+                </div>
+                {active &&
+                    <div className={style['rd-ct']}>
+                        <Table
+                            name=''
+                            data={this.props.data}
+                        >
+                            <Column title='年份' dataIndex='label' key='-1' />
+                            {
+                                [
+                                    ['edge_num', '边数'],
+                                    ['max_degree', '最大度'],
+                                    ['average_degree', '平均度'],
+                                    ['density', '密度'],
+                                    ['coummunity_num', '社区数'],
+                                    ['node_num', '节点数']
+                                ].map((v, i) => (
+                                    <Column title={v[1]} dataIndex={v[0]} key={i}
+                                        sorter={(a, b) => b[v[0]] - a[v[0]]} />
+                                ))
+                            }
+                        </Table>
+                    </div>}
+            </React.Fragment>
         )
     }
 

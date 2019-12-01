@@ -50,9 +50,9 @@ const MainSider = ({ mid, radarInfo, coword }) => {
         </React.Fragment>
     )
 }
-const GroupSider = ({ group, zpFile }) => {
+const GroupSider = ({ group, zps }) => {
     return (
-        <SvgGraph graph='scatter' data={[zpFile.find(v => v.label === group)]} />
+        <Charts type='scatter' data={zps[group]} />
     )
 }
 const ClusterSider = ({ mid, group, clusterInfo }) => {
@@ -202,8 +202,21 @@ export default class ModelDetail extends Component {
             if (res.resultDesc === 'Success')
                 fetch(host + res.data.split('Web_NEview')[1])
                     .then(r => r.json())
-                    .catch(console.log)
-                    .then(res => this.setState({ zpFile: res }))
+                    .then(res => {
+                        const zps = res.reduce((acc, { zp, label }) => {
+                            acc[label] = {
+                                black: [],
+                                greeen: [],
+                                red: [],
+                                blue: []
+                            }
+                            zp.forEach(v => {
+                                acc[label][v.gender].push([v.weight, v.height])
+                            })
+                            return acc
+                        }, {})
+                        this.setState({ zps })
+                    })
         })
         $.post(host + '/result/getRadarPath', {
             model_id: this.state.mid
@@ -294,7 +307,7 @@ export default class ModelDetail extends Component {
                             }
                         }
                     } catch (e) {
-                        console.log(e)
+                        console.warn(e)
                     }
                 })
                 cluster.info = true
@@ -313,7 +326,6 @@ export default class ModelDetail extends Component {
 
     getChart = () => {
         const { on, cluster, group, groups } = this.state
-        const [charts, setCharts] = useState({})
         const [loading, setLoading] = useState(true)
         useEffect(() => {
             this.titles = {
@@ -360,7 +372,7 @@ export default class ModelDetail extends Component {
         )
     }
     getSider = () => {
-        const { on, radarInfo, coword, zpFile, clusterInfo } = this.state
+        const { on, radarInfo, coword, zps, clusterInfo } = this.state
         switch (on) {
             case 'main':
                 if (radarInfo &&
@@ -368,7 +380,7 @@ export default class ModelDetail extends Component {
                     return <MainSider {...this.state} />
                 break
             case 'group':
-                if (zpFile)
+                if (zps)
                     return <GroupSider {...this.state} />
                 break
 

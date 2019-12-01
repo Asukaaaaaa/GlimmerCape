@@ -7,7 +7,7 @@
   position: relative;
   left: 5px;
   bottom: -5px;
-  width: calc(100% - 19px);
+  width: calc(100% - 20px);
   height: 32px;
   display: flex;
   align-items: center;

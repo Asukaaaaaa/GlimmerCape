@@ -6,19 +6,24 @@ import style from './table.css'
 export default class Table extends PureComponent {
     constructor(props) {
         super(props)
-
+        this.ref = React.createRef()
         this.contextmenu = React.createRef()
     }
     componentWillMount() {
         this.init(this.props)
     }
     componentDidMount() {
-        $(`.${style.main} > div:nth-child(2) .${style['body-wrapper']}`).scroll(function (e) {
-            $(`.${style.fixed} .${style['body-wrapper']}`).prop('scrollTop', $(this).prop('scrollTop'))
-        })
-        $(`.${style.fixed} .${style['body-wrapper']}`).scroll(function (e) {
-            // $(`.${style.main} > div:nth-child(2) .${style['body-wrapper']}`).prop('scrollTop', $(this).prop('scrollTop'))
-        })
+        const current = this.ref.current
+        $(`div:nth-child(2) .${style['body-wrapper']}`, current)
+            .scroll(function (e) {
+                $(`.${style.fixed} .${style['body-wrapper']}`, current)
+                    .prop('scrollTop', $(this).prop('scrollTop'))
+            })
+        $(`.${style.fixed} .${style['body-wrapper']}`, current)
+            .scroll(function (e) {
+                // $(`.${style.main} > div:nth-child(2) .${style['body-wrapper']}`, current)
+                //  .prop('scrollTop', $(this).prop('scrollTop'))
+            })
 
         const getRowIndex = target => {
             if (target.tagName === 'TR') {
@@ -27,16 +32,22 @@ export default class Table extends PureComponent {
                 return $(target).parent('tr').index()
             }
         }
-        $(`.${style.main} > div:nth-child(2) .${style.body} tr`).hover(function (e) {
-            $(`.${style.fixed} .${style['body-wrapper']} tr:nth-child(${getRowIndex(e.target) + 1})`).addClass(style.hover)
-        }, function (e) {
-            $(`.${style.fixed} .${style['body-wrapper']} tr:nth-child(${getRowIndex(e.target) + 1})`).removeClass(style.hover)
-        })
-        $(`.${style.fixed} .${style.body} tr`).hover(function (e) {
-            $(`.${style.main} > div:nth-child(2) .${style['body-wrapper']} tr:nth-child(${getRowIndex(e.target) + 1})`).addClass(style.hover)
-        }, function (e) {
-            $(`.${style.main} > div:nth-child(2) .${style['body-wrapper']} tr:nth-child(${getRowIndex(e.target) + 1})`).removeClass(style.hover)
-        })
+        $(`div:nth-child(2) .${style.body} tr`, current)
+            .hover(function (e) {
+                $(`.${style.fixed} .${style['body-wrapper']} tr:nth-child(${getRowIndex(e.target) + 1})`, current)
+                    .addClass(style.hover)
+            }, function (e) {
+                $(`.${style.fixed} .${style['body-wrapper']} tr:nth-child(${getRowIndex(e.target) + 1})`, current)
+                    .removeClass(style.hover)
+            })
+        $(`.${style.fixed} .${style.body} tr`, current)
+            .hover(function (e) {
+                $(`div:nth-child(2) .${style['body-wrapper']} tr:nth-child(${getRowIndex(e.target) + 1})`, current)
+                    .addClass(style.hover)
+            }, function (e) {
+                $(`div:nth-child(2) .${style['body-wrapper']} tr:nth-child(${getRowIndex(e.target) + 1})`, current)
+                    .removeClass(style.hover)
+            })
     }
     componentWillReceiveProps(props) {
         this.init(props)
@@ -81,6 +92,7 @@ export default class Table extends PureComponent {
                     </div>
                 </div>
                 <div
+                    ref={this.ref}
                     className={style.main}
                     /*onContextMenu={e => {
                         e.preventDefault()
@@ -96,7 +108,6 @@ export default class Table extends PureComponent {
                         }
                     }}
                 >
-
                     <div className={style.fixed}>
                         <div className={style['head-wrapper']}>
                             <table className={style.head}>
