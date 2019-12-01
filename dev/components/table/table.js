@@ -48,6 +48,13 @@ export default class Table extends PureComponent {
                 $(`div:nth-child(2) .${style['body-wrapper']} tr:nth-child(${getRowIndex(e.target) + 1})`, current)
                     .removeClass(style.hover)
             })
+
+        const headHeight = $('div:nth-child(2) > div:first', this.ref.current)[0].clientHeight
+        this.setState({
+            headHeight
+        })
+        $(style['body-wrapper'], this.ref.current)
+            .css('height', `calc(100% - ${headHeight}px)`)
     }
     componentWillReceiveProps(props) {
         this.init(props)
@@ -83,14 +90,15 @@ export default class Table extends PureComponent {
 
         return (
             <div className={style.root}>
-                <div className={style.title}>
-                    <div>{this.props.name}</div>
-                    <div>
-                        <a onClick={e => this.props.export()}>
-                            导出
+                {this.props.name &&
+                    <div className={style.title}>
+                        <div>{this.props.name}</div>
+                        <div>
+                            <a onClick={e => this.props.export()}>
+                                导出
                         </a>
-                    </div>
-                </div>
+                        </div>
+                    </div>}
                 <div
                     ref={this.ref}
                     className={style.main}
@@ -110,7 +118,12 @@ export default class Table extends PureComponent {
                 >
                     <div className={style.fixed}>
                         <div className={style['head-wrapper']}>
-                            <table className={style.head}>
+                            <table
+                                className={style.head}
+                                style={{
+                                    height: this.state.headHeight + 'px'
+                                }}
+                            >
                                 <tbody>
                                     <tr>
                                         {fixedCols.map((props, i) => (
