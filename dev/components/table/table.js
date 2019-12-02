@@ -136,8 +136,7 @@ export default class Table extends PureComponent {
                                         {fixedCols.map((props, i) => (
                                             <th key={i}>
                                                 {props.title}
-                                            </th>
-                                        ))}
+                                            </th>))}
                                     </tr>
                                 </tbody>
                             </table>
@@ -179,9 +178,11 @@ export default class Table extends PureComponent {
                                 <tbody>
                                     {data.map((v, i) => (
                                         <tr key={i}>
-                                            {cols.map(({ dataIndex }, i) => (
-                                                <td title={v[dataIndex]} key={i}>
-                                                    {v[dataIndex]}
+                                            {cols.map((props, i) => (
+                                                <td title={v[props.dataIndex]} key={i}>
+                                                    {props.hasOwnProperty('number') &&
+                                                        _.num2e(v[props.dataIndex]) ||
+                                                        v[props.dataIndex]}
                                                 </td>
                                             ))}
                                         </tr>

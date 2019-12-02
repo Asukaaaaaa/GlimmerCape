@@ -28,10 +28,17 @@ const download = (function () {
     }
 })()
 
+const num2e = (num, len = 4) => {
+    const p = Math.floor(Math.log10(num))
+    const n = (num * Math.pow(10, -p)).toFixed(len)
+    return n + 'e' + p;
+}
+
 const _ = {
     debounce,
     throttle,
-    download
+    download,
+    num2e
 }
 
 const ClassNames = (...args) => args.reduce((acc, val, i) => acc + (val || '') + ' ', '')
@@ -61,6 +68,7 @@ import telephone from '../static/img/telephone.svg'
 import userCenter from '../static/img/user-center.svg'
 import downloadSvg from '../static/img/download-fill.svg'
 import exchangeSvg from '../static/img/exchange.svg'
+import { isNumber } from 'util'
 
 const imgs = {
     logo, cross, test, detail, edit, mail, questionCircle, telephone, userCenter, downloadSvg, exchangeSvg

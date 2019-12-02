@@ -335,16 +335,18 @@ export default class Charts extends PureComponent {
                                 },
                                 data: categories
                             },
-                            series: this.props.data.map(v => [v.edge_num, v.max_degree, v.density, v.coummunity_num, v.node_num, v.average_degree].map((_v, i) => ({
-                                xAxisIndex: i,
-                                yAxisIndex: i,
-                                name: v.label,
-                                data: [_v],
-                                type: 'bar',
-                                label: {
-                                    show: true
-                                }
-                            }))).flat()
+                            series: this.props.data.map(v => [v.edge_num, v.max_degree, v.density, v.coummunity_num, v.node_num, v.average_degree]
+                                .map((_v, i) => ({
+                                    xAxisIndex: i,
+                                    yAxisIndex: i,
+                                    name: v.label,
+                                    data: [_v],
+                                    type: 'bar',
+                                    label: {
+                                        show: true,
+                                        formatter: param => _.num2e(param.value)
+                                    }
+                                }))).flat()
                         }, true)
                     }
                 },
@@ -376,6 +378,15 @@ export default class Charts extends PureComponent {
         }
         this.chart.setOption({
             tooltip: {
+                formatter: param => {
+                    const value = param.value.map(v => _.num2e(v))
+                    return '边数: ' + value[0] + '<br>' +
+                        '最大度： ' + value[1] + '<br>' +
+                        '密度： ' + value[2] + '<br>' +
+                        '社区数： ' + value[3] + '<br>' +
+                        '节点数： ' + value[4] + '<br>' +
+                        '平均度： ' + value[5]
+                }
             },
             toolbox,
             legend: {
@@ -405,7 +416,7 @@ export default class Charts extends PureComponent {
             series: [{
                 type: 'radar',
                 data: this.props.data.map(v => ({
-                    value: [v.edge_num, v.max_degree, v.density, v.coummunity_num, v.node_num, v.average_degree],
+                    value: [v.edge_num, v.max_degree, v.density, v.coummunity_num, v.node_num, v.average_degree].map(_v => _v.toString()),
                     name: v.label
                 }))
             }]
@@ -605,7 +616,7 @@ export default class Charts extends PureComponent {
                                     ['coummunity_num', '社区数'],
                                     ['node_num', '节点数']
                                 ].map((v, i) => (
-                                    <Column title={v[1]} dataIndex={v[0]} key={i}
+                                    <Column title={v[1]} number dataIndex={v[0]} key={i}
                                         sorter={(a, b) => b[v[0]] - a[v[0]]} />
                                 ))
                             }
