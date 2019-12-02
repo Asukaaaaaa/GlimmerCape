@@ -57,7 +57,7 @@ export default class Table extends PureComponent {
 
         if ($(`.${style['body-wrapper']}`, current)[0].clientHeight >
             $(`.${style['body-wrapper']} > table`, current)[0].clientHeight) {
-            $(`.${style['body-wrapper']}`, current)[1].style.width = 'calc(100% - 9px)'
+            $(`.${style['body-wrapper']}`, current)[1].style.width = 'calc(100% - 10px)'
         }
     }
     componentWillReceiveProps(props) {
@@ -109,19 +109,19 @@ export default class Table extends PureComponent {
                     style={{
                         height: this.props.name && 'calc(100% - 32px)'
                     }}
-                    /*onContextMenu={e => {
-                        e.preventDefault()
-                        const menu = this.contextmenu.current
-                        menu.style.visibility = 'visible'
-                        menu.style.left = e.clientX + 'px'
-                        menu.style.top = e.clientY + 'px'
-                    }}*/
-                    onClick={e => {
-                        const menu = this.contextmenu.current
-                        if (e.button !== 2) {
-                            menu.style.visibility = 'hidden'
-                        }
-                    }}
+                /*onContextMenu={e => {
+                    e.preventDefault()
+                    const menu = this.contextmenu.current
+                    menu.style.visibility = 'visible'
+                    menu.style.left = e.clientX + 'px'
+                    menu.style.top = e.clientY + 'px'
+                }}*/
+                /*onClick={e => {
+                    const menu = this.contextmenu.current
+                    if (e.button !== 2) {
+                        menu.style.visibility = 'hidden'
+                    }
+                }}*/
                 >
                     <div className={style.fixed}>
                         <div className={style['head-wrapper']}>
@@ -164,7 +164,7 @@ export default class Table extends PureComponent {
                                 <tbody>
                                     <tr onClick={this.handleSort}>
                                         {cols.map((props, i) => (
-                                            <th className={ClassNames(this.state.activeSort === props.title && style.active)}
+                                            <th className={ClassNames(this.state.activeSort == props.title && style.active)}
                                                 key={i}>
                                                 {props.title}
                                             </th>
@@ -180,7 +180,9 @@ export default class Table extends PureComponent {
                                     {data.map((v, i) => (
                                         <tr key={i}>
                                             {cols.map(({ dataIndex }, i) => (
-                                                <td key={i}>{v[dataIndex]}</td>
+                                                <td title={v[dataIndex]} key={i}>
+                                                    {v[dataIndex]}
+                                                </td>
                                             ))}
                                         </tr>
                                     ))}
