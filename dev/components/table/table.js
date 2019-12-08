@@ -1,6 +1,6 @@
 import React, { Component, PureComponent } from 'react'
 
-import { _, ClassNames, host } from '../../util'
+import { _, ClassNames, host } from '../../utils'
 import style from './table.css'
 
 export default class Table extends PureComponent {

@@ -3,8 +3,8 @@ import { withRouter } from 'react-router-dom'
 
 import style from './header.css'
 
-import { ClassNames, imgs } from '../../util'
-import { MainContext } from '../..'
+import { ClassNames, imgs } from '../../utils'
+import { AppContext } from '../../app'
 
 class Header extends Component {
     constructor(props) {
@@ -17,8 +17,8 @@ class Header extends Component {
     render() {
         const { state, props } = this
         return (
-            <MainContext.Consumer>
-                {({ user }) => (
+            <AppContext.Consumer>
+                {({ user = {} }) => (
                     <div className={style.main}>
                         <div>
                             <svg className={style.hoverable} onClick={props.handleClickTab} viewBox="0 0 24 24">
@@ -35,7 +35,7 @@ class Header extends Component {
                         </div>
                     </div>
                 )}
-            </MainContext.Consumer>
+            </AppContext.Consumer>
         )
     }
 }

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import style from './toolbar.css'
 import sticker from '../../../static/img/流汗.svg'
-import { ClassNames, host } from '../../util'
+import { ClassNames, host } from '../../utils'
 
 export default function Toolbar() {
     const [active, setActive] = useState(false)

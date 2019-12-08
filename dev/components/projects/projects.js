@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { withRouter } from 'react-router-dom'
 
-import { host } from '../../util'
+import { host } from '../../utils'
 import style from './projects.css'
 
 class Projects extends Component {

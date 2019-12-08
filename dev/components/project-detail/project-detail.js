@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { Tabs, Table, Divider, Tag, Button, Tooltip, Icon, Modal, Form, Input, Upload, Select, Spin, message } from 'antd'
 const { TabPane } = Tabs, { Column, ColumnGroup } = Table, { Option } = Select
 
-import { host } from '../../util'
+import { host } from '../../utils'
 import style from './project-detail.css'
 
 let project_id

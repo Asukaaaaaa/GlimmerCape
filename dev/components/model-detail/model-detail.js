@@ -5,12 +5,10 @@ const { TabPane } = Tabs, { Step } = Steps
 
 import Table, { Column } from '../table/table'
 import Charts from '../charts/charts'
-import SvgGraph from '../Svg-graph/graph'
 import Skeleton from '../skeleton/skeleton'
 
-import { _, host } from '../../util'
+import { _, host } from '../../utils'
 import style from './model-detail.css'
-import ClusterData from '../../../static/cluster.json'
 
 
 const MainSider = ({ mid, radarInfo, coword }) => {

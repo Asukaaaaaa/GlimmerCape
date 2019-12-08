@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 
 import { Modal, Form, Input, Button } from 'antd'
 
-import { host, imgs } from '../../util'
+import { host, imgs } from '../../utils'
 import style from './new-built.css'
 
 const ModalForm = ({ form, handleSubmit }) => {

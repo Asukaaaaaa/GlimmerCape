@@ -3,7 +3,7 @@ import { withRouter } from 'react-router-dom'
 
 import style from './sider.css'
 
-import { ClassNames, imgs } from '../../util'
+import { ClassNames, imgs } from '../../utils'
 
 const Sider = ({ active }) => {
     return (

@@ -1,15 +1,15 @@
 import React from 'react'
 import { withRouter } from 'react-router-dom'
 
-import { MainContext } from '../../index'
+import { AppContext } from '../../app'
 import style from './user.css'
-import { imgs } from '../../util'
+import { imgs } from '../../utils'
 
 
 const User = ({ active }) => {
     return (
-        <MainContext.Consumer>
-            {({user}) => (
+        <AppContext.Consumer>
+            {({ user = {} }) => (
                 <div style={{ opacity: active ? 1 : 0, zIndex: active ? 998 : '' }} className={style.main}>
                     <div className={style.info}>
                         <div>
@@ -32,7 +32,7 @@ const User = ({ active }) => {
                     </div>
                 </div>
             )}
-        </MainContext.Consumer>
+        </AppContext.Consumer>
     )
 }
 

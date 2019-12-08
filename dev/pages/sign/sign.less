@@ -1,0 +1,76 @@
+@import "../../app.less";
+
+.sign-table {
+  border-radius: 6px;
+  width: 350px;
+  height: 500px;
+  position: absolute;
+  top: 10%;
+  right: 10%;
+  overflow: hidden;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+  .st-container {
+    display: flex;
+    flex-direction: row;
+    flex: 1 0 auto;
+    transition: transform 0.6s ease-in-out;
+    &.signup {
+      transform: translateX(-100%);
+    }
+    .sign-block {
+      justify-content: space-between;
+      flex: 1 0 100%;
+    }
+    .st-signin {
+      .sign-block;
+    }
+    .st-signup {
+      .sign-block;
+    }
+    .st-title {
+      width: 175px;
+      height: 50px;
+      margin: 22px auto 12px;
+      background: center / contain no-repeat url("/static/imgs/logo.png");
+    }
+    .cp-divider {
+      margin: 10px 40px 18px;
+    }
+    .st-switch {
+      margin: 14px auto 28px;
+      > p {
+        font-size: 14px;
+        > span {
+          color: @active-blue;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+}
+
+.st-uinfo {
+  margin: 0 auto;
+  > div {
+    border: 1px solid #cdcdcd;
+    border-radius: 5px;
+    margin: 0 auto;
+    &:hover {
+      box-shadow: 0 0 8px 1px @active-blue;
+    }
+    > img {
+      border-radius: 2px;
+      width: 70px;
+      height: 70px;
+      margin: 3px;
+    }
+  }
+  > span {
+    margin: 10px auto 18px;
+    font: 12px "lucida Grande", Verdana, "Microsoft YaHei";
+    color: #666;
+    &:first-of-type {
+      font-size: 16px;
+    }
+  }
+}

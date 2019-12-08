@@ -12,7 +12,7 @@ import Toolbar from '../../components/toolbar/toolbar'
 
 import style from './main.css'
 
-import { ClassNames } from '../../util'
+import { ClassNames } from '../../utils'
 
 export default class Main extends Component {
     constructor(props) {

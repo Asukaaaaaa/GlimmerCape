@@ -2,7 +2,7 @@ import React, { Component, PureComponent, useState, useEffect } from 'react'
 import echarts from 'echarts'
 import Table, { Column } from '../table/table'
 import style from './charts.css'
-import { _, imgs, ClassNames, host } from '../../util'
+import { _, imgs, ClassNames, host } from '../../utils'
 
 
 export default class Charts extends PureComponent {
