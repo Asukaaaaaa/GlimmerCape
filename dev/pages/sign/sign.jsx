@@ -14,7 +14,6 @@ const SignWrapper = props => (
 )
 const Sign = ({
   user, setUser,
-  history
 }) => {
   const [mode, setMode] = React.useState('in')
   const [bingBg, setBingBg] = React.useState()
@@ -31,7 +30,6 @@ const Sign = ({
       user = JSON.parse(user)
       if (user.signed) {
         setUser(user)
-        //history.replace('/main')
       } else {
         setUinfo(user)
       }
@@ -48,7 +46,6 @@ const Sign = ({
                 <span>点击头像快捷登录</span>
                 <div onClick={e => {
                   setUser(uinfo)
-                  //history.replace('/main')
                 }}>
                   <img src={uinfo.photo} />
                 </div>
@@ -64,7 +61,6 @@ const Sign = ({
                             uinfo.photo = resolveLocalPath(uinfo.photo)
                             localStorage.setItem('user', JSON.stringify(uinfo))
                             setUser(uinfo)
-                            //history.replace('/main')
                           })
                       })
                   }}>

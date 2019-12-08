@@ -1,21 +1,26 @@
-import React, { Component } from 'react'
+import React, { Component, PureComponent, useContext } from 'react'
 import { withRouter } from 'react-router-dom'
-
+//
+import { AppContext } from '../../app'
 import { host } from '../../utils'
+//styles
 import style from './projects.css'
 
-class Projects extends Component {
+const ProjectsWrapper = props => (
+    <AppContext.Consumer>
+        {ctx => <Projects {...props} {...ctx} />}
+    </AppContext.Consumer>
+)
+class Projects extends PureComponent {
     constructor(props) {
         super(props)
         this.state = {
             data: [{}]
         }
-        this.update()
     }
-
     update() {
         $.post(host + '/project/getProjectList', {
-            user_id: window.user_id,
+            user_id: this.props.user.userId,
             page_num: 1,
             page_size: 100
         }, res => {
@@ -24,10 +29,12 @@ class Projects extends Component {
             }
         })
     }
+    componentDidMount() {
+        this.update()
+    }
     componentWillReceiveProps() {
         this.update()
     }
-
     Blocks({ data }) {
         return (
             <div className={style.blocks}>{
@@ -47,7 +54,6 @@ class Projects extends Component {
             }</div>
         )
     }
-
     render() {
         const Blocks = this.Blocks.bind(this),
             dataGroups = this.state.data.reduce((acc, v, i) => {
@@ -67,4 +73,4 @@ class Projects extends Component {
     }
 }
 
-export default withRouter(Projects)
+export default withRouter(ProjectsWrapper)
