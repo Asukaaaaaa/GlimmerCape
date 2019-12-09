@@ -53,7 +53,12 @@ export const ajaxer = {
 	post: (...arr) => ajaxer.get(...arr, 'post')
 }
 
-export const resolveLocalPath = path => _HOST + path.split('Web_NEview')[1]
+export const resolveLocalPath = (path = '') => {
+	const str = 'Web_NEview'
+	return path.includes(str) &&
+		_HOST + path.split(str)[1] ||
+		path
+}
 
 export const ClassNames = (...classnames) => classnames.reduce((acc, v) => acc + (v ? v + ' ' : ''), '')
 
