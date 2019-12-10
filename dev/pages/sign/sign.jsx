@@ -73,6 +73,10 @@ const Sign = ({
               </React.Fragment>}
             <Divider />
             <div className='st-switch'>
+              {uinfo.photo &&
+                <p>
+                  <span onClick={e => setUinfo({})}>使用其他账号</span>
+                </p>}
               <p>
                 没有账号?
                 <span onClick={e => setMode('up')}>注册</span>

@@ -56,10 +56,7 @@ const GroupSider = ({ group, zps }) => {
 const ClusterSider = ({ mid, group, clusterInfo }) => {
     return (
         <React.Fragment>
-            <div
-                className={style.cinfo}
-                title=''
-            >
+            <div className={style.cinfo} title=''>
                 <div>
                     <Icon type='bar-chart' />
                     <span>社区信息</span>
@@ -80,10 +77,7 @@ const ClusterSider = ({ mid, group, clusterInfo }) => {
                     <div>密度<span>{clusterInfo.cluster_density}</span></div>
                 </div>
             </div>
-            <div
-                style={{ minHeight: 'calc(100% - 300px)' }}
-                title='社区词列表'
-            >
+            <div style={{ minHeight: 'calc(100% - 300px)' }} title='社区词列表'>
                 <Table
                     name='社区词列表'
                     data={clusterInfo.cluster_nodes}
@@ -111,11 +105,7 @@ const ClusterSider = ({ mid, group, clusterInfo }) => {
     )
 }
 
-
 export default class ModelDetail extends Component {
-    state = {
-
-    }
     constructor(props) {
         super(props)
         this.state = {
@@ -124,7 +114,6 @@ export default class ModelDetail extends Component {
             radarInfo: null,
             coword: null,
             zpFile: null,
-
             // getter
             getMainData: _.debounce(this.getMainData),
             getGroupData: _.debounce(this.getGroupData),

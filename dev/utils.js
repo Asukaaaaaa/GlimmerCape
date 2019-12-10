@@ -1,4 +1,3 @@
-
 /* --------------------------------- consts --------------------------------- */
 export const _HOST = 'https://www.cross2u.top'
 export const _BASE = 'https://www.cross2u.top/Web_NEview'
@@ -54,7 +53,12 @@ export const ajaxer = {
 	post: (...arr) => ajaxer.get(...arr, 'post')
 }
 
-export const resolveLocalPath = path => _BASE + path.split('Web_NEview')[1]
+export const resolveLocalPath = (path = '') => {
+	const str = 'Web_NEview'
+	return path.includes(str) &&
+		_BASE + path.split(str)[1] ||
+		path
+}
 
 export const ClassNames = (...classnames) => classnames.reduce((acc, v) => acc + (v ? v + ' ' : ''), '')
 

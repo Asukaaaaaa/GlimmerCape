@@ -1,8 +1,12 @@
 import React, { Component, PureComponent, useState, useEffect } from 'react'
 import echarts from 'echarts'
+//
 import Table, { Column } from '../table/table'
-import style from './charts.css'
 import { _, imgs, ClassNames, _BASE } from '../../utils'
+//styles
+import style from './charts.css'
+import './charts.less'
+
 
 
 export default class Charts extends PureComponent {
@@ -19,7 +23,6 @@ export default class Charts extends PureComponent {
             'scatter': this.setScatter
         }
     }
-
     setSankey = ({
         group,
         getGroupData, getClusterData,
@@ -469,7 +472,6 @@ export default class Charts extends PureComponent {
             }]
         })
     }
-
     init(props = this.props) {
         this.chart.showLoading()
         this.maps[props.type](props)
@@ -483,48 +485,24 @@ export default class Charts extends PureComponent {
     componentWillReceiveProps(props) {
         this.init(props)
     }
-
-    Controls = () => {
-        const [listRef] = useState(React.createRef())
-        const [active, setActive] = useState(true)
+    render() {
         return (
-            <div className={style['ct-box']}>
-                <div
-                    className={style.controls}
-                    style={{
-                        transition: 'transform .3s ease-in-out',
-                        transform: active || `translateY(-${listRef.current.clientHeight}px)`
-                    }}
-                >
-                    <ul ref={listRef}>
-                        <li>
-                            <div className={style.item}>
-                                <span>排序</span>
-                                <select
-                                    onChange={e => {
-                                        if (e.target.value.length) {
-                                            const key = e.target.value
-                                            const { groups } = this.props
-                                            groups.forEach(g => g.sort((a, b) => (a._origin_[key] - b._origin_[key])))
-                                            this.props.setState(groups)
-                                        }
-                                    }}
-                                >
-                                    <option value=''>---</option>
-                                    <option value='centrality'>中心度</option>
-                                    <option value='density'>密度</option>
-                                    <option value='num'>节点数</option>
-                                </select>
-                            </div>
-                        </li>
-                    </ul>
-                    <div onClick={e => setActive(!active)}>
-                        设置
+            <div className={style.main} title={this.props.title}>
+                <div ref={this.chartRef} />
+                <div className={ClassNames(style.modal, this.state.modalOn && style.active)}>
+                    <div className={style['modal-mask']}
+                        onClick={e => this.setState({ modalOn: false })} />
+                    <div className={style['modal-content']}>
+                        <div ref={this.modalRef} />
                     </div>
                 </div>
+                {this.props.type == 'main' && <this.SankeyGroups />}
+                {this.props.type == 'radar' && <this.RadarChart />}
+                {this.enableControls && <this.Controls />}
             </div>
         )
     }
+
     SankeyGroups = () => {
         const groups = this.props.groups || []
         const [ptr, setPtr] = useState()
@@ -537,52 +515,43 @@ export default class Charts extends PureComponent {
             this.props.setState(groups)
         }
         return (
-            <div
-                className={ClassNames(style.skg, this.state.modalOn && style['modal-on'])}
+            <div className={ClassNames(style.skg, this.state.modalOn && style['modal-on'])}
                 onTransitionEnd={e => {
                     e.target.className.includes('skg-ptr') ||
                         setPtr()
-                }}
-            >
+                }}>
                 <div className={style['skg-block']}>
                     {groups.map((v, i) => (
-                        <div
+                        <div id={'skg-' + i} key={i}
                             style={{
                                 position: 'relative'
                             }}
-                            id={'skg-' + i}
-                            key={i}
                             onMouseEnter={e => this.setState({ group: i })}
                             onClick={e => {
                                 if (activeBlock !== i)
                                     setActBlock(i)
                                 else
                                     setActBlock(0)
-                            }}
-                        >
+                            }}>
                             {i}
                             <div className={ClassNames(style['skg-menu'], activeBlock === i && style.active)}>
-                                <div
-                                    onClick={e => {
-                                        this.props.setState({
-                                            on: 'group',
-                                            group: '' + i
-                                        })
-                                    }}
-                                >
+                                <div onClick={e => {
+                                    this.props.setState({
+                                        on: 'group',
+                                        group: '' + i
+                                    })
+                                }}>
                                     查看年份
-                                </div>
+								</div>
                             </div>
                         </div>
                     ))}
                 </div>
-                <div
-                    className={style['skg-ptr']}
+                <div className={style['skg-ptr']}
                     style={{
                         transition: this.state.modalOn || 'transform 0.25s ease-in-out',
                         transform: `translateX(${ptr ? ptr.offsetLeft : 0}px)`
-                    }}
-                />
+                    }} />
             </div>
         )
     }
@@ -590,10 +559,7 @@ export default class Charts extends PureComponent {
         const [active, setActive] = useState(false)
         return (
             <React.Fragment>
-                <div
-                    className={style['rd-change']}
-                    onClick={e => setActive(!active)}
-                >
+                <div className={style['rd-change']} onClick={e => setActive(!active)}>
                     <svg t="1575201808656" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2242" width="200" height="200">
                         <path d="M818.752 704H128a32 32 0 1 1 0-64h768a32 32 0 0 1 22.656 54.656l-192 192a32 32 0 0 1-45.312-45.312L818.752 704zM128 448a31.872 31.872 0 0 1-22.656-54.656l192-192a32 32 0 1 1 45.312 45.312L205.248 384H896a32 32 0 1 1 0 64H128z" p-id="2243"
                             fill={active ? '#1296db' : '#8a8a8a'}>
@@ -602,50 +568,71 @@ export default class Charts extends PureComponent {
                 </div>
                 {active &&
                     <div className={style['rd-ct']}>
-                        <Table
-                            name=''
-                            data={this.props.data}
-                        >
+                        <Table name='' data={this.props.data}>
                             <Column title='年份' dataIndex='label' key='-1' />
-                            {
-                                [
-                                    ['edge_num', '边数'],
-                                    ['max_degree', '最大度'],
-                                    ['average_degree', '平均度'],
-                                    ['density', '密度'],
-                                    ['coummunity_num', '社区数'],
-                                    ['node_num', '节点数']
-                                ].map((v, i) => (
-                                    <Column title={v[1]} number dataIndex={v[0]} key={i}
-                                        sorter={(a, b) => b[v[0]] - a[v[0]]} />
-                                ))
-                            }
+                            {[
+                                ['edge_num', '边数'],
+                                ['max_degree', '最大度'],
+                                ['average_degree', '平均度'],
+                                ['density', '密度'],
+                                ['coummunity_num', '社区数'],
+                                ['node_num', '节点数']
+                            ].map((v, i) => (
+                                <Column title={v[1]} number dataIndex={v[0]} key={i}
+                                    sorter={(a, b) => b[v[0]] - a[v[0]]} />
+                            ))}
                         </Table>
                     </div>}
             </React.Fragment>
         )
     }
-
-    render() {
+    Controls = () => {
         return (
-            <div
-                className={style.main}
-                title={this.props.title}
-            >
-                <div ref={this.chartRef} />
-                <div className={ClassNames(style.modal, this.state.modalOn && style.active)}>
-                    <div
-                        className={style['modal-mask']}
-                        onClick={e => this.setState({ modalOn: false })}
-                    />
-                    <div className={style['modal-content']}>
-                        <div ref={this.modalRef} />
-                    </div>
+            <div className='ct-controls'>
+                <div className='cc-button'>
+                    <svg t="1575819608404" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2917" width="64" height="64">
+                        <path d="M884.7 405.4l-27.5-9.8c-8.9-3.2-15.9-9.8-19.5-18.5s-3.4-18.3 0.7-26.9l12.5-26.3c20.8-43.8 12.1-94.3-22.2-128.6s-84.8-43-128.6-22.2l-26.3 12.5c-8.6 4.1-18.1 4.3-26.9 0.7-8.8-3.6-15.4-10.6-18.5-19.5l-9.8-27.5C602.3 93.6 560.5 64.1 512 64.1c-48.5 0-90.3 29.5-106.6 75.2l-9.8 27.5c-3.2 8.9-9.8 15.9-18.5 19.5-8.8 3.6-18.3 3.4-26.9-0.7l-26.3-12.5c-43.8-20.8-94.3-12.1-128.6 22.2s-43 84.8-22.2 128.6l12.5 26.3c4.1 8.6 4.3 18.1 0.7 26.9-3.6 8.8-10.6 15.4-19.5 18.5l-27.5 9.8C93.6 421.7 64.1 463.5 64.1 512s29.5 90.3 75.2 106.6l27.5 9.8c8.9 3.2 15.9 9.8 19.5 18.5 3.6 8.8 3.4 18.3-0.7 26.9l-12.5 26.3c-20.8 43.8-12.1 94.3 22.2 128.6s84.8 43 128.6 22.2l26.3-12.5c8.6-4.1 18.1-4.3 26.9-0.7s15.4 10.6 18.5 19.5l9.8 27.5c16.3 45.7 58.1 75.2 106.6 75.2 48.5 0 90.3-29.5 106.6-75.2l9.8-27.5c3.2-8.9 9.8-15.9 18.5-19.5 8.8-3.6 18.3-3.4 26.9 0.7l26.3 12.5c15.8 7.5 32.5 11.2 49 11.2 29.1 0 57.7-11.5 79.6-33.4 34.3-34.3 43-84.8 22.2-128.6l-12.5-26.3c-4.1-8.6-4.3-18.1-0.7-26.9 3.6-8.8 10.6-15.4 19.5-18.5l27.5-9.8c45.7-16.3 75.2-58.1 75.2-106.6s-29.5-90.3-75.2-106.6z m-26.9 137.8l-27.5 9.8c-30.1 10.7-54.4 33.8-66.6 63.3s-11.4 63 2.3 91.9l12.5 26.3c9.3 19.6-2.6 33.8-6.5 37.7-3.9 3.9-18.1 15.8-37.7 6.5L708 766.2c-28.9-13.7-62.3-14.6-91.9-2.3-29.5 12.2-52.6 36.5-63.3 66.6L543 858c-7.3 20.4-25.7 22-31.2 22s-24-1.6-31.2-22l-9.8-27.5c-10.7-30.1-33.8-54.4-63.3-66.6-13.9-5.7-28.6-8.6-43.3-8.6-16.6 0-33.3 3.7-48.6 10.9l-26.3 12.5c-19.6 9.3-33.8-2.6-37.7-6.5-3.9-3.9-15.8-18.1-6.5-37.7l12.5-26.3c13.7-28.9 14.6-62.3 2.3-91.9-12.2-29.5-36.5-52.6-66.6-63.3l-27.5-9.8c-20.4-7.3-22-25.7-22-31.2s1.6-24 22-31.2l27.5-9.8c30.1-10.7 54.4-33.8 66.6-63.3s11.4-63-2.3-91.9l-12.5-26.3c-9.3-19.6 2.6-33.8 6.5-37.7 3.9-3.9 18.1-15.8 37.7-6.5l26.3 12.5c28.9 13.7 62.3 14.6 91.9 2.3 29.5-12.2 52.6-36.5 63.3-66.6l9.8-27.5c7.3-20.4 25.7-22 31.2-22s24 1.6 31.2 22l9.8 27.5c10.7 30.1 33.8 54.4 63.3 66.6 29.5 12.2 63 11.4 91.9-2.3l26.3-12.5c19.6-9.3 33.8 2.6 37.7 6.5 3.9 3.9 15.8 18.1 6.5 37.7L766 315.8c-13.7 28.9-14.6 62.3-2.3 91.9 12.2 29.5 36.5 52.6 66.6 63.3l27.5 9.8c20.4 7.3 22 25.7 22 31.2s-1.5 24-22 31.2z" p-id="2918" fill="#8a8a8a"></path><path d="M512 320.3c-105.7 0-191.7 86-191.7 191.7s86 191.7 191.7 191.7 191.7-86 191.7-191.7-86-191.7-191.7-191.7z m0 303.4c-61.6 0-111.7-50.1-111.7-111.7S450.4 400.3 512 400.3 623.7 450.4 623.7 512 573.6 623.7 512 623.7z" p-id="2919" fill="#8a8a8a"></path>
+                    </svg>
                 </div>
-                {this.props.type == 'main' && <this.SankeyGroups />}
-                {this.props.type == 'radar' && <this.RadarChart />}
-                {this.enableControls && <this.Controls />}
+                <div className='cc-panel'>
+
+                </div>
             </div>
         )
     }
+	/*Controls = () => {
+		const [listRef] = useState(React.createRef())
+		const [active, setActive] = useState(true)
+		return (
+			<div className={style['ct-box']}>
+				<div className={style.controls}
+					style={{
+						transition: 'transform .3s ease-in-out',
+						transform: active || `translateY(-${listRef.current.clientHeight}px)`
+					}}>
+					<ul ref={listRef}>
+						<li>
+							<div className={style.item}>
+								<span>排序</span>
+								<select onChange={e => {
+									if (e.target.value.length) {
+										const key = e.target.value
+										const { groups } = this.props
+										groups.forEach(g => g.sort((a, b) => (a._origin_[key] - b._origin_[key])))
+										this.props.setState(groups)
+									}
+								}}>
+									<option value=''>---</option>
+									<option value='centrality'>中心度</option>
+									<option value='density'>密度</option>
+									<option value='num'>节点数</option>
+								</select>
+							</div>
+						</li>
+					</ul>
+					<div onClick={e => setActive(!active)}>设置</div>
+				</div>
+			</div>
+		)
+	}*/
 }
