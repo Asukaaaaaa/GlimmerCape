@@ -2,7 +2,7 @@ import * as React from 'react'
 // 
 import { AppContext } from '../../app'
 import { Form, Input, Divider } from '../../components/form/form'
-import { ClassNames, fetcher, ajaxer, resolveLocalPath } from '../../utils'
+import { ClassNames, fetcher, ajaxer, resolveLocalPath, _HOST } from '../../utils'
 //styles
 import './sign.less'
 
@@ -16,13 +16,13 @@ const Sign = ({
   user, setUser,
 }) => {
   const [mode, setMode] = React.useState('in')
-  const [bingBg, setBingBg] = React.useState()
+  const [bingBg, setBingBg] = React.useState({})
   const [uinfo, setUinfo] = React.useState({})
   React.useEffect(() => {
     //获取bing壁纸
-    //fetch('https://cn.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=zh-CN')
-    // .then(r => r.json())
-    // .then(res => setBingBg(res))
+    fetch(_HOST + '/BingBg')
+      .then(r => r.json())
+      .then(res => setBingBg(res))
 
     //本地登录信息
     let user = localStorage.getItem('user')
@@ -36,7 +36,10 @@ const Sign = ({
     }
   }, [])
   return (
-    <div className='pg-signin'>
+    <div className='pg-signin'
+      style={{
+        //background: `center / contain no-repeat url("${bingBg.img}")`
+      }}>
       <div className='sign-table'>
         <div className={ClassNames('st-container', mode == 'up' && 'signup')}>
           <div className='st-signin'>

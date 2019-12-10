@@ -10,7 +10,7 @@ import ProjectDetail from '../../components/project-detail/project-detail'
 import ModelDetail from '../../components/model-detail/model-detail'
 import Toolbar from '../../components/toolbar/toolbar'
 import { AppContext } from '../../app'
-import { _HOST, ajaxer } from '../../utils'
+import { _BASE, ajaxer } from '../../utils'
 //styles
 import './main.less'
 

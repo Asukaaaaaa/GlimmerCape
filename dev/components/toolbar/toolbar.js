@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import style from './toolbar.css'
 import sticker from '../../../static/img/流汗.svg'
-import { ClassNames, host } from '../../utils'
+import { ClassNames, _BASE } from '../../utils'
 
 export default function Toolbar() {
     const [active, setActive] = useState(false)
@@ -13,7 +13,7 @@ export default function Toolbar() {
             <div className={ClassNames(style.menu, active && style.active)}>
                 <div>
                     <a style={{ verticalAlign: '-webkit-baseline-middle' }}
-                        href={host + '/操作手册.docx'}
+                        href={_BASE + '/操作手册.docx'}
                         download='操作手册.docx'>
                         操作手册</a>
                 </div>

@@ -2,7 +2,7 @@ import React, { Component, PureComponent, useContext } from 'react'
 import { withRouter } from 'react-router-dom'
 //
 import { AppContext } from '../../app'
-import { host } from '../../utils'
+import { _BASE } from '../../utils'
 //styles
 import style from './projects.css'
 
@@ -19,7 +19,7 @@ class Projects extends PureComponent {
         }
     }
     update() {
-        $.post(host + '/project/getProjectList', {
+        $.post(_BASE + '/project/getProjectList', {
             user_id: this.props.user.userId,
             page_num: 1,
             page_size: 100

@@ -1,12 +1,13 @@
 
 /* --------------------------------- consts --------------------------------- */
-export const _HOST = 'https://www.cross2u.top/Web_NEview'
+export const _HOST = 'https://www.cross2u.top'
+export const _BASE = 'https://www.cross2u.top/Web_NEview'
 
 /* --------------------------------- methods -------------------------------- */
 export const fetcher = {
 	get: (path, values) => new Promise((resolve, reject) => {
 		const str = Object.keys(values).reduce((acc, v) => acc + v + '=' + JSON.stringify(values[v]) + '&', '')
-		fetch(_HOST + path + '?' + str)
+		fetch(_BASE + path + '?' + str)
 			.then(r => r.json())
 			.catch(e => reject(e))
 			.then(res => {
@@ -17,7 +18,7 @@ export const fetcher = {
 			})
 	}),
 	post: (path, values) => new Promise((resolve, reject) => {
-		fetch(_HOST + path, {
+		fetch(_BASE + path, {
 			method: 'POST',
 			body: values
 		}).then(r => r.json())
@@ -35,7 +36,7 @@ export const ajaxer = {
 		const str = Object.keys(values).reduce((acc, v) => acc + v + '=' + JSON.stringify(values[v]) + '&', '')
 		const options = {
 			type,
-			url: _HOST + path,
+			url: _BASE + path,
 			data: values,
 			success: res => {
 				if (res.resultCode == 1000)
@@ -53,7 +54,7 @@ export const ajaxer = {
 	post: (...arr) => ajaxer.get(...arr, 'post')
 }
 
-export const resolveLocalPath = path => _HOST + path.split('Web_NEview')[1]
+export const resolveLocalPath = path => _BASE + path.split('Web_NEview')[1]
 
 export const ClassNames = (...classnames) => classnames.reduce((acc, v) => acc + (v ? v + ' ' : ''), '')
 
@@ -115,8 +116,6 @@ const NormalColor = [
 ]
 const ExtendColor = []
 
-const host = 'https://www.cross2u.top/Web_NEview'
-
 import logo from '../static/img/logo.png'
 import cross from '../static/img/cross.png'
 import test from '../static/img/test.png'
@@ -128,7 +127,6 @@ import telephone from '../static/img/telephone.svg'
 import userCenter from '../static/img/user-center.svg'
 import downloadSvg from '../static/img/download-fill.svg'
 import exchangeSvg from '../static/img/exchange.svg'
-import { isNumber } from 'util'
 
 const imgs = {
 	logo, cross, test, detail, edit, mail, questionCircle, telephone, userCenter, downloadSvg, exchangeSvg
@@ -138,6 +136,5 @@ export {
 	BaseColor,
 	NormalColor,
 	ExtendColor,
-	host,
 	imgs
 }

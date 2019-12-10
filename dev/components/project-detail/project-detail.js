@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { Tabs, Table, Divider, Tag, Button, Tooltip, Icon, Modal, Form, Input, Upload, Select, Spin, message } from 'antd'
 const { TabPane } = Tabs, { Column, ColumnGroup } = Table, { Option } = Select
 
-import { host } from '../../utils'
+import { _BASE } from '../../utils'
 import style from './project-detail.css'
 
 let project_id
@@ -24,7 +24,7 @@ const DataForm = ({ form, handleSubmit, pid }) => {
                         formData.append('stopword_flag', values.stopword ? 1 : 0)
                         formData.append('stopword_file', values.stopword ? values.stopword[0].originFileObj : null)
                         $.post({
-                            url: host + '/dataset/upload',
+                            url: _BASE + '/dataset/upload',
                             processData: false,
                             contentType: false,
                             data: formData,
@@ -88,7 +88,7 @@ const DataForm = ({ form, handleSubmit, pid }) => {
                 bottom: '0',
                 right: '0'
             }}>
-                <a href={host + '/数据集模板.xlsx'}
+                <a href={_BASE + '/数据集模板.xlsx'}
                     download='数据集模板.xlsx'>数据集模板</a>
             </div>
         </Form>
@@ -112,7 +112,7 @@ const ModelForm = ({ form, datasets, handleSubmit, pid, models }) => {
                             data['model.' + attr] = data[attr]
                             delete data[attr]
                         }
-                        $.post(host + '/model/createModel', data, res => {
+                        $.post(_BASE + '/model/createModel', data, res => {
                             if (res.resultDesc === 'Success') {
                                 message.success({ content: `创建 ${values.model_name} 成功.`, key: 'loadModel' })
                                 handleSubmit('update')
@@ -288,7 +288,7 @@ export default class ProjectDetail extends Component {
     }
 
     update() {
-        $.post(host + '/dataset/getDatasetList', {
+        $.post(_BASE + '/dataset/getDatasetList', {
             project_id: this.props.match.params.id,
             page_num: 1,
             page_size: 100
@@ -297,7 +297,7 @@ export default class ProjectDetail extends Component {
                 this.setState({ datasets: res.data.list })
             }
         })
-        $.post(host + '/model/getModelList', {
+        $.post(_BASE + '/model/getModelList', {
             project_id: this.props.match.params.id,
             page_num: 1,
             page_size: 100
@@ -356,12 +356,12 @@ export default class ProjectDetail extends Component {
                             <Column title="操作" key="action"
                                 render={(text, record) => (
                                     <span>
-                                        <a href={`${host}${record.datasetUrl.split('Web_NEview')[1]}`}
+                                        <a href={`${_BASE}${record.datasetUrl.split('Web_NEview')[1]}`}
                                             download={`${record.datasetId}_${record.datasetName}`}
                                         >下载</a>
                                         <Divider type="vertical" />
                                         <a onClick={
-                                            e => $.post(host + '/dataset/deleteDataset', {
+                                            e => $.post(_BASE + '/dataset/deleteDataset', {
                                                 dataset_id: record.datasetId
                                             }, res => {
                                                 // todo
@@ -398,7 +398,7 @@ export default class ProjectDetail extends Component {
                                             to={this.models[record.modelName] === 'loading' ? '###' : `/model/${record.modelId}`}>查看</Link>
                                         <Divider type="vertical" />
                                         <a onClick={
-                                            e => $.post(host + '/model/deleteModel', {
+                                            e => $.post(_BASE + '/model/deleteModel', {
                                                 model_id: record.modelId
                                             }, res => {
                                                 // todo

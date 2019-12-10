@@ -7,7 +7,7 @@ import Table, { Column } from '../table/table'
 import Charts from '../charts/charts'
 import Skeleton from '../skeleton/skeleton'
 
-import { _, host } from '../../utils'
+import { _, _BASE } from '../../utils'
 import style from './model-detail.css'
 
 
@@ -30,11 +30,11 @@ const MainSider = ({ mid, radarInfo, coword }) => {
                     name='词列表'
                     data={coword}
                     export={() => {
-                        fetch(host + '/result/ExportCoword?model_id=' + mid)
+                        fetch(_BASE + '/result/ExportCoword?model_id=' + mid)
                             .then(res => res.json())
                             .then(res => {
                                 res = res.data.split('Web_NEview')[1]
-                                _.download(host + res, '词列表.xls')
+                                _.download(_BASE + res, '词列表.xls')
                             })
                     }}
                 >
@@ -88,14 +88,14 @@ const ClusterSider = ({ mid, group, clusterInfo }) => {
                     name='社区词列表'
                     data={clusterInfo.cluster_nodes}
                     export={() => {
-                        fetch(host + '/result/ExportClusterInfo' +
+                        fetch(_BASE + '/result/ExportClusterInfo' +
                             '?model_id=' + mid +
                             '&label=' + group +
                             '&cluster_id=' + clusterInfo.cluster_ID)
                             .then(res => res.json())
                             .then(res => {
                                 res = res.data.split('Web_NEview')[1]
-                                _.download(host + res, '社区数据.xls')
+                                _.download(_BASE + res, '社区数据.xls')
                             })
                     }}>
                     <Column width='30%' title="词汇" dataIndex="key" key="key" />
@@ -134,11 +134,11 @@ export default class ModelDetail extends Component {
         }
     }
     getMainData = () => {
-        $.post(host + '/result/getEvoFile', {
+        $.post(_BASE + '/result/getEvoFile', {
             model_id: this.state.mid
         }, res => {
             if (res.resultDesc === 'Success')
-                fetch(host + res.data.split('Web_NEview')[1])
+                fetch(_BASE + res.data.split('Web_NEview')[1])
                     .then(r => r.json())
                     .then(res => {
                         const groups = [], links = []
@@ -194,11 +194,11 @@ export default class ModelDetail extends Component {
                         this.setState({ groups, links })
                     })
         })
-        $.post(host + '/result/getZpFile', {
+        $.post(_BASE + '/result/getZpFile', {
             model_id: this.state.mid
         }, res => {
             if (res.resultDesc === 'Success')
-                fetch(host + res.data.split('Web_NEview')[1])
+                fetch(_BASE + res.data.split('Web_NEview')[1])
                     .then(r => r.json())
                     .then(res => {
                         const zps = res.reduce((acc, { zp, label }) => {
@@ -216,30 +216,30 @@ export default class ModelDetail extends Component {
                         this.setState({ zps })
                     })
         })
-        $.post(host + '/result/getRadarPath', {
+        $.post(_BASE + '/result/getRadarPath', {
             model_id: this.state.mid
         }, res => {
             if (res.resultDesc === 'Success')
-                fetch(host + res.data.split('Web_NEview')[1])
+                fetch(_BASE + res.data.split('Web_NEview')[1])
                     .then(r => r.json())
                     .then(res => this.setState({ radarInfo: res }))
         })
-        $.post(host + '/result/getCoword', {
+        $.post(_BASE + '/result/getCoword', {
             model_id: this.state.mid
         }, res => {
             if (res.resultDesc === 'Success')
-                fetch(host + res.data.split('Web_NEview')[1])
+                fetch(_BASE + res.data.split('Web_NEview')[1])
                     .then(r => r.json())
                     .then(res => this.setState({ coword: res }))
         })
     }
     getGroupData = (group) => {
-        $.post(host + '/result/getGraphInfo', {
+        $.post(_BASE + '/result/getGraphInfo', {
             model_id: this.state.mid,
             label: group
         }, res => {
             if (res.resultDesc === 'Success')
-                fetch(host + res.data.split('Web_NEview')[1])
+                fetch(_BASE + res.data.split('Web_NEview')[1])
                     .then(r => r.json())
                     .catch(console.log)
                     .then(res => {
@@ -281,7 +281,7 @@ export default class ModelDetail extends Component {
         })
     }
     getClusterData = ({ ID, group }) => {
-        $.post(host + '/result/getPickedClusterInfo', {
+        $.post(_BASE + '/result/getPickedClusterInfo', {
             model_id: this.state.mid,
             cluster_id: ID,
             label: group
