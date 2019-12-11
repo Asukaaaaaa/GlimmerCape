@@ -34,7 +34,7 @@ export default class Main extends Component {
 						<div className='pm-createproj'>
 							<span>创建新项目</span>
 							<div>
-								<img src='./static/imgs/cross.png' onClick={e => this.setState({ showCpModal: true })} />
+								<img src={require('./cross.png')} onClick={e => this.setState({ showCpModal: true })} />
 							</div>
 							<Modal title="创建项目" footer={null} visible={this.state.showCpModal} destroyOnClose
 								onCancel={e => this.setState({ showCpModal: false })}>

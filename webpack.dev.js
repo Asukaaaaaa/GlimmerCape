@@ -11,7 +11,10 @@ module.exports = {
 	},
 	devtool: 'inline-source-map',
 	resolve: {
-		extensions: ['.ts', '.tsx', '.js', '.jsx']
+		extensions: ['.ts', '.tsx', '.js', '.jsx'],
+		alias: {
+			Assets: path.resolve(__dirname, 'assets')
+		}
 	},
 	module: {
 		rules: [{
@@ -32,13 +35,7 @@ module.exports = {
 			exclude: /node_modules/,
 		}, {
 			test: /\.less$/,
-			use: [{
-				loader: "style-loader" // creates style nodes from JS strings
-			}, {
-				loader: "css-loader"   // translates CSS into CommonJS
-			}, {
-				loader: "less-loader"  // compiles Less to CSS
-			}]
+			use: ['style-loader', 'css-loader', 'less-loader']
 		}, {
 			test: /\.css$/,
 			include: /node_modules/,
