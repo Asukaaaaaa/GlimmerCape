@@ -66,7 +66,7 @@ const Input = ({
   switch (type) {
     case 'file':
       const [files, setFiles] = React.useState(baseFiles)
-      const [select, setSelect] = React.useState()
+      const [select, setSelect] = React.useState(0)
       React.useEffect(() => {
         setRefs({
           input: React.createRef(),

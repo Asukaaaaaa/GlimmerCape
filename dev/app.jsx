@@ -19,7 +19,6 @@ const App = () => {
       user, setUser
     }}>
       <Router>
-        <Redirect to={user ? '/' : '/sign'} />
         <Switch>
           <Route path='/sign' component={Sign} />
           <Route render={props => (
@@ -28,6 +27,7 @@ const App = () => {
               null)}>
           </Route>
         </Switch>
+        <Redirect to={user ? '/' : '/sign'} />
       </Router>
     </AppContext.Provider>
   )
