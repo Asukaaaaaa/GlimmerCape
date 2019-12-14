@@ -19,25 +19,18 @@ const MainSider = ({ mid, radarInfo, coword }) => {
             <div style={{
                 height: '300px'
             }}>
-                <Charts
-                    type='radar'
-                    data={radarInfo}
-                    mid={mid}
-                />
+                <Charts type='radar' data={radarInfo} mid={mid}/>
             </div>
             <div style={{ height: 'calc(100% - 300px)' }}>
-                <Table
-                    name='词列表'
-                    data={coword}
+                <Table name='词列表' data={coword}
                     export={() => {
                         fetch(_BASE + '/result/ExportCoword?model_id=' + mid)
                             .then(res => res.json())
                             .then(res => {
                                 res = res.data.split('Web_NEview')[1]
-                                _.download(_BASE + res, '词列表.xls')
+                                _.download(_BASE + res, '词列表')
                             })
-                    }}
-                >
+                    }}>
                     <Column width='30%' title="词汇" dataIndex="word" key="-1" />
                     {names.map((v, i) => (
                         <Column title={v} dataIndex={v} key={i}
@@ -78,9 +71,7 @@ const ClusterSider = ({ mid, group, clusterInfo }) => {
                 </div>
             </div>
             <div style={{ minHeight: 'calc(100% - 300px)' }} title='社区词列表'>
-                <Table
-                    name='社区词列表'
-                    data={clusterInfo.cluster_nodes}
+                <Table name='社区词列表' data={clusterInfo.cluster_nodes}
                     export={() => {
                         fetch(_BASE + '/result/ExportClusterInfo' +
                             '?model_id=' + mid +
@@ -89,7 +80,7 @@ const ClusterSider = ({ mid, group, clusterInfo }) => {
                             .then(res => res.json())
                             .then(res => {
                                 res = res.data.split('Web_NEview')[1]
-                                _.download(_BASE + res, '社区数据.xls')
+                                _.download(_BASE + res, '社区词列表')
                             })
                     }}>
                     <Column width='30%' title="词汇" dataIndex="key" key="key" />
@@ -381,23 +372,13 @@ export default class ModelDetail extends Component {
     render() {
         return (
             <div className={style.main} >
-                <Steps
-                    className={style.steps}
-                    current={
-                        this.state.on == 'main' ? 0 :
-                            this.state.on == 'group' ? 1 :
-                                this.state.on == 'cluster' ? 2 : -1
-                    }
-                >
-                    <Step
-                        onClick={e => this.setState({ on: 'main' })}
-                    />
-                    <Step
-                        onClick={e => this.state.group && this.setState({ on: 'group' })}
-                    />
-                    <Step
-                        onClick={e => this.state.cluster && this.setState({ on: 'cluster' })}
-                    />
+                <Steps className={style.steps}
+                    current={this.state.on == 'main' ? 0 :
+                        this.state.on == 'group' ? 1 :
+                            this.state.on == 'cluster' ? 2 : -1}>
+                    <Step onClick={e => this.setState({ on: 'main' })} />
+                    <Step onClick={e => this.state.group && this.setState({ on: 'group' })} />
+                    <Step onClick={e => this.state.cluster && this.setState({ on: 'cluster' })} />
                 </Steps>
                 <this.getChart />
                 <div className={style.right}>
