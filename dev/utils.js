@@ -1,6 +1,6 @@
 /* --------------------------------- consts --------------------------------- */
-export const _HOST = 'https://www.cross2u.top'
-export const _BASE = 'https://www.cross2u.top/Web_NEview'
+export const _HOST = 'http://oskg.whu.edu.cn' //'https://www.cross2u.top'
+export const _BASE = 'http://oskg.whu.edu.cn/Web_NEview' //'https://www.cross2u.top/Web_NEview'
 
 /* --------------------------------- methods -------------------------------- */
 export const fetcher = {
