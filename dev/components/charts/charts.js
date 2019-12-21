@@ -449,7 +449,14 @@ export default class Charts extends PureComponent {
             controlSetting: {
                 name: '雷达图',
                 //panel: [],
-                sub: []
+                sub: [{
+                    icon: (
+                        <svg t="1575201808656" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2242" width="200" height="200">
+                            <path d="M818.752 704H128a32 32 0 1 1 0-64h768a32 32 0 0 1 22.656 54.656l-192 192a32 32 0 0 1-45.312-45.312L818.752 704zM128 448a31.872 31.872 0 0 1-22.656-54.656l192-192a32 32 0 1 1 45.312 45.312L205.248 384H896a32 32 0 1 1 0 64H128z" p-id="2243"></path>
+                        </svg>
+                    ),
+                    onclick: e => this.setState({ rdcOn: !this.state.rdcOn })
+                }]
             }
         })
     }
@@ -532,7 +539,7 @@ export default class Charts extends PureComponent {
                     </div>
                 </div>
                 {this.props.type == 'main' && <this.SankeyGroups />}
-                {this.props.type == 'radar' && <this.RadarChart />}
+                {this.props.type == 'radar' && <this.RadarChart {...this.state} />}
                 <this.Controls {...this.state.controlSetting} />
             </div>
         )
@@ -590,35 +597,26 @@ export default class Charts extends PureComponent {
             </div>
         )
     }
-    RadarChart = () => {
-        const [active, setActive] = useState(false)
+    RadarChart = ({ rdcOn }) => {
         return (
-            <React.Fragment>
-                <div className={style['rd-change']} onClick={e => setActive(!active)}>
-                    <svg t="1575201808656" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2242" width="200" height="200">
-                        <path d="M818.752 704H128a32 32 0 1 1 0-64h768a32 32 0 0 1 22.656 54.656l-192 192a32 32 0 0 1-45.312-45.312L818.752 704zM128 448a31.872 31.872 0 0 1-22.656-54.656l192-192a32 32 0 1 1 45.312 45.312L205.248 384H896a32 32 0 1 1 0 64H128z" p-id="2243"
-                            fill={active ? '#1296db' : '#8a8a8a'}>
-                        </path>
-                    </svg>
-                </div>
-                {active &&
-                    <div className={style['rd-ct']}>
-                        <Table name='' data={this.props.data}>
-                            <Column title='年份' dataIndex='label' key='-1' />
-                            {[
-                                ['edge_num', '边数'],
-                                ['max_degree', '最大度'],
-                                ['average_degree', '平均度'],
-                                ['density', '密度'],
-                                ['coummunity_num', '社区数'],
-                                ['node_num', '节点数']
-                            ].map((v, i) => (
-                                <Column title={v[1]} number dataIndex={v[0]} key={i}
-                                    sorter={(a, b) => b[v[0]] - a[v[0]]} />
-                            ))}
-                        </Table>
-                    </div>}
-            </React.Fragment>
+            rdcOn &&
+            <div className={style['rd-ct']}>
+                <Table name='' data={this.props.data}>
+                    <Column title='年份' dataIndex='label' key='-1' />
+                    {[
+                        ['edge_num', '边数'],
+                        ['max_degree', '最大度'],
+                        ['average_degree', '平均度'],
+                        ['density', '密度'],
+                        ['coummunity_num', '社区数'],
+                        ['node_num', '节点数']
+                    ].map((v, i) => (
+                        <Column title={v[1]} number dataIndex={v[0]} key={i}
+                            sorter={(a, b) => b[v[0]] - a[v[0]]} />
+                    ))}
+                </Table>
+            </div> ||
+            null
         )
     }
     Controls = ({ name, panel, sub }) => {
@@ -658,6 +656,12 @@ export default class Charts extends PureComponent {
                     </div>}
                 {sub &&
                     <div className='cc-subpanel'>
+                        {sub.map((item, k) => (
+                            <div className='cp-item' key={k}
+                                onClick={item.onclick}>
+                                {item.icon}
+                            </div>
+                        ))}
                         <div className='cp-item'
                             onClick={e => {
                                 const cvs = $('canvas', this.chartRef.current)[0]
