@@ -625,7 +625,7 @@ export default class Charts extends PureComponent {
         const handleSort = key => {
             setSortKey(key)
             const { groups } = this.props
-            groups.forEach(g => g.sort((a, b) => (a._origin_[key] - b._origin_[key])))
+            groups.forEach(g => g.sort((a, b) => (b._origin_[key] - a._origin_[key])))
             this.props.setState(groups)
         }
         return (

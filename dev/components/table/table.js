@@ -129,8 +129,7 @@ export default class Table extends PureComponent {
                                 className={style.head}
                                 style={{
                                     height: this.state.headHeight + 'px'
-                                }}
-                            >
+                                }}>
                                 <tbody>
                                     <tr>
                                         {fixedCols.map((props, i) => (
