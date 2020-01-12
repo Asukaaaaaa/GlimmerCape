@@ -1,13 +1,14 @@
 import React, { Component, useState, useEffect } from 'react'
 
-import { Tabs, Icon, Button, Steps, Spin } from 'antd'
+import { Tabs, Icon, Button, Steps, Spin, Cascader, Modal } from 'antd'
 const { TabPane } = Tabs, { Step } = Steps
 
 import Table, { Column } from '../table/table'
 import Charts from '../charts/charts'
 import Skeleton from '../skeleton/skeleton'
-
-import { _, _BASE } from '../../utils'
+import { _, _BASE, fetcher, ajaxer } from '../../utils'
+//
+import './model-detail.less'
 import style from './model-detail.css'
 
 
@@ -19,7 +20,7 @@ const MainSider = ({ mid, radarInfo, coword }) => {
             <div style={{
                 height: '300px'
             }}>
-                <Charts type='radar' data={radarInfo} mid={mid}/>
+                <Charts type='radar' data={radarInfo} mid={mid} />
             </div>
             <div style={{ height: 'calc(100% - 300px)' }}>
                 <Table name='词列表' data={coword}
@@ -169,6 +170,12 @@ export default class ModelDetail extends Component {
                                     groups.nodesMap.set(c.id, c)
                                 })
                             }
+                        })
+                        groups.wordsMap = {}
+                        groups.nodesMap.forEach((val, key) => {
+                            let word = groups[val.name] || []
+                            word.push(val._origin_)
+                            groups.wordsMap[val.name] = word
                         })
                         groups.forEach((g, i) => this.getGroupData(i))
                         this.setState({ groups, links })
@@ -372,6 +379,16 @@ export default class ModelDetail extends Component {
     render() {
         return (
             <div className={style.main} >
+                <Cascader className='md-search'
+                    options={this.state.groups &&
+                        Object.keys(this.state.groups.wordsMap).map(k => ({ value: k, label: k })) ||
+                        []}
+                    onChange={([key]) => this.setState({ sltWord: key })}
+                    placeholder="共现词"
+                    showSearch={true} />
+                {this.state.sltWord &&
+                    <WordModal word={this.state.sltWord} mid={this.state.mid}
+                        handleQuit={e => this.setState({ sltWord: null })} />}
                 <Steps className={style.steps}
                     current={this.state.on == 'main' ? 0 :
                         this.state.on == 'group' ? 1 :
@@ -387,4 +404,40 @@ export default class ModelDetail extends Component {
             </div >
         )
     }
+}
+
+const WordModal = ({ handleQuit, word, mid }) => {
+    const [data, setData] = useState()
+    useEffect(() => {
+        ajaxer.get('/result/SearchKey', {
+            key: word,
+            model_id: mid
+        }).then(res => {
+            setData(JSON.parse(res))
+        })
+    })
+    return (
+        <div className='md-wordmodal'
+            onClick={handleQuit}>
+            <div className='wm-panel'>
+                {data &&
+                    <Table name='共现词' data={data}
+                        export={() => {
+                            fetch(_BASE + '/result/ExportKey?model_id=' + mid)
+                                .then(res => res.json())
+                                .then(res => {
+                                    res = res.data.split('Web_NEview')[1]
+                                    _.download(_BASE + res, '共现词')
+                                })
+                        }}>
+                        <Column width='30%' title="词汇" dataIndex="word" key="-1" />
+                        {Object.keys(data[0]).slice(0, -1).map((v, i) => (
+                            <Column title={v} dataIndex={v} key={i}
+                                sorter={(a, b) => b[v] - a[v]} />
+                        ))}
+                    </Table> ||
+                    <Spin className={style.loading} indicator={<Icon type="loading" style={{ fontSize: 36 }} spin />} />}
+            </div>
+        </div>
+    )
 }

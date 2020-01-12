@@ -73,11 +73,19 @@ const Input = ({
           scroll: React.createRef(),
         })
       }, [])
+      React.useEffect(() => {
+        if (files.length === 1) {
+          setSelect(0)
+          formValues[name] = files[0]
+          setState({ formValues })
+        }
+      }, [files])
       return (
         <div className='cp-input-file'>
           <input type='file' accept={accept} ref={refs.input} multiple
             onChange={e => {
-              const infile = Array.from(e.target.files).map(f => {
+              const efiles = Array.from(e.target.files)
+              const infile = efiles.map(f => {
                 f.img = window.URL.createObjectURL(f)
                 return f
               })

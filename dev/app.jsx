@@ -33,3 +33,8 @@ const App = () => {
   )
 }
 ReactDom.render(<App />, document.getElementById('root'))
+
+import { Icon, Spin } from 'antd'
+export const Loading = () => {
+  return <Spin className='cp-loading' indicator={<Icon type="loading" style={{ fontSize: 36 }} spin />} />
+}

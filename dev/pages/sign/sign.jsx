@@ -43,7 +43,7 @@ const Sign = ({
       <div className='sign-table'>
         <div className={ClassNames('st-container', mode == 'up' && 'signup')}>
           <div className='st-signin'>
-            <div className='st-title'></div>
+            <div className='st-title' />
             {uinfo.photo ?
               <div className='st-uinfo'>
                 <span>点击头像快捷登录</span>
@@ -59,12 +59,15 @@ const Sign = ({
                   handleSubmit={values => {
                     ajaxer.post('/user/login', values)
                       .then(res => {
-                        ajaxer.post('/user/getUserInfo', { user_id: res })
-                          .then(uinfo => {
-                            uinfo.photo = resolveLocalPath(uinfo.photo)
-                            localStorage.setItem('user', JSON.stringify(uinfo))
-                            setUser(uinfo)
-                          })
+                        Promise.all([
+                          ajaxer.post('/user/getUserInfo', { user_id: res }),
+                          ajaxer.post('/admin/login', values)
+                        ]).then(([uinfo, isAdmin]) => {
+                          uinfo.photo = resolveLocalPath(uinfo.photo)
+                          uinfo.admin = isAdmin
+                          localStorage.setItem('user', JSON.stringify(uinfo))
+                          setUser(uinfo)
+                        })
                       })
                   }}>
                   <Input placeholder='账号' name='account' value={uinfo.account} />
@@ -101,6 +104,8 @@ const Sign = ({
               <Input placeholder='账号' name='user.account' />
               <Input placeholder='密码' name='user.password' type='password' />
               <Input placeholder='手机号' name='user.phone' />
+              <Input placeholder='邮箱' name='user.email' />
+              <Input placeholder='机构' name='user.institution' />
               <Input placeholder='头像' name='photo' type='file' accept='image/*'
                 /*baseFiles={[{
                   img: '/static/imgs/icon.png'
