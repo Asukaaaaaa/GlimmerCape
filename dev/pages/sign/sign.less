@@ -13,8 +13,13 @@
   right: 10%;
   overflow: hidden;
   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
-  background-color: white;
-  opacity: 0.85;
+  background-color: rgba(255, 255, 255, 0.8);
+  .form-area {
+    border-radius: 3px;
+    margin: 0 35px;
+    padding: 0 5px;
+    background-color: rgba(255, 255, 255, 0.95);
+  }
   .st-container {
     display: flex;
     flex-direction: row;
@@ -24,23 +29,70 @@
     &.signup {
       transform: translateX(-100%);
     }
-    .sign-block {
+    .st-signin {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       flex: 1 0 100%;
     }
-    .st-signin {
-      .sign-block;
-    }
     .st-signup {
-      .sign-block;
+      flex: 1 0 100%;
+      overflow-y: overlay;
+      form {
+        .form-area;
+      }
+      &::-webkit-scrollbar {
+        width: 10px;
+      }
+      &::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        //box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        background: #cdcdcd;
+      }
     }
     .st-title {
       width: 175px;
       height: 50px;
       margin: 22px auto 12px;
       background: center / contain no-repeat url(./logo.png);
+    }
+    .st-form {
+      .form-area;
+      > .sign-mode {
+        border-top-left-radius: 3px;
+        border-top-right-radius: 3px;
+        position: relative;
+        left: -5px;
+        display: flex;
+        flex-direction: row;
+        width: calc(100% + 10px);
+        background-color: #bfbfbf;
+        > div {
+          box-shadow: inset 0 -8px 8px -8px rgba(0, 0, 0, 0.25);
+          flex: 50%;
+          padding: 4px 10px 8px;
+          &.active {
+            border-top-left-radius: 3px;
+            border-top-right-radius: 3px;
+            z-index: 999;
+            background-color: white;
+          }
+        }
+        > div:first-of-type {
+          text-align: left;
+          &.active {
+            box-shadow: 0 -8px 8px -8px rgba(0, 0, 0, 0.25),
+              8px 0 8px -8px rgba(0, 0, 0, 0.25);
+          }
+        }
+        > div:last-of-type {
+          text-align: right;
+          &.active {
+            box-shadow: 0 -8px 8px -8px rgba(0, 0, 0, 0.25),
+              -8px 0 8px -8px rgba(0, 0, 0, 0.25);
+          }
+        }
+      }
     }
     .cp-divider {
       margin: 10px 40px 18px;

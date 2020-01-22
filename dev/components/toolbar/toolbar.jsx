@@ -59,7 +59,7 @@ export default function Toolbar() {
 
 const AdminModal = ({ handleQuit }) => {
     const rootEl = useRef()
-    const [key, setKey] = useState('')
+    const [key, setKey] = useState('users')
     useEffect(() => {
         const divs = $('.ad-tools > div', rootEl.current)
         divs.removeClass('active')

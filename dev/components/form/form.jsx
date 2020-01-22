@@ -9,12 +9,14 @@ const FormContext = React.createContext()
 export class Form extends React.PureComponent {
   constructor(props) {
     super(props)
-    const formValues = props.children.reduce((acc, v) => {
-      acc[v.props.name] = null
+    const [formValues, formFneeds] = props.children.reduce((acc, v) => {
+      const name = v.props.name
+      acc[0][name] = null
+      v.props.fneed && acc[1].push(name)
       return acc
-    }, {})
+    }, [{}, []])
     this.state = {
-      formValues,
+      formValues, formFneeds,
       verify: false,
       setState: this.setState.bind(this)
     }
@@ -23,8 +25,9 @@ export class Form extends React.PureComponent {
     //verify
     state.verify = true
     for (let key in state.formValues) {
-      if (state.verify &&
-        state.formValues[key])
+      if (state.verify && (
+        state.formValues[key] ||
+        state.formFneeds.includes(key)))
         state.verify = true
       else
         state.verify = false
@@ -57,7 +60,7 @@ const InputWrapper = props => (
   </FormContext.Consumer>
 )
 const Input = ({
-  placeholder, name, type,
+  placeholder, name, type, fneed,
   accept, baseFiles = [], value = '',
   formValues, setState
 }) => {
@@ -81,9 +84,10 @@ const Input = ({
         }
       }, [files])
       return (
-        <div className='cp-input-file'>
+        <div className={ClassNames('cp-input-file', fneed && 'fneed', active && 'active')}>
           <input type='file' accept={accept} ref={refs.input} multiple
             onChange={e => {
+              !active && setActive(true)
               const efiles = Array.from(e.target.files)
               const infile = efiles.map(f => {
                 f.img = window.URL.createObjectURL(f)
@@ -121,11 +125,13 @@ const Input = ({
     default:
       React.useEffect(() => {
         value && setActive(true)
-        formValues[name] = value
-        setState({ formValues })
+        if (!fneed) {
+          formValues[name] = value
+          setState({ formValues })
+        }
       }, [value])
       return (
-        <div className={ClassNames('cp-input', active && 'active')}>
+        <div className={ClassNames('cp-input', fneed && 'fneed', active && 'active')}>
           <label>
             <span>{placeholder}</span>
             <input type={type} ref={refs.input} defaultValue={value}

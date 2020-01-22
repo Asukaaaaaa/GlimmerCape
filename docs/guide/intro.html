@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>引导页</title>
+</head>
+
+<!-- CSS -->
+<link type="text/css" rel="stylesheet" href="css/jquery.pagewalkthrough.css" />
+<link type="text/css" rel="stylesheet" href="css/intro.css" />
+<!-- jQuery -->
+<script src='https://code.jquery.com/jquery-3.4.1.min.js'></script>
+<!-- Page walkthrough plugin -->
+<script type="text/javascript" src="jquery.pagewalkthrough.min.js"></script>
+<script type="text/javascript" src="intro.js"></script>
+
+<body style="width:100%;padding:0px; margin:0px;">
+
+
+	<div>
+		<div class="box" id="p1">
+			<img class="pic" src="img/登录.png" alt="">
+			<div class="pz p1-1"></div>
+		</div>
+
+		<div class="box" id="p2">
+			<img class="pic" src="img/注册.png" alt="">
+			<div class="pz p2-1"></div>
+		</div>
+
+		<div class="box" id="p3">
+			<img class="pic" src="img/第一页.png" alt="">
+			<div class="pz p3-1"></div>
+			<div class="pz p3-2"></div>
+		</div>
+
+		<div class="box" id="p4">
+			<img class="pic" src="img/添加数据集.png" alt="">
+			<div class="pz p4-1"></div>
+		</div>
+
+		<div class="box" id="p5">
+			<img class="pic" src="img/添加模型.png" alt="">
+			<div class="pz p5-1"></div>
+		</div>
+
+		<div class="box" id="p6">
+			<img class="pic" src="img/圈一.png" alt="">
+			<div class="pz p6-1"></div>
+			<div class="pz p6-2"></div>
+			<div class="pz p6-3"></div>
+			<div class="pz p6-4"></div>
+			<div class="pz p6-5"></div>
+		</div>
+
+
+		<div class="box" id="p7">
+			<img class="pic" src="img/圈二.png" alt="">
+			<div class="pz p7-1"></div>
+			<div class="pz p7-2"></div>
+		</div>
+		<div class="box" id="p8">
+			<img class="pic" src="img/圈三.png" alt="">
+			<div class="pz p8-1"></div>
+			<div class="pz p8-2"></div>
+			<div class="pz p8-3"></div>
+			<div class="pz p8-4"></div>
+
+		</div>
+
+
+	</div>
+
+
+
+	<div id="walkthrough-content" style="display:none;">
+		<div id="walkthrough-0">
+			<h3>欢迎来到XXX</h3>
+		</div>
+
+		<div id="walkthrough-p1-1">
+			进入到登录界面，填写账户和密码，若没有账户，先进行注册
+		</div>
+
+		<div id="walkthrough-p2-1">
+			填写账号、密码、手机号码并且上传头像（账号和手机号仅可注册一次，保证唯一）
+		</div>
+
+		<div id="walkthrough-p3-1">
+			点击笑脸，即可下载操作手册
+		</div>
+
+		<div id="walkthrough-p3-2">
+			点击创建项目按钮，输入项目名称和基本描述，若提示创建成功，即可在我的项目中查看到新创建的项目
+		</div>
+
+		<div id="walkthrough-p4-1">
+			点击进入创建的某个项目，进入数据中心，点击右上角的添加数据集按钮，可下载数据集模板，输入数据集名称，上传数据集，停用词数据上传是可选项。点击Create创建按钮，若提示创建成功，即可在数据集列表中查看具体信息，包括数据周期个数，条数，上传时间，也可进行下载和删除操作。若数据集不符合规范则提示错误信息。
+		</div>
+
+		<div id="walkthrough-p5-1">
+			进入模型中心，点击右上角添加模型按钮，输入模型名称，选择相应的模型基本参数，点击创建，即可在模型列表中查看新建的模型处于训练当中，等待数分钟，若模型状态为成功，则训练成功，可进行查看和删除操作。
+		</div>
+
+		<div id="walkthrough-p6-1">
+			点击按钮可下载演化图片
+		</div>
+		<div id="walkthrough-p6-2">
+			将鼠标放置在某个社区，获得该社区的前驱与后继演化分析情况
+		</div>
+		<div id="walkthrough-p6-3">
+			雷达图表示每个周期的具体信息，点击下载按钮可保存图片
+		</div>
+		<div id="walkthrough-p6-4">
+			词频列表，横轴为周期，纵轴为词，值代表在相应周期中词出现个数，可导出词频列表
+		</div>
+		<div id="walkthrough-p6-5">
+			点击演化图中该灰色周期按钮，进入显示该周期的具体信息
+		</div>
+		<div id="walkthrough-p7-1">
+			周期zp图分布
+		</div>
+		<div id="walkthrough-p7-2">
+			社区信息，其中圆圈大小代表社区所含节点大小。点击社区节点，显示该社区的具体信息
+		</div>
+
+		<div id="walkthrough-p8-1">
+			“全部”表示词分布，右击可进行图片保存，并且点击某个节点即可查看该节点与哪些节点存在关联，“前驱”查看有哪些词继承到该社区，“后继”查看该社区有哪些词保留下来
+		</div>
+		<div id="walkthrough-p8-2">
+			社区词关联
+		</div>
+		<div id="walkthrough-p8-3">
+			社区基本信息
+		</div>
+		<div id="walkthrough-p8-4">
+			社区词列表，可导出社区词列表
+		</div>
+	</div>
+
+	<script>
+		$(window).scroll(function () {
+			const scrollTop = $(this).scrollTop(),
+				scrollHeight = $(document).height(),
+				windowHeight = $(this).height()
+			if (scrollTop + windowHeight >= scrollHeight) {
+				confirm('返回登录页') && window.location.replace('/')
+			}
+		})
+	</script>
+
+</body>
+
+</html>

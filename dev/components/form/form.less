@@ -6,14 +6,14 @@
   align-items: stretch;
   &:before {
     content: "";
-    height: 18px;
+    height: 8px;
   }
   > div {
-    margin: 0 40px 6px;
+    margin: 0 0 6px;
   }
   > .cp-button {
     height: 30px;
-    margin: 8px 40px;
+    margin: 8px 0;
   }
   //> .cp-divider {
   //  margin: 10px 40px 18px;
@@ -156,6 +156,12 @@
         }
       }
     }
+  }
+}
+.cp-input,
+.cp-input-file {
+  &.fneed:not(.active) {
+    opacity: 0.5;
   }
 }
 
