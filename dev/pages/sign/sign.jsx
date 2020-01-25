@@ -77,7 +77,14 @@ const Sign = ({
                       .then(res => {
                         Promise.all([
                           ajaxer.post('/user/getUserInfo', { user_id: res }),
-                          ajaxer.post('/admin/login', values)
+                          new Promise(resolve => {
+                            if (signinMode == 'user')
+                              resolve(false)
+                            else if (signinMode == 'admin')
+                              ajaxer.post('/admin/login', values)
+                                .then(r => resolve(true))
+                                .catch(e => resolve(false))
+                          })
                         ]).then(([uinfo, isAdmin]) => {
                           uinfo.photo = resolveLocalPath(uinfo.photo)
                           uinfo.admin = isAdmin
@@ -123,10 +130,10 @@ const Sign = ({
               }}>
               <Input placeholder='账号' name='user.account' />
               <Input placeholder='密码' name='user.password' type='password' />
-              <Input placeholder='姓名' name='name' />
+              <Input placeholder='姓名' name='user.name' />
               <Input placeholder='手机号' name='user.phone' fneed={true} />
-              <Input placeholder='邮箱' name='e_mail' />
-              <Input placeholder='机构' name='institution' />
+              <Input placeholder='邮箱' name='user.e_mail' />
+              <Input placeholder='机构' name='user.institution' />
               <Input placeholder='头像' name='photo' type='file' accept='image/*' fneed={true}
                 /*baseFiles={[{
                   img: '/static/imgs/icon.png'
