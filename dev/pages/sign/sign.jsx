@@ -73,25 +73,28 @@ const Sign = ({
                 </div>
                 <Form submit='登录'
                   handleSubmit={values => {
-                    ajaxer.post('/user/login', values)
-                      .then(res => {
-                        Promise.all([
-                          ajaxer.post('/user/getUserInfo', { user_id: res }),
-                          new Promise(resolve => {
-                            if (signinMode == 'user')
-                              resolve(false)
-                            else if (signinMode == 'admin')
-                              ajaxer.post('/admin/login', values)
-                                .then(r => resolve(true))
-                                .catch(e => resolve(false))
-                          })
-                        ]).then(([uinfo, isAdmin]) => {
-                          uinfo.photo = resolveLocalPath(uinfo.photo)
-                          uinfo.admin = isAdmin
-                          localStorage.setItem('user', JSON.stringify(uinfo))
+                    if (signinMode == 'user')
+                      ajaxer.post('/user/login', values)
+                        .then(res => {
+                          ajaxer.post('/user/getUserInfo', { user_id: res })
+                            .then(uinfo => {
+                              uinfo.photo = resolveLocalPath(uinfo.photo)
+                              localStorage.setItem('user', JSON.stringify(uinfo))
+                              setUser(uinfo)
+                            })
+                        })
+                    else if (signinMode == 'admin')
+                      ajaxer.post('/admin/login', values)
+                        .then(r => {
+                          const uinfo = {
+                            account: values.account,
+                            isAdmin: true
+                          }
                           setUser(uinfo)
                         })
-                      })
+                        .catch(e => {
+                          // 失败
+                        })
                   }}>
                   <Input placeholder='账号' name='account' value={uinfo.account} />
                   <Input placeholder='密码' name='password' type='password' value={uinfo.password} />
@@ -149,7 +152,7 @@ const Sign = ({
           </div>
         </div>
       </div>
-    </div>
+    </div >
   )
 }
 

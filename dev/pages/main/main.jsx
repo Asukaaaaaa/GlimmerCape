@@ -28,24 +28,21 @@ export default class Main extends Component {
 			<div className='pg-main' onClick={e => this.state.tabOn && this.setState({ tabOn: false })}>
 				<Header handleClickTab={() => this.setState({ tabOn: true })} handleClickUser={userOn => this.setState({ userOn })} />
 				<User active={state.userOn} />
-				{/* <Sider active={state.tabOn} /> */}
-				<Switch>
-					<Route path='/' exact>
-						<div className='pm-createproj'>
-							<span>创建新项目</span>
-							<div>
-								<img src={require('./cross.png')} onClick={e => this.setState({ showCpModal: true })} />
-							</div>
-							<Modal title="创建项目" footer={null} visible={this.state.showCpModal} destroyOnClose
-								onCancel={e => this.setState({ showCpModal: false })}>
-								<WrappedModalForm handleSubmit={e => this.setState({ showCpModal: false })} />
-							</Modal>
+				<Route exact path='/' >
+					<div className='pm-createproj'>
+						<span>创建新项目</span>
+						<div>
+							<img src={require('./cross.png')} onClick={e => this.setState({ showCpModal: true })} />
 						</div>
-						<Projects update={state.indexUpdate} />
-					</Route>
-					<Route path='/project/:id' component={ProjectDetail} />
-					<Route path='/model/:id' component={ModelDetail} />
-				</Switch>
+						<Modal title="创建项目" footer={null} visible={this.state.showCpModal} destroyOnClose
+							onCancel={e => this.setState({ showCpModal: false })}>
+							<WrappedModalForm handleSubmit={e => this.setState({ showCpModal: false })} />
+						</Modal>
+					</div>
+					<Projects update={state.indexUpdate} />
+				</Route>
+				<Route path='/project/:id' component={ProjectDetail} />
+				<Route path='/model/:id' component={ModelDetail} />
 				<Toolbar />
 			</div>
 		)

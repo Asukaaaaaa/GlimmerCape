@@ -111,7 +111,7 @@ const AdminUsersTools = () => {
         data &&
         <Table name='已注册用户' data={data.list}
             export={null}>
-            {['account', 'phone', 'email', 'institution', 'createTime'].map((v, i) => (
+            {['account', 'phone', 'eMail', 'institution', 'createTime'].map((v, i) => (
                 <Column title={v} dataIndex={v} key={i}
                     sorter={(a, b) => b[v] - a[v]} />
             ))}

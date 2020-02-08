@@ -3,6 +3,7 @@ import * as ReactDom from 'react-dom'
 import { HashRouter as Router, Route, Switch, Redirect, Link } from 'react-router-dom'
 //pages
 import Main from './pages/main/main'
+import Admin from './pages/admin/admin'
 import Sign from './pages/sign/sign'
 //styles
 import './app.less'
@@ -19,15 +20,18 @@ const App = () => {
       user, setUser
     }}>
       <Router>
-        <Switch>
-          <Route path='/sign' component={Sign} />
-          <Route render={props => (
-            user ?
-              <Route path='/' component={Main} /> :
-              null)}>
-          </Route>
-        </Switch>
         <Redirect to={user ? '/' : '/sign'} />
+        <Route path='/sign' component={Sign} />
+        <Route render={props => (
+          user &&
+          <Route path='/'>
+            <Redirect to={user.isAdmin ? '/admin' : '/'} />
+            <Switch>
+              <Route path='/admin' component={Admin} />
+              <Route path='/' component={Main} />
+            </Switch>
+          </Route>
+        )} />
       </Router>
     </AppContext.Provider>
   )
