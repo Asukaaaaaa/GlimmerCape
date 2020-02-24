@@ -418,8 +418,10 @@ const WordModal = ({ handleQuit, word, mid }) => {
     })
     return (
         <div className='md-wordmodal'
-            onClick={handleQuit}>
-            <div className='wm-panel'>
+            onClick={e => {
+                e.target == e.currentTarget && handleQuit(e)
+            }}>
+            <div className='wm-panel' >
                 {data &&
                     <Table name='共现词' data={data}
                         export={() => {

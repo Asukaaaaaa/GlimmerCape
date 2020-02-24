@@ -44,7 +44,7 @@
   position: absolute;
   top: 8px;
   left: 4.75%;
-  z-index: 1;
+  z-index: 1000;
   width: 77.35%;
   transition: 0.25s ease-in;
 }

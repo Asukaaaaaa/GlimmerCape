@@ -184,6 +184,7 @@ export default class Table extends PureComponent {
                                                         v[props.dataIndex]}
                                                 </td>
                                             ))}
+                                            <td className={style.gutter} />
                                         </tr>
                                     ))}
                                 </tbody>

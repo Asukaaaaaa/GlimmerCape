@@ -107,11 +107,11 @@ const Sign = ({
                   <span onClick={e => setUinfo({})}>使用其他账号</span>
                 </p> ||
                 <p>
-                  如何操作?
+                  如何操作？
                 <span onClick={e => window.location.replace('/guide/intro.html')}>引导</span>
                 </p>}
               <p>
-                没有账号?
+                没有账号？
                 <span onClick={e => setMode('up')}>注册</span>
               </p>
             </div>
