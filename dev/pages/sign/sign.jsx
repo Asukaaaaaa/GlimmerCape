@@ -5,6 +5,7 @@ import { Form, Input, Divider } from '../../components/form/form'
 import { ClassNames, fetcher, ajaxer, resolveLocalPath, _HOST } from '../../utils'
 //styles
 import './sign.less'
+import { message } from 'antd'
 
 
 const SignWrapper = props => (
@@ -19,11 +20,12 @@ const Sign = ({
   const [bingBg, setBingBg] = React.useState({})
   const [uinfo, setUinfo] = React.useState({})
   const [signinMode, setSigninMode] = React.useState('user')
+  const [focus, setFocus] = React.useState()
   React.useEffect(() => {
     //获取bing壁纸
-    fetch(_HOST + '/BingBg')
-      .then(r => r.json())
-      .then(res => setBingBg(res))
+    //fetch(_HOST + '/BingBg')
+    //  .then(r => r.json())
+    //  .then(res => setBingBg(res))
 
     //本地登录信息
     let user = localStorage.getItem('user')
@@ -78,22 +80,25 @@ const Sign = ({
                         .then(res => {
                           ajaxer.post('/user/getUserInfo', { user_id: res })
                             .then(uinfo => {
+                              message.success('登录成功.', 1)
                               uinfo.photo = resolveLocalPath(uinfo.photo)
                               localStorage.setItem('user', JSON.stringify(uinfo))
                               setUser(uinfo)
                             })
+                        }).catch(e => {
+                          message.error(e.resultDesc, 1.5)
                         })
                     else if (signinMode == 'admin')
                       ajaxer.post('/admin/login', values)
                         .then(r => {
+                          message.success('登录成功.', 1)
                           const uinfo = {
                             account: values.account,
                             isAdmin: true
                           }
                           setUser(uinfo)
-                        })
-                        .catch(e => {
-                          // 失败
+                        }).catch(e => {
+                          message.error(e.resultDesc, 1.5)
                         })
                   }}>
                   <Input placeholder='账号' name='account' value={uinfo.account} />
@@ -119,6 +124,7 @@ const Sign = ({
           <div className='st-signup'>
             <div className='st-title'></div>
             <Form submit='注册'
+              onFocus={e => setFocus(e)}
               handleSubmit={values => {
                 const data = new FormData()
                 Object.keys(values).forEach(k => data.set(k, values[k]))
@@ -136,7 +142,13 @@ const Sign = ({
               <Input placeholder='姓名' name='user.name' />
               <Input placeholder='手机号' name='user.phone' fneed={true} />
               <Input placeholder='邮箱' name='user.e_mail' />
-              <Input placeholder='机构' name='user.institution' />
+              <div className='form-item'>
+                {/*focus == 'user.institution' &&
+                  <div className='fi-selects'>
+                    机构
+                </div>*/}
+                <Input placeholder='机构' name='user.institution' />
+              </div>
               <Input placeholder='头像' name='photo' type='file' accept='image/*' fneed={true}
                 /*baseFiles={[{
                   img: '/static/imgs/icon.png'

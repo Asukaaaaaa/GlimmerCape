@@ -18,9 +18,26 @@ export class Form extends React.PureComponent {
     this.state = {
       formValues, formFneeds,
       verify: false,
-      setState: this.setState.bind(this)
+      setState: this.setState.bind(this),
+      onChange: (focus, value) => {
+        formValues[focus] = value
+        this.setState({
+          formValues
+        }, () => {
+          props.onChange &&
+            props.onChange(focus, value) ||
+            console.log('Form.Change', focus, value)
+        })
+      },
+      onFocus: (focus) => {
+        this.setState({ focus })
+        props.onFocus &&
+          props.onFocus(focus) ||
+          console.log('Form.Focus', focus)
+      }
     }
   }
+
   static getDerivedStateFromProps(props, state) {
     //verify
     state.verify = true
@@ -53,6 +70,14 @@ export class Form extends React.PureComponent {
   }
 }
 
+Form.Item = () => {
+  return (
+    <div>
+      <InputWrapper />
+    </div>
+  )
+}
+
 export { InputWrapper as Input }
 const InputWrapper = props => (
   <FormContext.Consumer>
@@ -62,7 +87,7 @@ const InputWrapper = props => (
 const Input = ({
   placeholder, name, type, fneed,
   accept, baseFiles = [], value = '',
-  formValues, setState
+  formValues, onChange, onFocus, setState
 }) => {
   const [active, setActive] = React.useState(false)
   const [refs, setRefs] = React.useState({})
@@ -79,13 +104,15 @@ const Input = ({
       React.useEffect(() => {
         if (files.length === 1) {
           setSelect(0)
-          formValues[name] = files[0]
-          setState({ formValues })
+          onChange(name, files[0])
+          //formValues[name] = files[0]
+          //setState({ formValues })
         }
       }, [files])
       return (
         <div className={ClassNames('cp-input-file', fneed && 'fneed', active && 'active')}>
           <input type='file' accept={accept} ref={refs.input} multiple
+            onFocus={e => onFocus(name)}
             onChange={e => {
               !active && setActive(true)
               const efiles = Array.from(e.target.files)
@@ -112,8 +139,9 @@ const Input = ({
                 <div key={i} className={ClassNames(i == select && 'selected')}
                   onClick={e => {
                     setSelect(i)
-                    formValues[name] = files[i]
-                    setState({ formValues })
+                    onChange(name, files[i])
+                    //formValues[name] = files[i]
+                    //setState({ formValues })
                   }}>
                   <img src={f.img} />
                 </div>
@@ -135,12 +163,14 @@ const Input = ({
           <label>
             <span>{placeholder}</span>
             <input type={type} ref={refs.input} defaultValue={value}
+              onFocus={e => onFocus(name)}
               onChange={e => {
                 const v = e.target.value
                 Boolean(v) !== active && setActive(!active)
                 if (v !== formValues[name]) {
-                  formValues[name] = v
-                  setState({ formValues })
+                  onChange(name, v)
+                  //formValues[name] = v
+                  //setState({ formValues })
                 }
               }} />
           </label>
