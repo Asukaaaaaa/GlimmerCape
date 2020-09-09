@@ -1,0 +1,71 @@
+@_blue: #1890ff;
+@_black: rgb(24, 26, 27);
+
+main {
+  > .logo {
+    top: 0;
+    left: 0;
+    position: fixed;
+    margin: 16px;
+    > img {
+      height: 16vh;
+    }
+  }
+  > .nav {
+    top: 0;
+    right: 0;
+    position: fixed;
+    margin: 16px;
+    padding: 0 16px;
+    border-radius: 5px;
+    color: white;
+    background-color: @_black;
+    display: flex;
+    &,
+    > .item {
+      list-style: none;
+    }
+    > .item {
+      margin: 8px;
+    }
+  }
+  > .tool {
+    top: calc(50% - 30px);
+    left: 88px;
+    position: fixed;
+    width: 360px;
+    height: 80px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    border-radius: 40px;
+    color: white;
+    background-color: @_black;
+    transition: 0.3s linear;
+    &:hover {
+      transform: translateX(-5%);
+    }
+    // how to change father's style?
+    // > div:first-child {
+    //   &:hover {
+    //   }
+    // }
+  }
+  > .info {
+    bottom: 0;
+    right: 0;
+    position: fixed;
+    margin: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    .help {
+      color: #bfbfbf;
+      font-size: 1.5rem;
+      transition: 0.2s linear;
+      &:hover {
+        font-size: 1.8rem;
+      }
+    }
+  }
+}

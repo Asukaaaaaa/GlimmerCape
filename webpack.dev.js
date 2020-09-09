@@ -12,7 +12,6 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
     alias: {
-      Assets: path.resolve(__dirname, 'assets'),
       '@': path.resolve(__dirname, 'dev'),
     },
   },
@@ -69,6 +68,11 @@ module.exports = {
         use: ['file-loader'],
       },
     ],
+  },
+  devServer: {
+    port: 9000,
+    contentBase: path.join(__dirname, 'docs'),
+    compress: true,
   },
   plugins: [
     new webpack.ProvidePlugin({
