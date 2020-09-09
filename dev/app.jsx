@@ -11,7 +11,6 @@ import {
 import Home from "./pages/home/home"
 import Main from "./pages/main/main"
 import Admin from "./pages/admin/admin"
-import Sign from "./pages/sign/sign"
 //styles
 import "./app.less"
 
@@ -31,15 +30,9 @@ const App = () => {
       }}>
       <Router>
         <Switch>
-          <Route path="/" component={Home} exact />
-          <Route path="/sign" component={Sign} />
-          {user ? (
-            user.isAdmin && <Redirect to=".admin" />
-          ) : (
-            <Redirect to="sign" />
-          )}
           <Route path="/main" component={Main} />
           <Route path="/admin" component={Admin} />
+          <Route path="/" component={Home} />
         </Switch>
       </Router>
     </AppContext.Provider>

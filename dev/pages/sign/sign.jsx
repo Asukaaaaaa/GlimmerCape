@@ -37,17 +37,17 @@ const Sign = ({
         setUinfo(user)
       }
     }
-    if (!localStorage.getItem('signed')) {
-      localStorage.setItem('signed', true)
-      //前往引导页
-      window.location.replace('/guide/intro.html')
-    }
+    // if (!localStorage.getItem('signed')) {
+    //   localStorage.setItem('signed', true)
+    //   //前往引导页
+    //   window.location.replace('/guide/intro.html')
+    // }
   }, [])
   return (
-    <div className='pg-signin'
-      style={{
-        //background: `center / contain no-repeat url("${bingBg.img}")`
-      }}>
+    // <div className='pg-signin'
+    //   style={{
+    //     //background: `center / contain no-repeat url("${bingBg.img}")`
+    //   }}>
       <div className='sign-table'>
         <div className={ClassNames('st-container', mode == 'up' && 'signup')}>
           <div className='st-signin'>
@@ -164,7 +164,7 @@ const Sign = ({
           </div>
         </div>
       </div>
-    </div >
+    // </div >
   )
 }
 

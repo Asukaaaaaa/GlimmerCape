@@ -28,7 +28,7 @@ export default class Main extends Component {
 			<div className='pg-main' onClick={e => this.state.tabOn && this.setState({ tabOn: false })}>
 				<Header handleClickTab={() => this.setState({ tabOn: true })} handleClickUser={userOn => this.setState({ userOn })} />
 				<User active={state.userOn} />
-				<Route exact path='/' >
+				<Route exact path='/main' >
 					<div className='pm-createproj'>
 						<span>创建新项目</span>
 						<div>
