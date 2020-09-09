@@ -1,0 +1,134 @@
+.pz{
+	position: absolute;
+}
+.pic{
+	width:100%;
+	height:100%;
+}
+.box{
+	position:relative;
+}
+.p1-1{
+	width: 8%;
+	height: 6%;
+	top: 75%;
+	right: 19%;
+}
+.p2-1{
+	width: 20%;
+	height: 5%;
+	bottom: 34%;
+	right: 13%;
+}
+
+.p3-1{
+	width: 2%;
+	height: 9%;
+	bottom: 26%;
+	right: 1.5%;
+}
+	
+.p3-2{
+	width: 14%;
+	height: 31%;
+	top: 16%;
+	left: 14%;
+}
+	
+.p4-1{
+	width: 10%;
+	height: 6%;
+	top: 11%;
+	right: 2%;
+}
+	
+.p5-1{
+	width: 9%;
+	height: 6%;
+	top: 11%;
+	right: 2%;
+}
+.p6-1{
+	width: 3%;
+	height: 5%;
+	bottom: 2%;
+	right: 30%;
+}
+.p6-2{
+	width: 6%;
+	height: 2%;
+	top: 34%;
+	right: 64%;
+}
+	
+.p6-3{
+    width: 21%;
+    height: 42%;
+    top: 11%;
+    right: 1%;
+
+}
+.p6-4 {
+    width: 25%;
+    height: 44%;
+    top: 56%;
+    right: 1%;
+}
+	
+.p6-5 {
+	width: 4%;
+	height: 5%;
+	top: 10%;
+	right: 48%;
+}
+	
+
+.p7-1 {
+    width: 24%;
+    height: 76%;
+    top: 18%;
+    right: 2%;
+}
+
+.p7-2 {
+    width: 10%;
+    height: 16%;
+    top: 18%;
+    right: 57%;
+}
+
+
+.p8-1 {
+    width: 5%;
+	height: 11%;
+	top: 10%;
+	left: 0%;
+}
+.p8-2 {
+	width: 30%;
+	height: 58%;
+	top: 28%;
+	left: 22%;
+}
+.p8-3 {
+	width: 24%;
+	height: 16%;
+	top: 18%;
+	right: 1%;
+}
+.p8-4 {
+	width: 25%;
+	height: 63%;
+	top: 37%;
+	right: 1%;
+}
+
+
+
+
+
+
+
+
+
+

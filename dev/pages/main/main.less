@@ -1,0 +1,31 @@
+@import "../../app.less";
+
+.pg-main {
+  overflow: auto;
+}
+
+.pm-createproj {
+  display: flex;
+  flex-direction: column;
+  height: 40%;
+  padding: 0 14%;
+  background-color: #f1f2f3;
+  > span {
+    padding: 10px 0;
+  }
+  > div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex: 0 0 auto;
+    > img {
+      width: 20%;
+      max-width: 200px;
+      max-height: 200px;
+      border: 1px solid #cdcdcd;
+      &:hover {
+        border-color: @active-blue;
+      }
+    }
+  }
+}

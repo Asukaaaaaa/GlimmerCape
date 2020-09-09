@@ -1,0 +1,30 @@
+.head {
+
+}
+
+.blocks {
+
+}
+
+.belts path {
+    opacity: 0.6;
+}
+
+.inactive {
+    opacity: 0.15 !important;
+}
+
+.head rect {
+    fill: #e9ebec;
+}
+
+.head text {
+    font-size: 160px;
+    text-anchor: middle;
+    dominant-baseline: central;
+}
+
+.blocks text {
+    font-size: 140px;
+    dominant-baseline: central;
+}

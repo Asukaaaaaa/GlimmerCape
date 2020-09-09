@@ -1,0 +1,169 @@
+@import "../../app.less";
+
+.cp-toolbar {
+  position: absolute;
+  right: 20px;
+  bottom: 10%;
+  .tb-item {
+    border-radius: 20px;
+    width: 36px;
+    height: 36px;
+    padding: 4px;
+    background-color: white;
+    box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.1);
+    &:hover {
+      path {
+        fill: @active-blue;
+      }
+    }
+    &.disable {
+      background-color: #cdcdcd;
+      pointer-events: none;
+    }
+  }
+  &.active {
+    > .tb-plus {
+      transform: rotate(-135deg);
+      path {
+        fill: @active-blue;
+      }
+    }
+    > .tb-toolsbox > .tb-tools {
+      transform: translateY(-100% - 24px);
+    }
+  }
+  > .tb-plus {
+    position: relative;
+    z-index: 1001;
+    width: 40px;
+    height: 40px;
+    transition: ease-out 0.4s transform;
+  }
+  > .tb-toolsbox {
+    position: absolute;
+    right: -5px;
+    bottom: 20px;
+    z-index: 1000;
+    width: 50px;
+    height: 200px; // todo
+    overflow: hidden;
+    > .tb-tools {
+      position: absolute;
+      top: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: column-reverse;
+      align-items: center;
+      transition: ease-out 0.4s transform;
+      > .tt-item {
+        .tb-item;
+        margin-bottom: 24px;
+        &:hover {
+          transform: scale(10/9);
+        }
+        > svg {
+          width: 100%;
+          height: 100%;
+        }
+      }
+      > .tt-admin {
+        > path {
+          fill: #d81e06 !important;
+        }
+      }
+    }
+  }
+}
+
+.tb-adminmodal {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 9999;
+  width: 100%;
+  height: 100%;
+  padding: 2% 5%;
+  background-color: rgba(0, 0, 0, 0.65);
+  > .am-panel {
+    border-radius: 15px;
+    display: flex;
+    flex-direction: row;
+    justify-content: stretch;
+    width: 100%;
+    height: 100%;
+    padding: 15px 0;
+    overflow: hidden;
+    background-color: white;
+    &::before {
+      content: "";
+      position: absolute;
+      top: 14px;
+      left: 0;
+      width: 100%;
+      border-bottom: 1px solid #bfbfbf;
+      transform: scaleY(0.5);
+    }
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: 15px;
+      left: 0;
+      width: 100%;
+      border-top: 1px solid #bfbfbf;
+      transform: scaleY(0.5);
+    }
+    > .ad-tools {
+      display: flex;
+      flex-direction: column;
+      justify-content: stretch;
+      flex: 0 0 20%;
+      overflow: hidden;
+      background-color: #fafafa;
+      > div {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-around;
+        height: 10%;
+        &.active,
+        &:hover {
+          background-color: #ebebec;
+        }
+        &::after {
+          content: "";
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          border-top: 1px solid #bfbfbf;
+          transform: scaleY(0.5);
+        }
+      }
+    }
+    > .ad-body {
+      flex: auto;
+      background-color: white;
+      padding: 0 2%;
+    }
+    > .am-exit {
+      border: 1px solid #bfbfbf;
+      border-bottom-left-radius: 15px;
+      position: absolute;
+      right: 0;
+      top: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 28px;
+      background-color: white;
+      &:hover {
+        background-color: #cdcdcd;
+      }
+      > svg {
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
+}

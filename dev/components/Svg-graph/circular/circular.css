@@ -1,0 +1,41 @@
+.nodes {
+
+}
+
+.nodes g text {
+    dominant-baseline: central;
+}
+
+.node-title {
+    width: 1000px;
+    height: 330px;
+    
+}
+
+.node-title > div {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.links {
+
+}
+
+.links path {
+    fill: none;
+}
+
+.active-node-group > .nodes > g:not(:hover) {
+    opacity: 0.15;
+}
+.active-node-single > .nodes > g:not(:hover),
+.active-node-single > .nodes > g:hover > g:not(:hover) {
+    opacity: 0.15;
+}
+.active-node-group > .links >  path:not(.active),
+.active-node-single > .links >  path:not(.active),
+.active-link > .nodes > g > g:not(.active),
+.active-link > .links > path:not(.active) {
+    opacity: 0.15;
+}

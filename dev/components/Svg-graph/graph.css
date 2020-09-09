@@ -1,0 +1,69 @@
+.main {
+    position: relative;
+}
+.main > canvas {
+    display: none;
+}
+.download {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    opacity: 0;
+    transition: opacity 0.15s linear;
+    text-align: center;
+}
+.download:hover {
+    opacity: 1;
+}
+.download > a {
+    display: inline-block;
+}
+.download > a > img {
+    width: 48px;
+    margin: 36px;
+}
+.main > svg {
+    width: 100%;
+    height: 100%;
+}
+
+/*****************************/
+.follow {
+    position: fixed;
+    z-index: 999;
+    margin: 20px 0 0 5px;
+    padding: 1px 6px 1px 18px;
+    border-radius: 8px;
+    white-space: nowrap;
+    color: white;
+    font: 14px bolder;
+    background-color: rgba(50, 50, 50, 0.7);
+}
+
+.follow > span:first-of-type {
+    width: 12px;
+    height: 12px;
+    position: absolute;
+    left: 4px;
+    top: 4.5px;
+    background-color: var(--active-color, #f7f7f7);
+}
+
+.node-f {
+    clip-path: circle();
+}
+
+.link-f {
+    clip-path: inset(4.5px 0);
+}
+
+.follow > span:nth-of-type(2) {
+    color: blue;
+}
+
+.follow > span:nth-of-type(3) > span {
+    color: red;
+}
+
+/*****************************/
