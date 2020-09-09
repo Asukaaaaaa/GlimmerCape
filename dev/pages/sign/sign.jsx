@@ -113,7 +113,7 @@ const Sign = ({
                 </p> ||
                 <p>
                   如何操作？
-                <span onClick={e => window.location.replace('/guide/intro.html')}>引导</span>
+                <span onClick={e => window.location.replace('./guide/intro.html')}>引导</span>
                 </p>}
               <p>
                 没有账号？
