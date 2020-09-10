@@ -30,8 +30,26 @@ const App = () => {
       }}>
       <Router>
         <Switch>
-          <Route path="/main" component={Main} />
-          <Route path="/admin" component={Admin} />
+          <Route
+            path="/main"
+            render={() =>
+              user ? (
+                <Route path="/main" component={Main} />
+              ) : (
+                <Redirect to="/" />
+              )
+            }
+          />
+          <Route
+            path="/admin"
+            render={() =>
+              user ? (
+                <Route path="/admin" component={Admin} />
+              ) : (
+                <Redirect to="/" />
+              )
+            }
+          />
           <Route path="/" component={Home} />
         </Switch>
       </Router>
