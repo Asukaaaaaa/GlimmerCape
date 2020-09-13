@@ -575,7 +575,7 @@ export default class Charts extends PureComponent {
                                 else
                                     setActBlock(0)
                             }}>
-                            {i}
+                                <a style={{color: 'black'}}>{i}</a>
                             <div className={ClassNames(style['skg-menu'], activeBlock === i && style.active)}>
                                 <div onClick={e => {
                                     this.props.setState({
@@ -583,7 +583,7 @@ export default class Charts extends PureComponent {
                                         group: '' + i
                                     })
                                 }}>
-                                    查看年份
+                                    <a style={{color: 'black'}}>查看年份</a>
 								</div>
                             </div>
                         </div>

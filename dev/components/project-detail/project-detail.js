@@ -395,7 +395,7 @@ export default class ProjectDetail extends Component {
                                 render={(text, record) => (
                                     <span>
                                         <Link style={{ color: this.models[record.modelName] === 'loading' && '#d3d3d3' }}
-                                            to={this.models[record.modelName] === 'loading' ? '###' : `/model/${record.modelId}`}>查看</Link>
+                                            to={this.models[record.modelName] === 'loading' ? '###' : `/main/model/${record.modelId}`}>查看</Link>
                                         <Divider type="vertical" />
                                         <a onClick={
                                             e => $.post(_BASE + '/model/deleteModel', {

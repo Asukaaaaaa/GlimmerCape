@@ -24,7 +24,7 @@ class Header extends Component {
                             <svg className={style.hoverable} onClick={props.handleClickTab} viewBox="0 0 24 24">
                                 <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
                             </svg>
-                            <img src={imgs.logo} onClick={e => this.props.history.push('/')} />
+                            <img src={imgs.logo} onClick={e => this.props.history.push('/main')} />
                         </div>
                         <div className={ClassNames(style.hoverable, state.userOn && style['user-on'])}
                             onClick={e => {

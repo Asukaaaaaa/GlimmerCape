@@ -92,16 +92,17 @@
 .skg-menu > div {
   position: relative;
   padding: 2px 0;
+  border-radius: 8px;
 }
 .skg-menu > div:hover {
   background-color: #40a9ff;
 }
-.skg-menu > div:first-child {
+/* .skg-menu > div:first-child {
   border-radius: 8px 8px 0 0;
 }
 .skg-menu > div:last-child {
   border-radius: 0 0 8px 8px;
-}
+} */
 .skg-menu > div:not(:last-child)::after {
   content: "";
   position: absolute;

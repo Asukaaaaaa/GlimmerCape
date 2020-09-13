@@ -56,8 +56,8 @@ export default class Main extends Component {
               </div>
               <Projects update={state.indexUpdate} />
             </Route>
-            <Route path="/project/:id" component={ProjectDetail} />
-            <Route path="/model/:id" component={ModelDetail} />
+            <Route path="/main/project/:id" component={ProjectDetail} />
+            <Route path="/main/model/:id" component={ModelDetail} />
             <Toolbar />
           </div>
         )}

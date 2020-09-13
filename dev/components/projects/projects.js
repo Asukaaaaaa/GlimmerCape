@@ -39,7 +39,7 @@ class Projects extends PureComponent {
         return (
             <div className={style.blocks}>{
                 data.map((v, i) => (
-                    <div onClick={e => this.props.history.push(`/project/${v.projectId}`)} key={i}>
+                    <div onClick={e => this.props.history.push(`/main/project/${v.projectId}`)} key={i}>
                         <div>{v.projectDesc}</div>
                         <div>
                             <span>{v.projectName}</span>
