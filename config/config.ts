@@ -27,7 +27,7 @@ export default defineConfig({
     // welcome
     {
       path: '/welcome',
-      component: './Welcome',
+      component: '../layouts/BlankLayout',
       routes: [
         {
           path: '/welcome',
@@ -71,12 +71,7 @@ export default defineConfig({
             {
               path: '/',
               redirect: '/project',
-            }, // {
-            //   path: '/welcome',
-            //   name: 'welcome',
-            //   icon: 'smile',
-            //   component: './Welcome',
-            // },
+            },
             // {
             //   name: 'list.table-list',
             //   icon: 'table',
@@ -85,20 +80,18 @@ export default defineConfig({
             // },
             {
               path: '/project',
-              exact: true,
               name: 'project',
               icon: 'smile',
-              component: './project',
+              component: './project/PrjList',
               // hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/project/detail',
-                  exact: true,
-                  name: 'detail',
-                  icon: 'smile',
-                  component: './project/PrjDetail',
-                },
-              ],
+              // routes: [],
+            },
+            {
+              path: '/project/detail',
+              name: 'project.detail',
+              icon: 'smile',
+              component: './project/PrjDetail',
+              hideInMenu: true,
             },
             {
               path: '/admin',
