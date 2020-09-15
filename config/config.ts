@@ -87,7 +87,7 @@ export default defineConfig({
               // routes: [],
             },
             {
-              path: '/project/detail',
+              path: '/project/detail/:tab',
               name: 'project.detail',
               icon: 'smile',
               component: './project/PrjDetail',

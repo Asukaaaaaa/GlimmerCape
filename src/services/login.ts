@@ -14,6 +14,18 @@ export async function fakeAccountLogin(params: LoginParamsType) {
   });
 }
 
+export async function accountLogin(params: any) {
+  // TODO do some request
+  // request('/api/login/account', { data: params });
+  
+}
+
+export async function accountLogout(params: any) {
+  // TODO do some request
+  // request('/api/login/account', { data: params });
+
+}
+
 export async function getFakeCaptcha(mobile: string) {
   return request(`/api/login/captcha?mobile=${mobile}`);
 }
