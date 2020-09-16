@@ -1,8 +1,8 @@
 import { stringify } from 'querystring';
 import { history, Reducer, Effect } from 'umi';
 
-import { fakeAccountLogin, accountLogout } from '@/services/login';
-import { setAuthority } from '@/utils/authority';
+import { accountLogout, accountLogin } from '@/services/login';
+import { setAuthority } from '@/utils/Authorized';
 import { getPageQuery } from '@/utils/utils';
 
 export interface StateType {
@@ -31,14 +31,18 @@ const Model: LoginModelType = {
   },
 
   effects: {
-    *login({ payload }, { call, put }) {
-      const response = yield call(fakeAccountLogin, payload);
+    *login({ payload: { type, auth, ...pass } }, { call, put }) {
+      const res = yield call(accountLogin, pass, auth);
       yield put({
         type: 'changeLoginStatus',
-        payload: response,
+        payload: {
+          status: res ? 'ok' : 'error',
+          type,
+          currentAuthority: auth,
+        },
       });
       // Login successfully
-      if (response.status === 'ok') {
+      if (res) {
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
         let { redirect } = params as { redirect: string };
@@ -59,11 +63,7 @@ const Model: LoginModelType = {
     },
 
     *logout({ payload }, { call, put }) {
-      // const res = yield call(accountLogout, payload);
-      // Logout successfully
-      // if () {
-      // // Save null user to storage 
-      // setAuthority('user')
+      yield call(accountLogout, payload);
       const { redirect } = getPageQuery();
       // Note: There may be security issues, please note
       if (window.location.pathname !== '/user/login' && !redirect) {

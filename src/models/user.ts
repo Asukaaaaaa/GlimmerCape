@@ -1,6 +1,7 @@
 import { Effect, Reducer } from 'umi';
 
-import { queryCurrent, query as queryUsers } from '@/services/user';
+import { queryUser, query } from '@/services/user';
+import { getStorage } from '@/utils/utils';
 
 export interface CurrentUser {
   avatar?: string;
@@ -24,7 +25,7 @@ export interface UserModelType {
   namespace: 'user';
   state: UserModelState;
   effects: {
-    fetch: Effect;
+    // fetch: Effect;
     fetchCurrent: Effect;
   };
   reducers: {
@@ -41,19 +42,22 @@ const UserModel: UserModelType = {
   },
 
   effects: {
-    *fetch(_, { call, put }) {
-      const response = yield call(queryUsers);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-    },
+    // *fetch(_, { call, put }) {
+    //   const response = yield call(queryUsers);
+    //   yield put({
+    //     type: 'save',
+    //     payload: response,
+    //   });
+    // },
     *fetchCurrent(_, { call, put }) {
-      const response = yield call(queryCurrent);
-      yield put({
-        type: 'saveCurrentUser',
-        payload: response,
-      });
+      const uid = getStorage('uid');
+      if (uid) {
+        const response = yield call(queryUser);
+        yield put({
+          type: 'saveCurrentUser',
+          payload: response,
+        });
+      } else console.warn('No uid. Not Signed!');
     },
   },
 

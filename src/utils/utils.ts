@@ -7,20 +7,19 @@ export const isUrl = (path: string): boolean => reg.test(path);
 
 export const getPageQuery = () => parse(window.location.href.split('?')[1]);
 
-
-
-// export const isAntDesignPro = (): boolean => {
-//   if (ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION === 'site') {
-//     return true;
-//   }
-//   return window.location.hostname === 'preview.pro.ant.design';
-// };
-
-// // 给官方演示站点用，用于关闭真实开发环境不需要使用的特性
-// export const isAntDesignProOrDev = (): boolean => {
-//   const { NODE_ENV } = process.env;
-//   if (NODE_ENV === 'development') {
-//     return true;
-//   }
-//   return isAntDesignPro();
-// };
+export const getStorage = (key: string) => {
+  let val = localStorage.getItem(key);
+  try {
+    val && (val = JSON.parse(val));
+  } finally {
+    return val;
+  }
+};
+export const setStorage = (key: string, value?: any) => {
+  let str = '';
+  try {
+    value && (str = JSON.stringify(value));
+  } finally {
+    localStorage.setItem(key, str);
+  }
+};

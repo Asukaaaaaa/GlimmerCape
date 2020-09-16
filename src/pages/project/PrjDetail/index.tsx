@@ -90,6 +90,13 @@ export default (props) => {
   useEffect(() => {
     setTab(props.match.params.tab);
   }, [props.match.params.tab]);
+  // init
+  useEffect(() => {
+    effect
+    return () => {
+      cleanup
+    }
+  }, [input])
   return (
     <PageContainer className={styles.main}>
       <Tabs
