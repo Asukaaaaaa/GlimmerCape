@@ -25,7 +25,6 @@ export interface UserModelType {
   namespace: 'user';
   state: UserModelState;
   effects: {
-    // fetch: Effect;
     fetchCurrent: Effect;
   };
   reducers: {
@@ -42,27 +41,20 @@ const UserModel: UserModelType = {
   },
 
   effects: {
-    // *fetch(_, { call, put }) {
-    //   const response = yield call(queryUsers);
-    //   yield put({
-    //     type: 'save',
-    //     payload: response,
-    //   });
-    // },
     *fetchCurrent(_, { call, put }) {
       const uid = getStorage('uid');
       if (uid) {
-        const response = yield call(queryUser);
+        const response = yield call(queryUser, { user_id: uid });
         yield put({
           type: 'saveCurrentUser',
-          payload: response,
+          payload: response.data,
         });
       } else console.warn('No uid. Not Signed!');
     },
   },
 
   reducers: {
-    saveCurrentUser(state, action) {
+    saveCurrentUser(state, action:{payload}) {
       return {
         ...state,
         currentUser: action.payload || {},

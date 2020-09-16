@@ -58,6 +58,17 @@ export default defineConfig({
         },
       ],
     },
+    {
+      path: '/admin',
+      component: '../layouts/UserLayout',
+      routes: [
+        {
+          name: 'login',
+          path: '/admin/login',
+          component: './user/login',
+        },
+      ],
+    },
     // app
     {
       path: '/',

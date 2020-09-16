@@ -50,7 +50,7 @@ const Login: React.FC<LoginProps> = (props) => {
 
   useEffect(() => {
     const { name, path } = props.route;
-    const auth = path.replace(/[\/|login]/g, '');
+    const auth = path.replace(/(\/|login)/g, '');
     setIsAdmin({ user: false, admin: true }[auth] || isAdmin);
   }, [props.route]);
 
@@ -132,11 +132,18 @@ const Login: React.FC<LoginProps> = (props) => {
         </div>
         <Submit loading={submitting}>登录</Submit>
         <div className={styles.other}>
-          其他登录方式
-          <WechatOutlined className={styles.icon} />
-          <Link className={styles.register} to="/user/register">
-            注册账户
-          </Link>
+          {isAdmin ? (
+            <></>
+          ) : (
+            <>
+              其他登录方式
+              <WechatOutlined className={styles.icon} />
+              {/* <span>我是管理员</span> */}
+              <Link className={styles.register} to="/user/register">
+                注册账户
+              </Link>
+            </>
+          )}
         </div>
       </LoginForm>
     </div>

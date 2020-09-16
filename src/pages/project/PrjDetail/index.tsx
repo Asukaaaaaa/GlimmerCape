@@ -85,18 +85,21 @@ export default (props) => {
       },
     ],
   };
+
   // tab 与路由绑定
   const [tab, setTab] = useState('dataset');
   useEffect(() => {
     setTab(props.match.params.tab);
   }, [props.match.params.tab]);
+
   // init
   useEffect(() => {
-    effect
+    // effect;
     return () => {
-      cleanup
-    }
-  }, [input])
+      // cleanup;
+    };
+  }, []);
+
   return (
     <PageContainer className={styles.main}>
       <Tabs
@@ -106,10 +109,28 @@ export default (props) => {
         animated
       >
         <Tabs.TabPane tab="数据中心" key="dataset">
-          <Table columns={colums.dataset} />
+          <Table
+            columns={colums.dataset}
+            pagination={{}}
+            onChange={(pagination, filters, sorter, { currentDataSource, action }) => {
+              props.dispatch({
+                type: `projectDetail/${action}`,
+                payload: {},
+              });
+            }}
+          />
         </Tabs.TabPane>
         <Tabs.TabPane tab="模型中心" key="model">
-          <Table columns={colums.model} />
+          <Table
+            columns={colums.model}
+            pagination={{}}
+            onChange={(pagination, filters, sorter, { currentDataSource, action }) => {
+              props.dispatch({
+                type: `projectDetail/${action}`,
+                payload: {},
+              });
+            }}
+          />
         </Tabs.TabPane>
       </Tabs>
     </PageContainer>
