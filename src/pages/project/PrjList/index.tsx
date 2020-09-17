@@ -3,10 +3,11 @@ import { Button, Card, List, Typography } from 'antd';
 import React, { Component } from 'react';
 
 import { PageContainer } from '@ant-design/pro-layout';
-import { connect, CurrentUser, Dispatch, UserModelState } from 'umi';
+import { connect, CurrentUser, Dispatch, UserModelState, Link } from 'umi';
 import { StateType } from './model';
 import { CardListItemDataType } from './data.d';
 import styles from './style.less';
+import logo from '@/assets/logo.svg';
 
 const { Paragraph } = Typography;
 
@@ -96,10 +97,19 @@ class Project extends Component<ProjectProps, ProjectState> {
                   <Card
                     hoverable
                     className={styles.card}
-                    actions={[<a key="option1">操作一</a>, <a key="option2">操作二</a>]}
+                    actions={[
+                      <Link to={`/project/detail/model/${item.projectId}`} key="option1">
+                        数据集
+                      </Link>,
+                      <Link to={`/project/detail/model/${item.projectId}`} key="option2">
+                        模型
+                      </Link>,
+                    ]}
                   >
                     <Card.Meta
-                      avatar={<img alt="" className={styles.cardAvatar} src={item.avatar || ''} />}
+                      avatar={
+                        <img alt="" className={styles.cardAvatar} src={item.avatar || logo} />
+                      }
                       title={<a>{item.projectName}</a>}
                       description={
                         <Paragraph className={styles.item} ellipsis={{ rows: 3 }}>
