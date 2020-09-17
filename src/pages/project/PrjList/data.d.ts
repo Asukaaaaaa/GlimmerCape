@@ -5,25 +5,32 @@ export interface Member {
 }
 
 export interface CardListItemDataType {
-  id: string;
-  owner: string;
-  title: string;
-  avatar: string;
-  cover: string;
-  status: 'normal' | 'exception' | 'active' | 'success';
-  percent: number;
-  logo: string;
-  href: string;
-  body?: any;
-  updatedAt: number;
-  createdAt: number;
-  subDescription: string;
-  description: string;
-  activeUser: number;
-  newUser: number;
-  star: number;
-  like: number;
-  message: number;
-  content: string;
-  members: Member[];
+  userId: number;
+  projectId: number;
+  projectName: string;
+  projectDesc: string;
+  createTime: string;
+  modifyTime: string;
+  
+  // id: string;
+  // owner: string;
+  // title: string;
+  // avatar: string;
+  // cover: string;
+  // status: 'normal' | 'exception' | 'active' | 'success';
+  // percent: number;
+  // logo: string;
+  // href: string;
+  // body?: any;
+  // updatedAt: number;
+  // createdAt: number;
+  // subDescription: string;
+  // description: string;
+  // activeUser: number;
+  // newUser: number;
+  // star: number;
+  // like: number;
+  // message: number;
+  // content: string;
+  // members: Member[];
 }

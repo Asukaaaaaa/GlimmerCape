@@ -3,7 +3,7 @@ import { Button, Card, List, Typography } from 'antd';
 import React, { Component } from 'react';
 
 import { PageContainer } from '@ant-design/pro-layout';
-import { connect, Dispatch } from 'umi';
+import { connect, CurrentUser, Dispatch, UserModelState } from 'umi';
 import { StateType } from './model';
 import { CardListItemDataType } from './data.d';
 import styles from './style.less';
@@ -11,26 +11,30 @@ import styles from './style.less';
 const { Paragraph } = Typography;
 
 interface ProjectProps {
+  currentUser: CurrentUser;
   projectAnd: StateType;
   dispatch: Dispatch<any>;
   loading: boolean;
 }
 interface ProjectState {
-  visible: boolean;
-  done: boolean;
+  visible?: boolean;
+  done?: boolean;
   current?: Partial<CardListItemDataType>;
+  fetchCounts?: number;
 }
 
-class Project extends Component<
-  ProjectProps,
-  ProjectState
-> {
+class Project extends Component<ProjectProps, ProjectState> {
+  state: ProjectState = { fetchCounts: 1 };
+
   componentDidMount() {
-    const { dispatch } = this.props;
+    const { dispatch, currentUser } = this.props;
+
     dispatch({
       type: 'projectAnd/fetch',
       payload: {
-        count: 8,
+        user_id: currentUser.userid,
+        page_num: this.state.fetchCounts,
+        // page_size: 20
       },
     });
   }
@@ -43,10 +47,7 @@ class Project extends Component<
 
     const content = (
       <div className={styles.pageHeaderContent}>
-        <p>
-          段落示意：蚂蚁金服务设计平台 ant.design，用最小的工作量，无缝接入蚂蚁金服生态，
-          提供跨越设计与开发的体验解决方案。
-        </p>
+        <p></p>
         <div className={styles.contentLink}>
           <a>
             <img alt="" src="https://gw.alipayobjects.com/zos/rmsportal/MjEImQtenlyueSmVEfUD.svg" />{' '}
@@ -89,36 +90,33 @@ class Project extends Component<
               xxl: 4,
             }}
             dataSource={[nullData, ...list]}
-            renderItem={(item) => {
-              if (item && item.id) {
-                return (
-                  <List.Item key={item.id}>
-                    <Card
-                      hoverable
-                      className={styles.card}
-                      actions={[<a key="option1">操作一</a>, <a key="option2">操作二</a>]}
-                    >
-                      <Card.Meta
-                        avatar={<img alt="" className={styles.cardAvatar} src={item.avatar} />}
-                        title={<a>{item.title}</a>}
-                        description={
-                          <Paragraph className={styles.item} ellipsis={{ rows: 3 }}>
-                            {item.description}
-                          </Paragraph>
-                        }
-                      />
-                    </Card>
-                  </List.Item>
-                );
-              }
-              return (
+            renderItem={(item) =>
+              item?.projectId ? (
+                <List.Item key={item.projectId}>
+                  <Card
+                    hoverable
+                    className={styles.card}
+                    actions={[<a key="option1">操作一</a>, <a key="option2">操作二</a>]}
+                  >
+                    <Card.Meta
+                      avatar={<img alt="" className={styles.cardAvatar} src={item.avatar || ''} />}
+                      title={<a>{item.projectName}</a>}
+                      description={
+                        <Paragraph className={styles.item} ellipsis={{ rows: 3 }}>
+                          {item.projectDesc}
+                        </Paragraph>
+                      }
+                    />
+                  </Card>
+                </List.Item>
+              ) : (
                 <List.Item>
                   <Button type="dashed" className={styles.newButton}>
                     <PlusOutlined /> 新增产品
                   </Button>
                 </List.Item>
-              );
-            }}
+              )
+            }
           />
         </div>
       </PageContainer>
@@ -128,14 +126,17 @@ class Project extends Component<
 
 export default connect(
   ({
+    user,
     projectAnd,
     loading,
   }: {
+    user: UserModelState;
     projectAnd: StateType;
     loading: {
       models: { [key: string]: boolean };
     };
   }) => ({
+    currentUser: user.currentUser,
     projectAnd,
     loading: loading.models.projectAnd,
   }),

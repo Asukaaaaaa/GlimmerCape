@@ -3,7 +3,7 @@ import { history, Reducer, Effect } from 'umi';
 
 import { accountLogout, accountLogin } from '@/services/login';
 import { setAuthority } from '@/utils/Authorized';
-import { getPageQuery } from '@/utils/utils';
+import { getPageQuery, setStorage } from '@/utils/utils';
 
 export interface StateType {
   status?: 'ok' | 'error';
@@ -17,6 +17,7 @@ export interface LoginModelType {
   effects: {
     login: Effect;
     logout: Effect;
+    autoAuth: Effect;
   };
   reducers: {
     changeLoginStatus: Reducer<StateType>;
@@ -36,13 +37,16 @@ const Model: LoginModelType = {
       yield put({
         type: 'changeLoginStatus',
         payload: {
-          status: res ? 'ok' : 'error',
+          status: res?.data ? 'ok' : 'error',
           type,
           currentAuthority: auth,
         },
       });
-      // Login successfully
-      if (res) {
+
+      if (res?.data) {
+        // Login successfully
+        setStorage('uid', res.data);
+
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
         let { redirect } = params as { redirect: string };
@@ -75,6 +79,15 @@ const Model: LoginModelType = {
         });
       }
     },
+
+    *autoAuth({ payload }, { call, put }) {
+      yield put({
+        type: 'changeLoginStatus',
+        payload: {
+          currentAuthority: payload,
+        },
+      });
+    },
   },
 
   reducers: {
@@ -82,8 +95,7 @@ const Model: LoginModelType = {
       setAuthority(payload.currentAuthority);
       return {
         ...state,
-        status: payload.status,
-        type: payload.type,
+        ...payload,
       };
     },
   },

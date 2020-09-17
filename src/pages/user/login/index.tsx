@@ -45,6 +45,9 @@ const Login: React.FC<LoginProps> = (props) => {
         type,
         auth: isAdmin ? 'admin' : 'user',
       },
+      callback: (payload) => {
+        // dispatch({ type: 'user/' });
+      },
     });
   };
 

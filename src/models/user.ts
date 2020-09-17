@@ -1,11 +1,22 @@
 import { Effect, Reducer } from 'umi';
 
-import { queryUser, query } from '@/services/user';
-import { getStorage } from '@/utils/utils';
+import { queryUser } from '@/services/user';
+import { getStorage, originFilePathParser } from '@/utils/utils';
+import { merge } from 'lodash';
+import { getAuthority } from '@/utils/Authorized';
 
 export interface CurrentUser {
   avatar?: string;
   name?: string;
+  userid?: string;
+  // account: string
+  // password: string
+  phone?: string;
+  // photo: string
+  // userId: string
+  createTime?: string;
+  // isAdmin?: boolean;
+
   title?: string;
   group?: string;
   signature?: string;
@@ -13,7 +24,6 @@ export interface CurrentUser {
     key: string;
     label: string;
   }[];
-  userid?: string;
   unreadCount?: number;
 }
 
@@ -42,22 +52,41 @@ const UserModel: UserModelType = {
 
   effects: {
     *fetchCurrent(_, { call, put }) {
-      const uid = getStorage('uid');
+      const uid = getStorage('uid'),
+        auth = getAuthority()[0];
       if (uid) {
-        const response = yield call(queryUser, { user_id: uid });
-        yield put({
-          type: 'saveCurrentUser',
-          payload: response.data,
-        });
+        const response = yield call(queryUser, uid);
+        yield [
+          put({
+            type: 'saveCurrentUser',
+            payload: response.data,
+          }),
+          put({
+            type: 'login/autoAuth',
+            payload: auth,
+          }),
+        ];
       } else console.warn('No uid. Not Signed!');
     },
   },
 
   reducers: {
-    saveCurrentUser(state, action:{payload}) {
+    saveCurrentUser(state, action) {
+      const { payload } = action;
       return {
         ...state,
-        currentUser: action.payload || {},
+        currentUser: merge(
+          state?.currentUser,
+          payload
+            ? {
+                avatar: payload.photo ? originFilePathParser(payload.photo) : '', // TODO default img src
+                name: payload.account,
+                userid: payload.userId,
+                phone: payload.phone,
+                createTime: payload.createTime,
+              }
+            : {},
+        ),
       };
     },
     changeNotifyCount(

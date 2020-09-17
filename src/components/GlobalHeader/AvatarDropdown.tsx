@@ -9,7 +9,8 @@ import styles from './index.less';
 
 export interface GlobalHeaderRightProps extends Partial<ConnectProps> {
   currentUser?: CurrentUser;
-  menu?: boolean;
+  menu?: boolean; // ? wtf is 'menu'?
+  currentAuthority?: 'user' | 'guest' | 'admin';
 }
 
 class AvatarDropdown extends React.Component<GlobalHeaderRightProps> {
@@ -43,23 +44,23 @@ class AvatarDropdown extends React.Component<GlobalHeaderRightProps> {
         name: '',
       },
       menu,
+      currentAuthority,
     } = this.props;
     const menuHeaderDropdown = (
       <Menu className={styles.menu} selectedKeys={[]} onClick={this.onMenuClick}>
-        {menu && (
-          <Menu.Item key="center">
-            <UserOutlined />
-            个人中心
-          </Menu.Item>
+        {currentAuthority === 'user' && (
+          <>
+            <Menu.Item key="center">
+              <UserOutlined />
+              个人中心
+            </Menu.Item>
+            <Menu.Item key="settings">
+              <SettingOutlined />
+              个人设置
+            </Menu.Item>
+            <Menu.Divider />
+          </>
         )}
-        {menu && (
-          <Menu.Item key="settings">
-            <SettingOutlined />
-            个人设置
-          </Menu.Item>
-        )}
-        {menu && <Menu.Divider />}
-
         <Menu.Item key="logout">
           <LogoutOutlined />
           退出登录
@@ -87,6 +88,7 @@ class AvatarDropdown extends React.Component<GlobalHeaderRightProps> {
   }
 }
 
-export default connect(({ user }: ConnectState) => ({
+export default connect(({ login, user }: ConnectState) => ({
   currentUser: user.currentUser,
+  currentAuthority: login.currentAuthority,
 }))(AvatarDropdown);

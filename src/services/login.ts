@@ -1,4 +1,5 @@
 import { _api_, _base_ } from '@/utils/api';
+import { setAuthority } from '@/utils/Authorized';
 import request from '@/utils/request';
 import { setStorage } from '@/utils/utils';
 
@@ -41,6 +42,7 @@ export async function accountLogout(params: any) {
   // // TODO do some request
   // // request('/api/login/account', { data: params });
   // ? got no api, do 'logout' in localStorage
+  setAuthority('');
   setStorage('uid');
   // // TODO reload
 }
