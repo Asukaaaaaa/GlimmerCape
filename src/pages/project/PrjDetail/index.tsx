@@ -1,8 +1,9 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Spin, Tabs, Table, Space } from 'antd';
 import styles from './index.less';
-import { history } from 'umi';
+import { history, useDispatch, useRouteMatch } from 'umi';
+import { pickBy } from 'lodash';
 
 export default (props) => {
   const colums = {
@@ -86,25 +87,34 @@ export default (props) => {
     ],
   };
 
-  // tab 与路由绑定
-  const [tab, setTab] = useState('dataset');
-  useEffect(() => {
-    setTab(props.match.params.tab);
-  }, [props.match.params.tab]);
+  const dispatch = useDispatch();
 
-  // init
+  // tab 与路由绑定
+  const match = useRouteMatch<{ tab: string; pid: string }>();
+  const [tab, setTab] = useState('dataset');
+  const [pid, setPid] = useState('');
   useEffect(() => {
-    // effect;
-    return () => {
-      // cleanup;
-    };
+    const { tab, pid } = match.params;
+    setTab(tab);
+    setPid(pid);
+  }, [match.params]);
+  useEffect(() => {
+    // 拉取初始数据
+    dispatch({
+      type: `projectDetail/fetch${match.params.tab.replace(/^[a-z]/g, (L) => L.toUpperCase())}`,
+      payload: {
+        project_id: pid,
+        page_num: 1,
+      },
+    });
+    // return () => {};
   }, []);
 
   return (
     <PageContainer className={styles.main}>
       <Tabs
         activeKey={tab}
-        onChange={(key) => history.push(`/project/detail/${key}`)}
+        onChange={(key) => history.push(`/project/detail/${key}/${pid}`)}
         size="large"
         animated
       >
@@ -113,9 +123,14 @@ export default (props) => {
             columns={colums.dataset}
             pagination={{}}
             onChange={(pagination, filters, sorter, { currentDataSource, action }) => {
-              props.dispatch({
+              dispatch({
                 type: `projectDetail/${action}`,
-                payload: {},
+                payload: {
+                  type: tab,
+                  paginate: pagination,
+                  filter: filters,
+                  sort: sorter,
+                }[action],
               });
             }}
           />
@@ -125,9 +140,14 @@ export default (props) => {
             columns={colums.model}
             pagination={{}}
             onChange={(pagination, filters, sorter, { currentDataSource, action }) => {
-              props.dispatch({
+              dispatch({
                 type: `projectDetail/${action}`,
-                payload: {},
+                payload: {
+                  type: tab,
+                  pagination,
+                  filters,
+                  sorter,
+                },
               });
             }}
           />

@@ -98,7 +98,7 @@ export default defineConfig({
               // routes: [],
             },
             {
-              path: '/project/detail/:tab',
+              path: '/project/detail/:tab/:pid',
               name: 'project.detail',
               icon: 'smile',
               component: './project/PrjDetail',
