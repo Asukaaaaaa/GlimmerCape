@@ -6,7 +6,7 @@ import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import CreateForm from './components/CreateForm';
 import UpdateForm, { FormValueType } from './components/UpdateForm';
-import { TableListItem } from './data.d';
+import { TableListItem } from './data';
 import { queryRule, updateRule, addRule, removeRule } from './service';
 
 /**
@@ -71,7 +71,11 @@ const handleRemove = async (selectedRows: TableListItem[]) => {
   }
 };
 
-const TableList: React.FC<{}> = () => {
+export interface PropsType<ListItem> {
+  name: string;
+  columns: ProColumns<ListItem>[];
+}
+const TableList: React.FC<PropsType<{}>> = (props) => {
   const [createModalVisible, handleModalVisible] = useState<boolean>(false);
   const [updateModalVisible, handleUpdateModalVisible] = useState<boolean>(false);
   const [stepFormValues, setStepFormValues] = useState({});

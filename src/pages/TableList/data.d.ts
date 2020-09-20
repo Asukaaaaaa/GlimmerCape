@@ -13,6 +13,33 @@ export interface TableListItem {
   progress: number;
 }
 
+export type DatasetListItem = {
+  datasetId: number;
+  datasetName: string;
+  datasetNum: number;
+  datasetUrl: string;
+  nwbUrl: string;
+  periodNum: number;
+  projectId: number;
+  stopwordFlag: number;
+};
+export type ModelListItem = {
+  communityNum: number;
+  createTime: number;
+  datasetId: number;
+  detectorFlag: number;
+  layoutFlag: number;
+  modelId: number;
+  modelName: string;
+  modelStatus: number;
+  modifyTime: number;
+  projectId: number;
+  showFlag: number;
+  similarityFlag: number;
+  similarityThreshold: number;
+  sortFlag: number;
+};
+
 export interface TableListPagination {
   total: number;
   pageSize: number;

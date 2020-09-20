@@ -11,11 +11,12 @@ export const _api_ = {
   // post project detail
   getDatasetList: '/dataset/getDatasetList',
   uploadDataset: '/dataset/upload',
+  downloadDataset: '/dataset/downloadDataset',
   deleteDataset: '/dataset/deleteDataset',
   getModelList: '/model/getModelList',
   createModel: '/model/createModel',
   deleteModel: '/model/deleteModel',
-  
+
   // // post
   // getEvoFile: '/result/getEvoFile',
   // getZpFile: '/result/getZpFile',

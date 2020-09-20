@@ -1,11 +1,18 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import React, { useState, useEffect, useCallback } from 'react';
-import { Spin, Tabs, Table, Space } from 'antd';
+import React, { useState, useEffect, useCallback, FC } from 'react';
+import { Spin, Tabs, Table, Space, Tag, Button } from 'antd';
 import styles from './index.less';
-import { history, useDispatch, useRouteMatch } from 'umi';
-import { pickBy } from 'lodash';
+import { connect, history, Link, useDispatch, useRouteMatch } from 'umi';
+import { StateType, DatasetItem, ModelItem } from './model';
+import Downloader from '@/components/Downloader';
+import { downloadDataset, deleteDataset, deleteModel } from './service';
+import { originFilePathParser } from '@/utils/utils';
+import { PlusOutlined } from '@ant-design/icons';
 
-export default (props) => {
+type PropsType = {
+  projectDetail: StateType;
+};
+export const Detail: FC<PropsType> = (props) => {
   const colums = {
     dataset: [
       {
@@ -27,15 +34,35 @@ export default (props) => {
         title: '上传时间',
         dataIndex: 'createTime',
         key: 'createTime',
+        render(time: number) {
+          return <span>{new Date(time).toLocaleString()}</span>;
+        },
       },
       {
         title: '操作',
         key: 'action',
-        render() {
+        render(record: DatasetItem) {
           return (
             <Space>
-              <a>下载</a>
-              <a>删除</a>
+              <a
+                onClick={(e) => {
+                  // downloadDataset({ dataset_id: '' + record.datasetId });
+                  Downloader.get(originFilePathParser(record.datasetUrl));
+                }}
+              >
+                下载
+              </a>
+              <a
+                onClick={(e) => {
+                  deleteDataset({ dataset_id: '' + record.datasetId })
+                    .then((res) => {
+                      // TODO
+                    })
+                    .catch((err) => console.warn(err));
+                }}
+              >
+                删除
+              </a>
             </Space>
           );
         },
@@ -44,42 +71,68 @@ export default (props) => {
     model: [
       {
         title: '模型名称',
-        dataIndex: 'name',
-        key: 'name',
+        dataIndex: 'modelName',
+        key: 'modelName',
       },
       {
         title: '状态',
-        dataIndex: 'age',
-        key: 'age',
+        dataIndex: 'modelStatus',
+        key: 'modelStatus',
+        render(text: string) {
+          return (
+            <Tag color={['geekblue', 'green', 'volcano'][text]} key={text}>
+              {['训练中', '成功', '失败'][text]}
+            </Tag>
+          );
+        },
       },
       {
         title: '社区选择',
-        dataIndex: 'address',
-        key: 'address',
+        dataIndex: 'detectorFlag',
+        key: 'detectorFlag',
+        render(text: string) {
+          return <span>{['Blondel', 'Newman MM', 'Ball OverLapping'][text]}</span>;
+        },
       },
       {
         title: '相似度系数',
-        dataIndex: 'name',
-        key: 'name',
+        dataIndex: 'similarityThreshold',
+        key: 'similarityThreshold',
       },
       {
         title: '社区排序',
-        dataIndex: 'name',
-        key: 'name',
+        dataIndex: 'sortFlag',
+        key: 'sortFlag',
+        render(text: string) {
+          return <span>{['中心度', '节点数量'][text]}</span>;
+        },
       },
       {
         title: '更新时间',
-        dataIndex: 'name',
-        key: 'name',
+        dataIndex: 'modifyTime',
+        key: 'modifyTime',
+        render(time: number) {
+          return <span>{new Date(time).toLocaleString()}</span>;
+        },
       },
       {
         title: '操作',
         key: 'action',
-        render() {
+        render(record: ModelItem) {
           return (
             <Space>
-              <a>查看</a>
-              <a>删除</a>
+              <Link to={`/project/model/${record.modelId}`}>查看</Link>
+              <a
+                onClick={(e) => {
+                  deleteModel({ model_id: '' + record.modelId })
+                    .then((res) => {
+                      // TODO
+                    })
+                    .catch((err) => console.warn(err));
+                }}
+              >
+                删除
+              </a>
             </Space>
           );
         },
@@ -95,23 +148,32 @@ export default (props) => {
   const [pid, setPid] = useState('');
   useEffect(() => {
     const { tab, pid } = match.params;
+    dispatch({
+      type: `projectDetail/fetch${tab.replace(/^[a-z]/g, (L) => L.toUpperCase())}`,
+      payload: pid,
+    });
     setTab(tab);
     setPid(pid);
   }, [match.params]);
   useEffect(() => {
-    // 拉取初始数据
-    dispatch({
-      type: `projectDetail/fetch${match.params.tab.replace(/^[a-z]/g, (L) => L.toUpperCase())}`,
-      payload: {
-        project_id: pid,
-        page_num: 1,
-      },
-    });
-    // return () => {};
+    // console.log(1);
+    return () => {
+      dispatch({
+        type: 'projectDetail/clear',
+      });
+    };
   }, []);
 
+  const {
+    datasetView,
+    datasetPage,
+    datasetViewLoading,
+    modelView,
+    modelPage,
+    modelViewLoading,
+  } = props.projectDetail;
   return (
-    <PageContainer className={styles.main}>
+    <PageContainer>
       <Tabs
         activeKey={tab}
         onChange={(key) => history.push(`/project/detail/${key}/${pid}`)}
@@ -119,8 +181,28 @@ export default (props) => {
         animated
       >
         <Tabs.TabPane tab="数据中心" key="dataset">
+          <header
+            style={{
+              height: '64px',
+              padding: '0 0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
+            <strong>
+              <big>数据集列表</big>
+            </strong>
+            <div>
+              <Button type="primary" icon={<PlusOutlined />}>
+                新建
+              </Button>
+            </div>
+          </header>
           <Table
             columns={colums.dataset}
+            dataSource={datasetView?.slice((datasetPage - 1) * 20, datasetPage * 20)}
+            loading={datasetViewLoading}
             pagination={{}}
             onChange={(pagination, filters, sorter, { currentDataSource, action }) => {
               dispatch({
@@ -138,6 +220,8 @@ export default (props) => {
         <Tabs.TabPane tab="模型中心" key="model">
           <Table
             columns={colums.model}
+            dataSource={modelView?.slice((modelPage - 1) * 20, modelPage * 20)}
+            loading={modelViewLoading}
             pagination={{}}
             onChange={(pagination, filters, sorter, { currentDataSource, action }) => {
               dispatch({
@@ -156,3 +240,7 @@ export default (props) => {
     </PageContainer>
   );
 };
+
+export default connect(({ projectDetail }: { projectDetail: StateType }) => ({ projectDetail }))(
+  Detail,
+);

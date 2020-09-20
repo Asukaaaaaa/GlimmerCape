@@ -98,7 +98,7 @@ class Project extends Component<ProjectProps, ProjectState> {
                     hoverable
                     className={styles.card}
                     actions={[
-                      <Link to={`/project/detail/model/${item.projectId}`} key="option1">
+                      <Link to={`/project/detail/dataset/${item.projectId}`} key="option1">
                         数据集
                       </Link>,
                       <Link to={`/project/detail/model/${item.projectId}`} key="option2">

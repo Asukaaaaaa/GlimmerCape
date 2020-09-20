@@ -1,0 +1,18 @@
+export default {
+  'modelanddashboardmonitor.monitor.trading-activity': '活動實時交易情況',
+  'modelanddashboardmonitor.monitor.total-transactions': '今日交易總額',
+  'modelanddashboardmonitor.monitor.sales-target': '銷售目標完成率',
+  'modelanddashboardmonitor.monitor.remaining-time': '活動剩余時間',
+  'modelanddashboardmonitor.monitor.total-transactions-per-second': '每秒交易總額',
+  'modelanddashboardmonitor.monitor.activity-forecast': '活動情況預測',
+  'modelanddashboardmonitor.monitor.efficiency': '券核效率',
+  'modelanddashboardmonitor.monitor.ratio': '跳出率',
+  'modelanddashboardmonitor.monitor.proportion-per-category': '各品類占比',
+  'modelanddashboardmonitor.monitor.fast-food': '中式快餐',
+  'modelanddashboardmonitor.monitor.western-food': '西餐',
+  'modelanddashboardmonitor.monitor.hot-pot': '火鍋',
+  'modelanddashboardmonitor.monitor.waiting-for-implementation': 'Waiting for implementation',
+  'modelanddashboardmonitor.monitor.popular-searches': '熱門搜索',
+  'modelanddashboardmonitor.monitor.resource-surplus': '資源剩余',
+  'modelanddashboardmonitor.monitor.fund-surplus': '補貼資金剩余',
+};

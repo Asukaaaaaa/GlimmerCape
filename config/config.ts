@@ -35,8 +35,7 @@ export default defineConfig({
           component: './Welcome',
         },
       ],
-    },
-    // user
+    }, // user
     {
       path: '/user',
       component: '../layouts/UserLayout',
@@ -68,8 +67,7 @@ export default defineConfig({
           component: './user/login',
         },
       ],
-    },
-    // app
+    }, // app
     {
       path: '/',
       component: '../layouts/SecurityLayout',
@@ -83,26 +81,59 @@ export default defineConfig({
               path: '/',
               redirect: '/project',
             },
-            // {
-            //   name: 'list.table-list',
-            //   icon: 'table',
-            //   path: '/list',
-            //   component: './ListTableList',
-            // },
+            {
+              name: 'list',
+              icon: 'table',
+              path: '/list',
+              component: '../layouts/BlankLayout',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'dataset',
+                  icon: 'table',
+                  path: '/list/dataset',
+                  component: './TableList/DatasetList',
+                },
+                {
+                  name: '监控页',
+                  icon: 'smile',
+                  path: '/list/model/dashboardmonitor',
+                  component: './model/DashboardMonitor',
+                },
+                {
+                  name: 'model',
+                  icon: 'table',
+                  path: '/list/model',
+                  component: './TableList/ModelList',
+                },
+                {
+                  name: 'list',
+                  icon: 'table',
+                  path: '/list',
+                  component: './TableList',
+                },
+              ],
+            },
             {
               path: '/project',
               name: 'project',
               icon: 'smile',
-              component: './project/PrjList',
-              // hideChildrenInMenu: true,
-              // routes: [],
-            },
-            {
-              path: '/project/detail/:tab/:pid',
-              name: 'project.detail',
-              icon: 'smile',
-              component: './project/PrjDetail',
-              hideInMenu: true,
+              component: '../layouts/BlankLayout',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/project/detail/:tab/:pid',
+                  name: 'detail',
+                  icon: 'smile',
+                  component: './project/PrjDetail',
+                },
+                {
+                  path: '/project',
+                  // name: 'detail',
+                  icon: 'smile',
+                  component: './project/PrjList',
+                },
+              ],
             },
             {
               path: '/admin',
@@ -119,6 +150,12 @@ export default defineConfig({
                   authority: ['admin'],
                 },
               ],
+            },
+            {
+              name: '工作台',
+              icon: 'smile',
+              path: '/model/dashboardworkplace',
+              component: './model/DashboardWorkplace',
             },
             {
               component: './404',

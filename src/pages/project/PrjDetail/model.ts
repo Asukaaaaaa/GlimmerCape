@@ -1,9 +1,8 @@
-import { merge } from 'lodash';
 import { Effect, Reducer } from 'umi';
 
 import { queryDatesetList, queryModelList } from './service';
 
-type DatasetItem = {
+export type DatasetItem = {
   datasetId: number;
   datasetName: string;
   datasetNum: number;
@@ -13,7 +12,7 @@ type DatasetItem = {
   projectId: number;
   stopwordFlag: number;
 };
-type ModelItem = {
+export type ModelItem = {
   communityNum: number;
   createTime: number;
   datasetId: number;
@@ -31,12 +30,12 @@ type ModelItem = {
 };
 
 export interface StateType {
-  datasetPage?: number;
+  datasetPage: number;
   datasetViewLoading?: boolean;
   datasetView?: DatasetItem[];
   datasetList?: DatasetItem[];
 
-  modelPage?: number;
+  modelPage: number;
   modelViewLoading?: boolean;
   modelView?: ModelItem[];
   modelList?: ModelItem[];
@@ -51,11 +50,10 @@ export interface ModelType {
     paginate: Effect;
     filter: Effect;
     sort: Effect;
+    clear: Effect;
   };
   reducers: {
-    updateDatasetList: Reducer<StateType>;
-
-    updateModelList: Reducer<StateType>;
+    update: Reducer<StateType>;
   };
 }
 
@@ -75,52 +73,80 @@ const Model: ModelType = {
   },
 
   effects: {
-    *fetchDataset({ payload }, { call, put }) {
-      const response = yield call(queryDatesetList, payload);
+    *fetchDataset({ payload }, { call, put, select }) {
+      put({
+        type: 'update',
+        payload: { datasetViewLoading: true },
+      });
+      const { datasetPage, datasetList } = yield select(
+        ({ projectDetail }: { projectDetail: StateType }) => projectDetail,
+      );
+      const response = yield call(queryDatesetList, { project_id: payload, page_num: datasetPage });
       if (response?.data) {
         const { list, pageNumber, pageSize, totalPage, totalRow } = response.data;
         const start = (pageNumber - 1) * pageSize;
-        const listCopy = new Array<DatasetItem>(totalRow);
-        for (let i = start, j = 0; i < start + list.length; i++, j++) listCopy[i] = list[j];
+        for (let i = start, j = 0; i < start + list.length; i++, j++) datasetList[i] = list[j];
         yield put({
-          type: 'updateDatasetList',
-          payload: listCopy,
+          type: 'update',
+          payload: {
+            datasetView: datasetList, // TODO
+            datasetViewLoading: false,
+            datasetList: datasetList,
+          },
         });
       }
     },
-    *fetchModel({ payload }, { call, put }) {
-      const response = yield call(queryModelList, payload);
+    *fetchModel({ payload }, { call, put, select }) {
+      put({
+        type: 'update',
+        payload: { modelViewLoading: true },
+      });
+      const { modelPage, modelList } = yield select(
+        ({ projectDetail }: { projectDetail: StateType }) => projectDetail,
+      );
+      const response = yield call(queryModelList, { project_id: payload, page_num: modelPage });
       if (response?.data) {
         const { list, pageNumber, pageSize, totalPage, totalRow } = response.data;
         const start = (pageNumber - 1) * pageSize;
-        const listCopy = new Array<ModelItem>(totalRow);
-        for (let i = start, j = 0; i < start + list.length; i++, j++) listCopy[i] = list[j];
+        for (let i = start, j = 0; i < start + list.length; i++, j++) modelList[i] = list[j];
         yield put({
-          type: 'updateModelList',
-          payload: listCopy,
+          type: 'update',
+          payload: {
+            modelView: modelList, // TODO
+            modelViewLoading: false,
+            modelList: modelList,
+          },
         });
       }
     },
-    paginate({ payload: { type, pagination } }, { call, put, select }) {},
+    *paginate({ payload: { type, pagination } }, { call, put, select }) {
+      // TODO
+    },
     filter() {},
     sort() {},
+    *clear({ payload }, { call, put, select }) {
+      yield put({
+        type: 'update',
+        payload: {
+          datasetPage: 1,
+          datasetViewLoading: false,
+          datasetView: [],
+          datasetList: [],
+
+          modelPage: 1,
+          modelViewLoading: false,
+          modelView: [],
+          modelList: [],
+        },
+      });
+    },
   },
 
   reducers: {
-    updateDatasetList(state, action) {
-      const list = merge(state?.datasetList, action.payload);
+    update(state, action) {
       return {
         ...state,
-        datasetView: list, // TODO view redo for new list
-        datasetList: list,
-      };
-    },
-    updateModelList(state, action) {
-      const list = merge(state?.modelList, action.payload);
-      return {
-        ...state,
-        modelView: list, // TODO view redo for new list
-        modelList: list,
+        ...action.payload,
       };
     },
   },
