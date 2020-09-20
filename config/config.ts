@@ -95,12 +95,6 @@ export default defineConfig({
                   component: './TableList/DatasetList',
                 },
                 {
-                  name: '监控页',
-                  icon: 'smile',
-                  path: '/list/model/dashboardmonitor',
-                  component: './model/DashboardMonitor',
-                },
-                {
                   name: 'model',
                   icon: 'table',
                   path: '/list/model',
@@ -111,6 +105,27 @@ export default defineConfig({
                   icon: 'table',
                   path: '/list',
                   component: './TableList',
+                },
+              ],
+            },
+            {
+              name: 'model',
+              icon: 'smile',
+              path: '/model',
+              component: '../layouts/BlankLayout',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: '监控页',
+                  icon: 'smile',
+                  path: '/model/dashboardmonitor',
+                  component: './model/DashboardMonitor',
+                },
+                {
+                  name: '工作台',
+                  icon: 'smile',
+                  path: '/model/dashboardworkplace',
+                  component: './model/DashboardWorkplace',
                 },
               ],
             },
@@ -151,12 +166,7 @@ export default defineConfig({
                 },
               ],
             },
-            {
-              name: '工作台',
-              icon: 'smile',
-              path: '/model/dashboardworkplace',
-              component: './model/DashboardWorkplace',
-            },
+
             {
               component: './404',
             },
