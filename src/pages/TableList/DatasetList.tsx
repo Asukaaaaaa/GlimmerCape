@@ -1,15 +1,20 @@
+import NumberRange from '@/components/InputFilter/NumberRange';
 import { PlusOutlined } from '@ant-design/icons';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
-import { Button, Divider, Drawer } from 'antd';
+import { Button, DatePicker, Divider, Drawer, Input, InputNumber } from 'antd';
 import React, { useState, useRef } from 'react';
+import { useRouteMatch } from 'umi';
 import CreateForm from './components/CreateForm';
 import UpdateForm from './components/UpdateForm';
 import { DatasetListItem } from './data';
-import { queryRule, deleteDataset } from './service';
+import { deleteDataset, queryDatesetList } from './service';
+import './index.less'
 
 const TableList: React.FC<{}> = (props) => {
+  const match = useRouteMatch<{ pid: string }>();
+
   const [createModalVisible, handleModalVisible] = useState<boolean>(false);
   const [updateModalVisible, handleUpdateModalVisible] = useState<boolean>(false);
 
@@ -25,7 +30,7 @@ const TableList: React.FC<{}> = (props) => {
       title: '数据集名称',
       dataIndex: 'datasetName',
       // tip: '规则名称是唯一的 key',
-      formItemProps: {
+      fieldProps: {
         rules: [
           {
             required: true,
@@ -40,19 +45,36 @@ const TableList: React.FC<{}> = (props) => {
     {
       title: '周期数目',
       dataIndex: 'periodNum',
-      // valueType: 'textarea',
+      sorter: true,
+      valueType: 'digit',
+      renderFormItem(item, { value, onChange, onSelect }) {
+        return <NumberRange />;
+      },
     },
     {
       title: '数据条数',
       dataIndex: 'datasetNum',
       sorter: true,
-      // hideInForm: true,
-      // renderText: (val: string) => `${val} 万`,
+      valueType: 'digit',
+      renderFormItem(item, { value, onChange, onSelect }) {
+        return <NumberRange />;
+      },
     },
     {
       title: '上传时间',
       dataIndex: 'createTime',
-      renderText: (val: number) => new Date(val).toLocaleString(),
+      sorter: true,
+      hideInForm: true,
+      valueType: 'dateTime',
+      renderFormItem() {
+        return (
+          <DatePicker.RangePicker
+            // style={{ width: '420px' }}
+            // showTime={{ format: 'HH:mm' }}
+            // format="YYYY-MM-DD HH:mm"
+          />
+        );
+      },
     },
     {
       title: '操作',
@@ -88,7 +110,7 @@ const TableList: React.FC<{}> = (props) => {
   return (
     <PageContainer>
       <ProTable<DatasetListItem>
-        headerTitle="查询表格"
+        headerTitle="数据集列表"
         actionRef={actionRef}
         rowKey="key"
         search={{
@@ -99,7 +121,11 @@ const TableList: React.FC<{}> = (props) => {
             <PlusOutlined /> 新建
           </Button>,
         ]}
-        request={(params, sorter, filter) => queryRule({ ...params, sorter, filter })}
+        request={async (params, sorter, filter) => {
+          const res = await queryDatesetList({ project_id: match.params.pid, ...params });
+          return { data: res.data.list, success: true, total: res.data.totalRow };
+        }}
+        defaultData={[]}
         columns={columns}
         rowSelection={{
           onChange: (_, selectedRows) => setSelectedRows(selectedRows),
@@ -165,7 +191,7 @@ const TableList: React.FC<{}> = (props) => {
         />
       ) : null} */}
 
-      <Drawer
+      {/* <Drawer
         width={600}
         visible={!!row}
         onClose={() => {
@@ -186,7 +212,7 @@ const TableList: React.FC<{}> = (props) => {
             columns={columns}
           />
         )}
-      </Drawer>
+      </Drawer> */}
     </PageContainer>
   );
 };

@@ -38,6 +38,33 @@ export async function updateRule(params: TableListParams) {
   });
 }
 
+export async function queryDatesetList({
+  project_id,
+  pageSize,
+  current,
+}: {
+  project_id: string;
+  pageSize?: number;
+  current?: number;
+}) {
+  return request.post(_base_ + _api_.getDatasetList, {
+    params: { project_id, page_num: current, page_size: pageSize },
+  });
+}
+export async function queryModelList({
+  project_id,
+  pageSize,
+  current,
+}: {
+  project_id: string;
+  pageSize?: number;
+  current?: number;
+}) {
+  return request.post(_base_ + _api_.getModelList, {
+    params: { project_id, page_num: current, page_size: pageSize },
+  });
+}
+
 export async function downloadDataset(params: { dataset_id: string }) {
   return request.post(_base_ + _api_.downloadDataset, { params });
 }

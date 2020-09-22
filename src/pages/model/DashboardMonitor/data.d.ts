@@ -3,3 +3,9 @@ export interface TagType {
   value: string;
   type: string;
 }
+
+export interface RadarDataType {
+  name: string;
+  label: string;
+  value: number;
+}

@@ -7,8 +7,6 @@ export default {
   'menu.login': '登录',
   'menu.register': '注册',
   'menu.register.result': '注册结果',
-  'menu.project': '项目列表',
-  'menu.project.detail': '项目详情',
   'menu.dashboard': 'Dashboard',
   'menu.dashboard.analysis': '分析页',
   'menu.dashboard.monitor': '监控页',
@@ -51,4 +49,11 @@ export default {
   'menu.editor.flow': '流程编辑器',
   'menu.editor.mind': '脑图编辑器',
   'menu.editor.koni': '拓扑编辑器',
+  //
+  'menu.list.project': '项目列表',
+  'menu.list.dataset': '数据中心',
+  'menu.list.model': '模型中心',
+  'menu.model': '模型',
+  'menu.model.监控页': '模型',
+  'menu.model.工作台': '模型',
 };

@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import { GridContent } from '@ant-design/pro-layout';
 import numeral from 'numeral';
 import { StateType } from './model';
-import { Pie, WaterWave, Gauge, TagCloud, Map } from './components/Charts';
+import { Pie, WaterWave, Gauge, TagCloud, Map, Radar } from './components/Charts';
 import ActiveChart from './components/ActiveChart';
 import styles from './style.less';
 
@@ -24,6 +24,9 @@ class DashboardMonitor extends Component<DashboardMonitorProps> {
     const { dispatch } = this.props;
     dispatch({
       type: 'modelAndDashboardMonitor/fetchTags',
+    });
+    dispatch({
+      type: 'modelAndDashboardMonitor/fetchRadarData',
     });
   }
 
@@ -109,6 +112,18 @@ class DashboardMonitor extends Component<DashboardMonitorProps> {
                 style={{ marginBottom: 24 }}
                 bordered={false}
               >
+                <Radar hasLegend height={343} data={modelAndDashboardMonitor.radarData} />
+              </Card>
+              {/* <Card
+                title={
+                  <FormattedMessage
+                    id="modelanddashboardmonitor.monitor.activity-forecast"
+                    defaultMessage="Activity forecast"
+                  />
+                }
+                style={{ marginBottom: 24 }}
+                bordered={false}
+              >
                 <ActiveChart />
               </Card>
               <Card
@@ -130,7 +145,7 @@ class DashboardMonitor extends Component<DashboardMonitorProps> {
                   height={180}
                   percent={87}
                 />
-              </Card>
+              </Card> */}
             </Col>
           </Row>
           <Row gutter={24}>

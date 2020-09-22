@@ -1,10 +1,12 @@
 import { Effect, Reducer } from 'umi';
 
-import { TagType } from './data.d';
-import { queryTags } from './service';
+import { RadarDataType, TagType } from './data.d';
+import { queryTags, queryRadarData } from './service';
 
 export interface StateType {
   tags: TagType[];
+
+  radarData: RadarDataType[];
 }
 
 export interface ModelType {
@@ -12,8 +14,11 @@ export interface ModelType {
   state: StateType;
   effects: {
     fetchTags: Effect;
+    fetchRadarData: Effect;
   };
   reducers: {
+    update: Reducer<StateType>;
+
     saveTags: Reducer<StateType>;
   };
 }
@@ -23,6 +28,8 @@ const Model: ModelType = {
 
   state: {
     tags: [],
+
+    radarData: [],
   },
 
   effects: {
@@ -33,9 +40,24 @@ const Model: ModelType = {
         payload: response.list,
       });
     },
+    *fetchRadarData(_, { call, put }) {
+      const response = yield call(queryRadarData);
+      yield put({
+        type: 'update',
+        payload: {
+          radarData: response.data,
+        },
+      });
+    },
   },
 
   reducers: {
+    update(state, action) {
+      return {
+        ...state,
+        ...action.payload,
+      };
+    },
     saveTags(state, action) {
       return {
         ...state,

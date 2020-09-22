@@ -79,7 +79,7 @@ export default defineConfig({
           routes: [
             {
               path: '/',
-              redirect: '/project',
+              redirect: '/list',
             },
             {
               name: 'list',
@@ -91,20 +91,24 @@ export default defineConfig({
                 {
                   name: 'dataset',
                   icon: 'table',
-                  path: '/list/dataset',
+                  path: '/list/dataset/:pid',
                   component: './TableList/DatasetList',
                 },
                 {
                   name: 'model',
                   icon: 'table',
-                  path: '/list/model',
+                  path: '/list/model/:pid',
                   component: './TableList/ModelList',
                 },
                 {
-                  name: 'list',
+                  name: 'project',
                   icon: 'table',
+                  path: '/list/project',
+                  component: './project/PrjList',
+                },
+                {
                   path: '/list',
-                  component: './TableList',
+                  redirect: '/list/project',
                 },
               ],
             },
@@ -113,40 +117,20 @@ export default defineConfig({
               icon: 'smile',
               path: '/model',
               component: '../layouts/BlankLayout',
+              hideInMenu: true,
               hideChildrenInMenu: true,
               routes: [
                 {
                   name: '监控页',
                   icon: 'smile',
-                  path: '/model/dashboardmonitor',
+                  path: '/model/dashboardmonitor/:mid',
                   component: './model/DashboardMonitor',
                 },
                 {
                   name: '工作台',
                   icon: 'smile',
-                  path: '/model/dashboardworkplace',
+                  path: '/model/dashboardworkplace/:mid',
                   component: './model/DashboardWorkplace',
-                },
-              ],
-            },
-            {
-              path: '/project',
-              name: 'project',
-              icon: 'smile',
-              component: '../layouts/BlankLayout',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/project/detail/:tab/:pid',
-                  name: 'detail',
-                  icon: 'smile',
-                  component: './project/PrjDetail',
-                },
-                {
-                  path: '/project',
-                  // name: 'detail',
-                  icon: 'smile',
-                  component: './project/PrjList',
                 },
               ],
             },

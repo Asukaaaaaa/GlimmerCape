@@ -1,16 +1,19 @@
+import NumberRange from '@/components/InputFilter/NumberRange';
 import { PlusOutlined } from '@ant-design/icons';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
-import { Button, Divider, Drawer } from 'antd';
+import { Button, DatePicker, Divider, Drawer, Select } from 'antd';
 import React, { useState, useRef } from 'react';
-import { Link } from 'umi';
+import { Link, useRouteMatch } from 'umi';
 import CreateForm from './components/CreateForm';
 import UpdateForm from './components/UpdateForm';
 import { ModelListItem } from './data';
-import { queryRule, deleteModel } from './service';
+import { queryModelList, deleteModel } from './service';
 
 const TableList: React.FC<{}> = (props) => {
+  const match = useRouteMatch<{ pid: string }>();
+
   const [createModalVisible, handleModalVisible] = useState<boolean>(false);
   const [updateModalVisible, handleUpdateModalVisible] = useState<boolean>(false);
 
@@ -25,7 +28,7 @@ const TableList: React.FC<{}> = (props) => {
     {
       title: '模型名称',
       dataIndex: 'modelName',
-      formItemProps: {
+      fieldProps: {
         rules: [
           {
             required: true,
@@ -38,38 +41,49 @@ const TableList: React.FC<{}> = (props) => {
       },
     },
     {
-      title: '状态',
-      dataIndex: 'modelStatus',
-      // hideInForm: true,
+      title: '社区选择',
+      dataIndex: 'detectorFlag',
       valueEnum: {
-        0: { text: '训练中', status: 'Processing' },
-        1: { text: '成功', status: 'Success' },
-        2: { text: '失败', status: 'Erros' },
+        0: { text: 'Blondel' },
+        1: { text: 'Newman' },
+        2: { text: 'MM' },
+        3: { text: 'Ball OverLapping' },
       },
     },
     {
-      title: '社区选择',
-      dataIndex: 'detectorFlag',
-      renderText(val: number) {
-        return ['Blondel', 'Newman MM', 'Ball OverLapping'][val];
+      title: '社区排序',
+      dataIndex: 'sortFlag',
+      valueEnum: {
+        0: { text: '中心度' },
+        1: { text: '节点数量' },
       },
     },
     {
       title: '相似度系数',
       dataIndex: 'similarityThreshold',
-    },
-    {
-      title: '社区排序',
-      dataIndex: 'sortFlag',
-      renderText(val: number) {
-        return ['中心度', '节点数量'][val];
+      sorter: true,
+      renderFormItem(item, { value, onChange, onSelect }) {
+        return <NumberRange />;
       },
     },
     {
       title: '更新时间',
       dataIndex: 'modifyTime',
-      renderText(val: number) {
-        return new Date(val).toLocaleString();
+      sorter: true,
+      hideInForm: true,
+      valueType: 'dateTime',
+      renderFormItem(item, { value, onChange, onSelect }) {
+        return <DatePicker.RangePicker />
+      }
+    },
+    {
+      title: '状态',
+      dataIndex: 'modelStatus',
+      hideInForm: true,
+      valueEnum: {
+        0: { text: '训练中', status: 'Processing' },
+        1: { text: '成功', status: 'Success' },
+        2: { text: '失败', status: 'Erros' },
       },
     },
     {
@@ -78,7 +92,7 @@ const TableList: React.FC<{}> = (props) => {
       valueType: 'option',
       render: (_, record) => (
         <>
-          <Link to={`/project/model/${record.modelId}`}>查看</Link>
+          <Link to={`/model/dashboardmonitor/${record.modelId}`}>查看</Link>
           <Divider type="vertical" />
           <a
             onClick={(e) => {
@@ -99,7 +113,7 @@ const TableList: React.FC<{}> = (props) => {
   return (
     <PageContainer>
       <ProTable<ModelListItem>
-        headerTitle="模型中心"
+        headerTitle="模型列表"
         actionRef={actionRef}
         rowKey="key"
         search={{
@@ -110,7 +124,10 @@ const TableList: React.FC<{}> = (props) => {
             <PlusOutlined /> 新建
           </Button>,
         ]}
-        request={(params, sorter, filter) => queryRule({ ...params, sorter, filter })}
+        request={async (params, sorter, filter) => {
+          const res = await queryModelList({ project_id: match.params.pid, ...params });
+          return { data: res.data.list, success: true, total: res.data.totalRow };
+        }}
         columns={columns}
         rowSelection={{
           onChange: (_, selectedRows) => setSelectedRows(selectedRows),
@@ -176,9 +193,9 @@ const TableList: React.FC<{}> = (props) => {
         />
       ) : null} */}
 
-      <Drawer
+      {/* <Drawer
         width={600}
-        visible={!!row}
+        visible={!!row} 
         onClose={() => {
           setRow(undefined);
         }}
@@ -197,7 +214,7 @@ const TableList: React.FC<{}> = (props) => {
             columns={columns}
           />
         )}
-      </Drawer>
+      </Drawer> */}
     </PageContainer>
   );
 };
